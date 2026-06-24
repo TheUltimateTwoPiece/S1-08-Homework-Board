@@ -35,6 +35,7 @@ export async function sendReminder(formData: FormData) {
   const title = (formData.get("title") as string).trim();
   const message = (formData.get("message") as string).trim();
   const target = formData.get("target") as string;
+  const postId = formData.get("postId") as string | null;
 
   if (!title || !message) {
     return { error: "Title and message are required." };
@@ -49,6 +50,34 @@ export async function sendReminder(formData: FormData) {
       .eq("role", "student");
 
     userIds = students?.map((s) => s.id) ?? [];
+  } else if (target === "incomplete") {
+    // Send only to students who haven't completed the specified post
+    if (!postId) {
+      return { error: "Please select a post to filter by incomplete students." };
+    }
+
+    // Get all students
+    const { data: students } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("role", "student");
+
+    if (!students || students.length === 0) {
+      return { error: "No students found." };
+    }
+
+    // Get all completions for this post
+    const { data: completions } = await supabase
+      .from("post_completions")
+      .select("user_id")
+      .eq("post_id", postId);
+
+    const completedUserIds = new Set(completions?.map((c) => c.user_id) ?? []);
+
+    // Filter to only students who haven't completed
+    userIds = students
+      .filter((s) => !completedUserIds.has(s.id))
+      .map((s) => s.id);
   } else {
     const { data: student } = await supabase
       .from("profiles")

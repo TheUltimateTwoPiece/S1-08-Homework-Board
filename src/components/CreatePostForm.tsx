@@ -1,15 +1,44 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { createPost } from "@/actions/posts";
+import { enhanceContentWithAI } from "@/actions/ai";
 
 export function CreatePostForm() {
+  const [content, setContent] = useState("");
+  const [enhancing, setEnhancing] = useState(false);
+  const [aiError, setAiError] = useState("");
+
   const [state, formAction, pending] = useActionState(
     async (_prev: { error?: string; success?: boolean } | null, formData: FormData) => {
-      return createPost(formData);
+      const result = await createPost(formData);
+      if (result?.success) {
+        setContent("");
+      }
+      return result;
     },
     null,
   );
+
+  async function handleEnhanceWithAI() {
+    if (!content.trim()) {
+      setAiError("Please enter some content first.");
+      return;
+    }
+
+    setEnhancing(true);
+    setAiError("");
+
+    const result = await enhanceContentWithAI(content);
+
+    if (result.error) {
+      setAiError(result.error);
+    } else if (result.content) {
+      setContent(result.content);
+    }
+
+    setEnhancing(false);
+  }
 
   return (
     <form action={formAction} className="space-y-4 rounded-xl border border-slate-200 bg-white p-5">
@@ -35,11 +64,23 @@ export function CreatePostForm() {
         <textarea
           id="content"
           name="content"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
           rows={6}
           required
           placeholder="List the assignments, due dates, and any instructions..."
           className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
         />
+        <button
+          type="button"
+          onClick={handleEnhanceWithAI}
+          disabled={enhancing || !content.trim()}
+          className="mt-2 flex items-center gap-2 rounded-lg border border-purple-300 bg-purple-50 px-3 py-1.5 text-xs font-medium text-purple-700 hover:bg-purple-100 disabled:opacity-50"
+        >
+          <span>✨</span>
+          {enhancing ? "Enhancing..." : "Enhance with Gemini AI"}
+        </button>
+        {aiError && <p className="mt-1 text-xs text-red-600">{aiError}</p>}
       </div>
 
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}

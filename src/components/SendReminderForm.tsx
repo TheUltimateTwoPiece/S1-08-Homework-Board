@@ -33,6 +33,8 @@ const QUICK_REMINDERS = [
 export function SendReminderForm({ students, posts }: SendReminderFormProps) {
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
+  const [target, setTarget] = useState("all");
+  const [selectedPostId, setSelectedPostId] = useState("");
 
   const [state, formAction, pending] = useActionState(
     async (
@@ -43,6 +45,8 @@ export function SendReminderForm({ students, posts }: SendReminderFormProps) {
       if (result?.success) {
         setTitle("");
         setMessage("");
+        setSelectedPostId("");
+        setTarget("all");
       }
       return result;
     },
@@ -80,9 +84,12 @@ export function SendReminderForm({ students, posts }: SendReminderFormProps) {
         <select
           id="target"
           name="target"
+          value={target}
+          onChange={(e) => setTarget(e.target.value)}
           className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
         >
           <option value="all">All students</option>
+          <option value="incomplete">Only students who haven't completed this task</option>
           {students.map((student) => (
             <option key={student.id} value={student.id}>
               {student.full_name} ({student.email})
@@ -94,14 +101,17 @@ export function SendReminderForm({ students, posts }: SendReminderFormProps) {
       {posts.length > 0 && (
         <div>
           <label htmlFor="postId" className="mb-1 block text-sm font-medium text-slate-700">
-            Remind about assignment (optional)
+            Remind about assignment {target === "incomplete" && "(required)"}
           </label>
           <select
             id="postId"
-            defaultValue=""
+            name="postId"
+            value={selectedPostId}
             onChange={(e) => {
+              setSelectedPostId(e.target.value);
               if (e.target.value) applyPostReminder(e.target.value);
             }}
+            required={target === "incomplete"}
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           >
             <option value="">Choose a homework post...</option>
@@ -111,6 +121,11 @@ export function SendReminderForm({ students, posts }: SendReminderFormProps) {
               </option>
             ))}
           </select>
+          {target === "incomplete" && !selectedPostId && (
+            <p className="mt-1 text-xs text-amber-600">
+              Please select a post to filter students by completion status
+            </p>
+          )}
         </div>
       )}
 
@@ -170,9 +185,10 @@ export function SendReminderForm({ students, posts }: SendReminderFormProps) {
         </p>
       )}
 
+
       <button
         type="submit"
-        disabled={pending}
+        disabled={pending || (target === "incomplete" && !selectedPostId)}
         className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
       >
         {pending ? "Sending..." : "Send reminder"}
