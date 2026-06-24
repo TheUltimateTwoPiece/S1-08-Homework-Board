@@ -29,8 +29,20 @@ Return only the improved content, no additional commentary.`;
     const enhancedContent = result.response.text();
 
     return { success: true, content: enhancedContent };
-  } catch (error) {
+  } catch (error: any) {
     console.error("AI enhancement error:", error);
-    return { error: "Failed to enhance content with AI. Please try again." };
+    
+    // Provide more specific error messages
+    if (error.message?.includes("API key")) {
+      return { error: "Invalid Google Gemini API key. Please check your .env.local file." };
+    }
+    if (error.message?.includes("quota")) {
+      return { error: "API quota exceeded. Please check your Google Cloud usage." };
+    }
+    if (error.message?.includes("model")) {
+      return { error: "Model not available. Please check your API configuration." };
+    }
+    
+    return { error: `Failed to enhance content: ${error.message || "Unknown error"}` };
   }
 }
