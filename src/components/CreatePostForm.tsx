@@ -41,11 +41,11 @@ export function CreatePostForm() {
   }
 
   return (
-    <form action={formAction} className="space-y-4 rounded-xl border border-slate-200 bg-white p-5">
-      <h2 className="text-lg font-semibold text-slate-900">New homework post</h2>
+    <form action={formAction} className="hb-card space-y-4 p-5">
+      <h2 className="hb-text text-lg font-semibold">New homework post</h2>
 
       <div>
-        <label htmlFor="title" className="mb-1 block text-sm font-medium text-slate-700">
+        <label htmlFor="title" className="hb-text-muted mb-1 block text-sm font-medium">
           Title
         </label>
         <input
@@ -53,12 +53,12 @@ export function CreatePostForm() {
           name="title"
           required
           placeholder="e.g. Math — Chapter 5 exercises"
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+          className="hb-input w-full rounded-lg px-3 py-2 text-sm"
         />
       </div>
 
       <div>
-        <label htmlFor="content" className="mb-1 block text-sm font-medium text-slate-700">
+        <label htmlFor="content" className="hb-text-muted mb-1 block text-sm font-medium">
           Homework details
         </label>
         <textarea
@@ -69,29 +69,29 @@ export function CreatePostForm() {
           rows={6}
           required
           placeholder="List the assignments, due dates, and any instructions..."
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+          className="hb-input w-full rounded-lg px-3 py-2 text-sm"
         />
         <button
           type="button"
           onClick={handleEnhanceWithAI}
           disabled={enhancing || !content.trim()}
-          className="mt-2 flex items-center gap-2 rounded-lg border border-purple-300 bg-purple-50 px-3 py-1.5 text-xs font-medium text-purple-700 hover:bg-purple-100 disabled:opacity-50"
+          className="hb-chip mt-2 flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium disabled:opacity-50"
         >
           <span>✨</span>
           {enhancing ? "Enhancing..." : "Enhance with Gemini AI"}
         </button>
-        {aiError && <p className="mt-1 text-xs text-red-600">{aiError}</p>}
+        {aiError && <p className="hb-text-error mt-1 text-xs">{aiError}</p>}
       </div>
 
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state?.error && <p className="hb-text-error text-sm">{state.error}</p>}
       {state?.success && (
-        <p className="text-sm text-green-600">Post published successfully!</p>
+        <p className="hb-text-success text-sm">Post published successfully!</p>
       )}
 
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+        className="hb-btn-primary px-4 py-2 text-sm font-medium"
       >
         {pending ? "Publishing..." : "Publish post"}
       </button>

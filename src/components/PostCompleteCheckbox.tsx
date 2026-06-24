@@ -22,15 +22,15 @@ export function PostCompleteCheckbox({
           compact ? "p-2" : "px-3 py-2"
         } ${
           completed
-            ? "border-green-300 bg-green-50 text-green-700 hover:border-green-400 hover:bg-green-100"
-            : "border-slate-300 bg-white text-slate-600 hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-700"
+            ? "hb-check-btn--done"
+            : "hb-check-btn--todo"
         }`}
       >
         <span
           className={`flex h-5 w-5 items-center justify-center rounded border-2 ${
             completed
-              ? "border-green-600 bg-green-600 text-white"
-              : "border-slate-400 bg-white group-hover:border-indigo-500"
+              ? "hb-check-icon--done"
+              : "hb-check-icon--todo"
           }`}
         >
           {completed && (

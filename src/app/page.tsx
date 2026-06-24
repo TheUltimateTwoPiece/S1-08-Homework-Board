@@ -27,8 +27,8 @@ export default async function HomePage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Daily Homework</h1>
-        <p className="mt-1 text-sm text-slate-600">
+        <h1 className="hb-text text-2xl font-bold">Daily Homework</h1>
+        <p className="hb-text-muted mt-1 text-sm">
           Welcome back, {profile.full_name}. Here are the latest assignments.
         </p>
       </div>
@@ -44,12 +44,12 @@ export default async function HomePage() {
           ))}
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
-          <p className="text-slate-600">No homework posted yet.</p>
+        <div className="hb-card border-dashed p-12 text-center">
+          <p className="hb-text-muted">No homework posted yet.</p>
           {profile.role === "admin" && (
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="hb-text-subtle mt-2 text-sm">
               Head to the{" "}
-              <a href="/admin" className="font-medium text-indigo-600 hover:underline">
+              <a href="/admin" className="hb-link font-medium">
                 admin panel
               </a>{" "}
               to create your first post.

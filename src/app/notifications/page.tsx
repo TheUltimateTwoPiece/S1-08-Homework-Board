@@ -26,8 +26,8 @@ export default async function NotificationsPage() {
     <div className="mx-auto max-w-4xl px-4 py-8">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Reminders</h1>
-          <p className="mt-1 text-sm text-slate-600">
+          <h1 className="hb-text text-2xl font-bold">Reminders</h1>
+          <p className="hb-text-muted mt-1 text-sm">
             {profile.role === "admin"
               ? "Homework reminders you receive appear here. Send reminders to students from the admin panel."
               : unreadCount > 0
@@ -40,7 +40,7 @@ export default async function NotificationsPage() {
           <form action={markAllNotificationsRead}>
             <button
               type="submit"
-              className="text-sm font-medium text-indigo-600 hover:underline"
+              className="hb-link text-sm font-medium"
             >
               Mark all as read
             </button>
@@ -53,29 +53,27 @@ export default async function NotificationsPage() {
           {(notifications as Notification[]).map((notification) => (
             <li
               key={notification.id}
-              className={`rounded-xl border p-5 ${
-                notification.read_at
-                  ? "border-slate-200 bg-white"
-                  : "border-amber-200 bg-amber-50"
+              className={`hb-card p-5 ${
+                notification.read_at ? "" : "hb-card--unread"
               }`}
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <div className="mb-1 flex items-center gap-2">
                     {!notification.read_at && (
-                      <span className="rounded bg-amber-200 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-900">
+                      <span className="hb-badge-new rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
                         New
                       </span>
                     )}
-                    <h2 className="font-semibold text-slate-900">
+                    <h2 className="hb-text font-semibold">
                       {notification.title}
                     </h2>
                   </div>
-                  <p className="text-sm leading-relaxed text-slate-700">
+                  <p className="hb-text-muted text-sm leading-relaxed">
                     {notification.message}
                   </p>
                   <time
-                    className="mt-2 block text-xs text-slate-500"
+                    className="hb-text-subtle mt-2 block text-xs"
                     dateTime={notification.created_at}
                   >
                     {formatDistanceToNow(new Date(notification.created_at), {
@@ -93,7 +91,7 @@ export default async function NotificationsPage() {
                     />
                     <button
                       type="submit"
-                      className="shrink-0 text-xs font-medium text-indigo-600 hover:underline"
+                      className="hb-link shrink-0 text-xs font-medium"
                     >
                       Mark read
                     </button>
@@ -104,10 +102,10 @@ export default async function NotificationsPage() {
           ))}
         </ul>
       ) : (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
-          <p className="text-slate-600">No reminders yet.</p>
+        <div className="hb-card border-dashed p-12 text-center">
+          <p className="hb-text-muted">No reminders yet.</p>
           {profile.role === "student" && (
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="hb-text-subtle mt-2 text-sm">
               When an admin sends a homework reminder, it will show up here
               and on the bell icon in the header.
             </p>

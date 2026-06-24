@@ -48,15 +48,13 @@ export default async function PostPage({ params }: PageProps) {
     <div className="mx-auto max-w-4xl px-4 py-8">
       <Link
         href="/"
-        className="mb-6 inline-block text-sm text-indigo-600 hover:underline"
+        className="hb-link mb-6 inline-block text-sm"
       >
         ← Back to all posts
       </Link>
 
       <article
-        className={`rounded-xl border bg-white p-6 shadow-sm ${
-          isCompleted ? "border-green-200 bg-green-50/40" : "border-slate-200"
-        }`}
+        className={`hb-card p-6 ${isCompleted ? "hb-card--completed" : ""}`}
       >
         <div className="mb-4 flex items-start justify-between gap-4">
           <div className="flex min-w-0 flex-1 items-start gap-4">
@@ -66,7 +64,7 @@ export default async function PostPage({ params }: PageProps) {
             />
             <h1
               className={`text-2xl font-bold ${
-                isCompleted ? "text-slate-500 line-through" : "text-slate-900"
+                isCompleted ? "hb-text-subtle line-through" : "hb-text"
               }`}
             >
               {typedPost.title}
@@ -77,7 +75,7 @@ export default async function PostPage({ params }: PageProps) {
               <input type="hidden" name="postId" value={typedPost.id} />
               <button
                 type="submit"
-                className="text-sm text-red-600 hover:text-red-700"
+                className="hb-text-error text-sm hover:underline"
               >
                 Delete post
               </button>
@@ -85,7 +83,7 @@ export default async function PostPage({ params }: PageProps) {
           )}
         </div>
 
-        <div className="mb-6 flex gap-3 text-xs text-slate-500">
+        <div className="hb-text-subtle mb-6 flex gap-3 text-xs">
           <span>{typedPost.profiles?.full_name ?? "Admin"}</span>
           <span>·</span>
           <time dateTime={typedPost.created_at}>
@@ -93,13 +91,13 @@ export default async function PostPage({ params }: PageProps) {
           </time>
         </div>
 
-        <div className="whitespace-pre-line text-sm leading-relaxed text-slate-700">
+        <div className="hb-text-muted whitespace-pre-line text-sm leading-relaxed">
           {typedPost.content}
         </div>
       </article>
 
       <section className="mt-8">
-        <h2 className="mb-4 text-lg font-semibold text-slate-900">
+        <h2 className="hb-text mb-4 text-lg font-semibold">
           Comments ({comments?.length ?? 0})
         </h2>
 

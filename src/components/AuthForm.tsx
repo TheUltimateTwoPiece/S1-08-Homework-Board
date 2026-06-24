@@ -33,22 +33,22 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
   const pending = mode === "signin" ? signInPending : signUpPending;
 
   return (
-    <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-      <h1 className="text-2xl font-bold text-slate-900">S1-08 Homework Board</h1>
-      <p className="mt-1 text-sm text-slate-600">
+    <div className="hb-card w-full max-w-md p-8">
+      <h1 className="hb-text text-2xl font-bold">S1-08 Homework Board</h1>
+      <p className="hb-text-muted mt-1 text-sm">
         {mode === "signin"
           ? "Sign in to view homework and notifications"
           : "Create an account to join your class"}
       </p>
 
-      <div className="mt-6 flex rounded-lg bg-slate-100 p-1">
+      <div className="hb-segmented mt-6 flex rounded-lg p-1">
         <button
           type="button"
           onClick={() => setMode("signin")}
           className={`flex-1 rounded-md py-2 text-sm font-medium transition ${
             mode === "signin"
-              ? "bg-white text-slate-900 shadow-sm"
-              : "text-slate-600 hover:text-slate-900"
+              ? "hb-segmented-btn--active"
+              : "hb-segmented-btn--inactive hover:text-slate-900"
           }`}
         >
           Sign in
@@ -58,8 +58,8 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
           onClick={() => setMode("signup")}
           className={`flex-1 rounded-md py-2 text-sm font-medium transition ${
             mode === "signup"
-              ? "bg-white text-slate-900 shadow-sm"
-              : "text-slate-600 hover:text-slate-900"
+              ? "hb-segmented-btn--active"
+              : "hb-segmented-btn--inactive hover:text-slate-900"
           }`}
         >
           Sign up
@@ -69,7 +69,7 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
       {mode === "signin" ? (
         <form action={signInAction} className="mt-6 space-y-4">
           <div>
-            <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700">
+            <label htmlFor="email" className="hb-text-muted mb-1 block text-sm font-medium">
               Email
             </label>
             <input
@@ -78,12 +78,12 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
               type="email"
               required
               autoComplete="email"
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="hb-input w-full rounded-lg px-3 py-2 text-sm"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="mb-1 block text-sm font-medium text-slate-700">
+            <label htmlFor="password" className="hb-text-muted mb-1 block text-sm font-medium">
               Password
             </label>
             <input
@@ -92,16 +92,16 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
               type="password"
               required
               autoComplete="current-password"
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="hb-input w-full rounded-lg px-3 py-2 text-sm"
             />
           </div>
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="hb-text-error text-sm">{error}</p>}
 
           <button
             type="submit"
             disabled={pending}
-            className="w-full rounded-lg bg-indigo-600 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+            className="hb-btn-primary w-full py-2.5 text-sm font-medium"
           >
             {pending ? "Signing in..." : "Sign in"}
           </button>
@@ -109,7 +109,7 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
       ) : (
         <form action={signUpAction} className="mt-6 space-y-4">
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">
+            <label className="hb-text-muted mb-2 block text-sm font-medium">
               Account type
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -118,8 +118,8 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
                 onClick={() => setAccountType("student")}
                 className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition ${
                   accountType === "student"
-                    ? "border-indigo-600 bg-indigo-50 text-indigo-700"
-                    : "border-slate-300 text-slate-700 hover:border-slate-400"
+                    ? "hb-choice-btn--active"
+                    : "hb-choice-btn--inactive"
                 }`}
               >
                 Student
@@ -129,8 +129,8 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
                 onClick={() => setAccountType("admin")}
                 className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition ${
                   accountType === "admin"
-                    ? "border-indigo-600 bg-indigo-50 text-indigo-700"
-                    : "border-slate-300 text-slate-700 hover:border-slate-400"
+                    ? "hb-choice-btn--active"
+                    : "hb-choice-btn--inactive"
                 }`}
               >
                 Admin
@@ -141,7 +141,7 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
 
           {accountType === "admin" && (
             <div>
-              <label htmlFor="adminCode" className="mb-1 block text-sm font-medium text-slate-700">
+              <label htmlFor="adminCode" className="hb-text-muted mb-1 block text-sm font-medium">
                 Admin access code
               </label>
               <input
@@ -153,16 +153,16 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
                 placeholder="16-character code from your admin"
                 autoComplete="off"
                 spellCheck={false}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-sm uppercase tracking-wider focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                className="hb-input w-full rounded-lg px-3 py-2 font-mono text-sm uppercase tracking-wider"
               />
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="hb-text-subtle mt-1 text-xs">
                 Ask an admin for the access code.
               </p>
             </div>
           )}
 
           <div>
-            <label htmlFor="fullName" className="mb-1 block text-sm font-medium text-slate-700">
+            <label htmlFor="fullName" className="hb-text-muted mb-1 block text-sm font-medium">
               Full name
             </label>
             <input
@@ -171,12 +171,12 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
               type="text"
               required
               autoComplete="name"
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="hb-input w-full rounded-lg px-3 py-2 text-sm"
             />
           </div>
 
           <div>
-            <label htmlFor="signup-email" className="mb-1 block text-sm font-medium text-slate-700">
+            <label htmlFor="signup-email" className="hb-text-muted mb-1 block text-sm font-medium">
               Email
             </label>
             <input
@@ -185,12 +185,12 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
               type="email"
               required
               autoComplete="email"
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="hb-input w-full rounded-lg px-3 py-2 text-sm"
             />
           </div>
 
           <div>
-            <label htmlFor="signup-password" className="mb-1 block text-sm font-medium text-slate-700">
+            <label htmlFor="signup-password" className="hb-text-muted mb-1 block text-sm font-medium">
               Password
             </label>
             <input
@@ -200,17 +200,17 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
               required
               minLength={6}
               autoComplete="new-password"
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="hb-input w-full rounded-lg px-3 py-2 text-sm"
             />
           </div>
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          {success && <p className="text-sm text-green-700">{success}</p>}
+          {error && <p className="hb-text-error text-sm">{error}</p>}
+          {success && <p className="hb-text-success text-sm">{success}</p>}
 
           <button
             type="submit"
             disabled={pending}
-            className="w-full rounded-lg bg-indigo-600 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+            className="hb-btn-primary w-full py-2.5 text-sm font-medium"
           >
             {pending
               ? "Creating account..."

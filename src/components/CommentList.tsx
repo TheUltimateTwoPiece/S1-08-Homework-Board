@@ -10,7 +10,7 @@ type CommentListProps = {
 export function CommentList({ comments, currentUserId }: CommentListProps) {
   if (comments.length === 0) {
     return (
-      <p className="text-sm text-slate-500">
+      <p className="hb-text-subtle text-sm">
         No comments yet. Be the first to ask a question!
       </p>
     );
@@ -21,14 +21,14 @@ export function CommentList({ comments, currentUserId }: CommentListProps) {
       {comments.map((comment) => (
         <li
           key={comment.id}
-          className="rounded-lg border border-slate-100 bg-slate-50 p-4"
+          className="hb-card hb-card-muted p-4"
         >
           <div className="mb-2 flex items-center justify-between gap-2">
-            <span className="text-sm font-medium text-slate-900">
+            <span className="hb-text text-sm font-medium">
               {comment.profiles?.full_name ?? "Student"}
             </span>
             <time
-              className="text-xs text-slate-500"
+              className="hb-text-subtle text-xs"
               dateTime={comment.created_at}
             >
               {formatDistanceToNow(new Date(comment.created_at), {
@@ -36,7 +36,7 @@ export function CommentList({ comments, currentUserId }: CommentListProps) {
               })}
             </time>
           </div>
-          <p className="whitespace-pre-line text-sm leading-relaxed text-slate-700">
+          <p className="hb-text-muted whitespace-pre-line text-sm leading-relaxed">
             {comment.content}
           </p>
           {comment.author_id === currentUserId && (
@@ -45,7 +45,7 @@ export function CommentList({ comments, currentUserId }: CommentListProps) {
               <input type="hidden" name="postId" value={comment.post_id} />
               <button
                 type="submit"
-                className="text-xs text-red-600 hover:text-red-700"
+                className="hb-text-error text-xs hover:underline"
               >
                 Delete
               </button>

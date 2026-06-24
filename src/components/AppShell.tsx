@@ -15,7 +15,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Header profile={profile} unreadCount={unreadCount} />
-      <main className="flex-1 bg-slate-50">{children}</main>
+      <main className="hb-main flex-1">{children}</main>
     </>
   );
 }

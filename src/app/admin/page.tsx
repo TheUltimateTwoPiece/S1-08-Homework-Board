@@ -32,8 +32,8 @@ export default async function AdminPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Admin panel</h1>
-        <p className="mt-1 text-sm text-slate-600">
+        <h1 className="hb-text text-2xl font-bold">Admin panel</h1>
+        <p className="hb-text-muted mt-1 text-sm">
           Post daily homework and send reminders so students complete their work.
         </p>
       </div>

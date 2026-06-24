@@ -11,10 +11,10 @@ type PostCardProps = {
 export function PostCard({ post, completed }: PostCardProps) {
   return (
     <div
-      className={`flex items-start gap-3 rounded-xl border bg-white p-5 shadow-sm transition ${
+      className={`hb-card flex items-start gap-3 p-5 hb-card--interactive ${
         completed
-          ? "border-green-200 bg-green-50/40"
-          : "border-slate-200 hover:border-indigo-300 hover:shadow-md"
+          ? "hb-card--completed"
+          : ""
       }`}
     >
       <PostCompleteCheckbox postId={post.id} completed={completed} compact />
@@ -23,23 +23,23 @@ export function PostCard({ post, completed }: PostCardProps) {
         <div className="mb-2 flex items-start justify-between gap-4">
           <h2
             className={`text-lg font-semibold ${
-              completed ? "text-slate-500 line-through" : "text-slate-900"
+              completed ? "hb-text-subtle line-through" : "hb-text"
             }`}
           >
             {post.title}
           </h2>
           <time
-            className="shrink-0 text-xs text-slate-500"
+            className="hb-text-subtle shrink-0 text-xs"
             dateTime={post.created_at}
           >
             {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
           </time>
         </div>
-        <p className="line-clamp-3 whitespace-pre-line text-sm leading-relaxed text-slate-600">
+        <p className="hb-text-muted line-clamp-3 whitespace-pre-line text-sm leading-relaxed">
           {post.content}
         </p>
         {post.profiles?.full_name && (
-          <p className="mt-3 text-xs text-slate-400">
+          <p className="hb-text-subtle mt-3 text-xs">
             Posted by {post.profiles.full_name}
           </p>
         )}

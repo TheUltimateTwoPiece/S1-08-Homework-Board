@@ -10,9 +10,9 @@ type HeaderProps = {
 
 export function Header({ profile, unreadCount }: HeaderProps) {
   return (
-    <header className="border-b border-slate-200 bg-white">
+    <header className="hb-header">
       <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-4">
-        <Link href="/" className="text-lg font-semibold text-slate-900">
+        <Link href="/" className="hb-brand text-lg font-semibold">
           S1-08 Homework Board
         </Link>
 
@@ -22,16 +22,16 @@ export function Header({ profile, unreadCount }: HeaderProps) {
           {profile.role === "admin" && (
             <Link
               href="/admin"
-              className="rounded-lg bg-indigo-600 px-3 py-1.5 font-medium text-white hover:bg-indigo-700"
+              className="hb-btn-primary px-3 py-1.5 text-sm font-medium"
             >
               Create Post
             </Link>
           )}
 
-          <span className="hidden text-slate-500 sm:inline">
+          <span className="hb-text-subtle hidden sm:inline">
             {profile.full_name}
             {profile.role === "admin" && (
-              <span className="ml-1 rounded bg-indigo-100 px-1.5 py-0.5 text-xs font-medium text-indigo-700">
+              <span className="hb-badge-admin ml-1 rounded px-1.5 py-0.5 text-xs font-medium">
                 Admin
               </span>
             )}
@@ -40,7 +40,7 @@ export function Header({ profile, unreadCount }: HeaderProps) {
           <form action={signOut}>
             <button
               type="submit"
-              className="text-slate-600 hover:text-slate-900"
+              className="hb-link-muted"
             >
               Sign out
             </button>

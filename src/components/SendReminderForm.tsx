@@ -69,16 +69,16 @@ export function SendReminderForm({ students, posts }: SendReminderFormProps) {
   }
 
   return (
-    <form action={formAction} className="space-y-4 rounded-xl border border-slate-200 bg-white p-5">
+    <form action={formAction} className="hb-card space-y-4 p-5">
       <div>
-        <h2 className="text-lg font-semibold text-slate-900">Send reminder</h2>
-        <p className="mt-1 text-sm text-slate-600">
+        <h2 className="hb-text text-lg font-semibold">Send reminder</h2>
+        <p className="hb-text-muted mt-1 text-sm">
           Students will see this in their reminders bell icon.
         </p>
       </div>
 
       <div>
-        <label htmlFor="target" className="mb-1 block text-sm font-medium text-slate-700">
+        <label htmlFor="target" className="hb-text-muted mb-1 block text-sm font-medium">
           Send to
         </label>
         <select
@@ -86,10 +86,10 @@ export function SendReminderForm({ students, posts }: SendReminderFormProps) {
           name="target"
           value={target}
           onChange={(e) => setTarget(e.target.value)}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+          className="hb-input w-full rounded-lg px-3 py-2 text-sm"
         >
           <option value="all">All students</option>
-          <option value="incomplete">Only students who haven't completed this task</option>
+          <option value="incomplete">Only students who haven’t completed this task</option>
           {students.map((student) => (
             <option key={student.id} value={student.id}>
               {student.full_name} ({student.email})
@@ -100,7 +100,7 @@ export function SendReminderForm({ students, posts }: SendReminderFormProps) {
 
       {posts.length > 0 && (
         <div>
-          <label htmlFor="postId" className="mb-1 block text-sm font-medium text-slate-700">
+          <label htmlFor="postId" className="hb-text-muted mb-1 block text-sm font-medium">
             Remind about assignment {target === "incomplete" && "(required)"}
           </label>
           <select
@@ -112,7 +112,7 @@ export function SendReminderForm({ students, posts }: SendReminderFormProps) {
               if (e.target.value) applyPostReminder(e.target.value);
             }}
             required={target === "incomplete"}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            className="hb-input w-full rounded-lg px-3 py-2 text-sm"
           >
             <option value="">Choose a homework post...</option>
             {posts.map((post) => (
@@ -122,7 +122,7 @@ export function SendReminderForm({ students, posts }: SendReminderFormProps) {
             ))}
           </select>
           {target === "incomplete" && !selectedPostId && (
-            <p className="mt-1 text-xs text-amber-600">
+            <p className="hb-text-warning mt-1 text-xs">
               Please select a post to filter students by completion status
             </p>
           )}
@@ -130,7 +130,7 @@ export function SendReminderForm({ students, posts }: SendReminderFormProps) {
       )}
 
       <div>
-        <span className="mb-2 block text-sm font-medium text-slate-700">
+        <span className="hb-text-muted mb-2 block text-sm font-medium">
           Quick reminders
         </span>
         <div className="flex flex-wrap gap-2">
@@ -139,7 +139,7 @@ export function SendReminderForm({ students, posts }: SendReminderFormProps) {
               key={reminder.label}
               type="button"
               onClick={() => applyQuickReminder(reminder)}
-              className="rounded-full border border-slate-300 px-3 py-1 text-xs font-medium text-slate-700 hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-700"
+              className="hb-chip rounded-full px-3 py-1 text-xs font-medium"
             >
               {reminder.label}
             </button>
@@ -148,7 +148,7 @@ export function SendReminderForm({ students, posts }: SendReminderFormProps) {
       </div>
 
       <div>
-        <label htmlFor="reminder-title" className="mb-1 block text-sm font-medium text-slate-700">
+        <label htmlFor="reminder-title" className="hb-text-muted mb-1 block text-sm font-medium">
           Reminder title
         </label>
         <input
@@ -158,12 +158,12 @@ export function SendReminderForm({ students, posts }: SendReminderFormProps) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="e.g. Math homework due tomorrow"
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+          className="hb-input w-full rounded-lg px-3 py-2 text-sm"
         />
       </div>
 
       <div>
-        <label htmlFor="message" className="mb-1 block text-sm font-medium text-slate-700">
+        <label htmlFor="message" className="hb-text-muted mb-1 block text-sm font-medium">
           Reminder message
         </label>
         <textarea
@@ -174,13 +174,13 @@ export function SendReminderForm({ students, posts }: SendReminderFormProps) {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Let students know what they need to complete..."
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+          className="hb-input w-full rounded-lg px-3 py-2 text-sm"
         />
       </div>
 
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state?.error && <p className="hb-text-error text-sm">{state.error}</p>}
       {state?.success && (
-        <p className="text-sm text-green-600">
+        <p className="hb-text-success text-sm">
           Reminder sent to {state.count} student{state.count === 1 ? "" : "s"}!
         </p>
       )}
@@ -189,7 +189,7 @@ export function SendReminderForm({ students, posts }: SendReminderFormProps) {
       <button
         type="submit"
         disabled={pending || (target === "incomplete" && !selectedPostId)}
-        className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+        className="hb-btn-primary px-4 py-2 text-sm font-medium"
       >
         {pending ? "Sending..." : "Send reminder"}
       </button>
