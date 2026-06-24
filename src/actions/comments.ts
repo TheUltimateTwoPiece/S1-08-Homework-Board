@@ -13,6 +13,7 @@ export async function addComment(formData: FormData) {
   if (!user) redirect("/login");
 
   const postId = formData.get("postId") as string;
+  const parentCommentId = (formData.get("parentCommentId") as string | null) ?? "";
   const content = (formData.get("content") as string).trim();
 
   if (!content) {
@@ -21,6 +22,7 @@ export async function addComment(formData: FormData) {
 
   const { error } = await supabase.from("comments").insert({
     post_id: postId,
+    parent_comment_id: parentCommentId ? parentCommentId : null,
     author_id: user.id,
     content,
   });

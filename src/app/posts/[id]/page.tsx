@@ -106,7 +106,12 @@ export default async function PostPage({ params }: PageProps) {
         </div>
 
         <CommentList
-          comments={(comments as Comment[]) ?? []}
+          comments={
+            ((comments as Comment[]) ?? []).map((comment) => ({
+              ...comment,
+              parent_comment_id: comment.parent_comment_id ?? null,
+            })) as Comment[]
+          }
           currentUserId={profile.id}
         />
       </section>

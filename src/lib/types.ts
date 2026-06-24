@@ -21,10 +21,19 @@ export type Post = {
 export type Comment = {
   id: string;
   post_id: string;
+  parent_comment_id: string | null;
   author_id: string;
   content: string;
   created_at: string;
   profiles?: Pick<Profile, "full_name">;
+};
+
+export type Feedback = {
+  id: string;
+  author_id: string;
+  message: string;
+  created_at: string;
+  profiles?: Pick<Profile, "full_name" | "email">;
 };
 
 export type Notification = {

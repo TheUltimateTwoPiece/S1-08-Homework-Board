@@ -33,6 +33,12 @@
   }
 }
 
+@keyframes hb-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @layer components {
   .hb-main {
     background: transparent;
@@ -265,6 +271,36 @@
 
   .hb-check-btn--todo:hover .hb-check-icon--todo {
     border-color: rgba(37, 99, 235, 0.9);
+  }
+
+  .hb-check-btn--pending {
+    cursor: wait;
+    opacity: 0.9;
+  }
+
+  .hb-spinner {
+    height: 12px;
+    width: 12px;
+    border-radius: 9999px;
+    border: 2px solid rgba(37, 99, 235, 0.25);
+    border-top-color: rgba(37, 99, 235, 1);
+    animation: hb-spin 800ms linear infinite;
+  }
+
+  .hb-check-btn--done .hb-spinner {
+    border-color: rgba(255, 255, 255, 0.35);
+    border-top-color: rgba(255, 255, 255, 1);
+  }
+
+  .hb-reply {
+    display: flex;
+    gap: 8px;
+  }
+
+  .hb-reply-arrow {
+    flex: none;
+    margin-top: 2px;
+    color: var(--hb-text-subtle);
   }
 
   .hb-skeleton {

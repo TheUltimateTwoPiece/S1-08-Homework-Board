@@ -20,12 +20,17 @@ export function Header({ profile, unreadCount }: HeaderProps) {
           <NotificationBell unreadCount={unreadCount} />
 
           {profile.role === "admin" && (
-            <Link
-              href="/admin"
-              className="hb-btn-primary px-3 py-1.5 text-sm font-medium"
-            >
-              Create Post
-            </Link>
+            <>
+              <Link href="/admin/feedback" className="hb-link font-medium">
+                View feedback
+              </Link>
+              <Link
+                href="/admin"
+                className="hb-btn-primary px-3 py-1.5 text-sm font-medium"
+              >
+                Create Post
+              </Link>
+            </>
           )}
 
           <span className="hb-text-subtle hidden sm:inline">

@@ -23,8 +23,16 @@ create table public.posts (
 create table public.comments (
   id uuid primary key default gen_random_uuid(),
   post_id uuid not null references public.posts(id) on delete cascade,
+  parent_comment_id uuid references public.comments(id) on delete cascade,
   author_id uuid not null references public.profiles(id),
   content text not null,
+  created_at timestamptz not null default now()
+);
+
+create table public.feedback (
+  id uuid primary key default gen_random_uuid(),
+  author_id uuid not null references public.profiles(id),
+  message text not null,
   created_at timestamptz not null default now()
 );
 
@@ -87,6 +95,7 @@ $$;
 alter table public.profiles enable row level security;
 alter table public.posts enable row level security;
 alter table public.comments enable row level security;
+alter table public.feedback enable row level security;
 alter table public.notifications enable row level security;
 alter table public.post_completions enable row level security;
 
@@ -160,6 +169,21 @@ create policy "Users can delete own comments"
   on public.comments for delete
   to authenticated
   using (auth.uid() = author_id);
+
+create policy "Users can create feedback"
+  on public.feedback for insert
+  to authenticated
+  with check (auth.uid() = author_id);
+
+create policy "Users can view own feedback"
+  on public.feedback for select
+  to authenticated
+  using (auth.uid() = author_id);
+
+create policy "Admins can view all feedback"
+  on public.feedback for select
+  to authenticated
+  using (public.is_admin());
 
 -- Notifications policies
 create policy "Users can view own notifications"

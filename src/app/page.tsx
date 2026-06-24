@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { PostCard } from "@/components/PostCard";
 import { requireProfile } from "@/lib/auth";
@@ -26,11 +27,23 @@ export default async function HomePage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      <div className="mb-8">
-        <h1 className="hb-text text-2xl font-bold">Daily Homework</h1>
-        <p className="hb-text-muted mt-1 text-sm">
-          Welcome back, {profile.full_name}. Here are the latest assignments.
-        </p>
+      <div className="mb-8 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="hb-text text-2xl font-bold">Daily Homework</h1>
+          <p className="hb-text-muted mt-1 text-sm">
+            Welcome back, {profile.full_name}. Here are the latest assignments.
+          </p>
+        </div>
+        <div className="flex shrink-0 items-center gap-3">
+          <Link href="/feedback" className="hb-link text-sm font-medium">
+            Feedback
+          </Link>
+          {profile.role === "admin" && (
+            <Link href="/admin/feedback" className="hb-link text-sm font-medium">
+              View feedback
+            </Link>
+          )}
+        </div>
       </div>
 
       {posts && posts.length > 0 ? (

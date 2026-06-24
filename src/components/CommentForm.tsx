@@ -1,16 +1,31 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { addComment } from "@/actions/comments";
 
 type CommentFormProps = {
   postId: string;
+  parentCommentId?: string;
+  placeholder?: string;
+  onSuccess?: () => void;
 };
 
-export function CommentForm({ postId }: CommentFormProps) {
+export function CommentForm({
+  postId,
+  parentCommentId,
+  placeholder = "Write a comment...",
+  onSuccess,
+}: CommentFormProps) {
+  const [content, setContent] = useState("");
+
   const [state, formAction, pending] = useActionState(
     async (_prev: { error?: string } | null, formData: FormData) => {
-      return addComment(formData);
+      const result = await addComment(formData);
+      if (result?.success) {
+        setContent("");
+        onSuccess?.();
+      }
+      return result;
     },
     null,
   );
@@ -18,11 +33,16 @@ export function CommentForm({ postId }: CommentFormProps) {
   return (
     <form action={formAction} className="space-y-3">
       <input type="hidden" name="postId" value={postId} />
+      {parentCommentId && (
+        <input type="hidden" name="parentCommentId" value={parentCommentId} />
+      )}
       <textarea
         name="content"
         rows={3}
         required
-        placeholder="Write a comment..."
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        placeholder={placeholder}
         className="hb-input hb-text w-full rounded-lg px-3 py-2 text-sm placeholder:text-slate-400"
       />
       {state?.error && (
