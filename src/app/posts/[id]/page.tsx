@@ -168,6 +168,8 @@ export default async function PostPage({ params }: PageProps) {
   const completedUserIds = new Set(
     (postCompletionsResult?.data ?? []).map((row) => row.user_id as string),
   );
+  const completedCount = Array.from(completedUserIds).length;
+  const remainingCount = Math.max(0, students.length - completedCount);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
@@ -178,93 +180,131 @@ export default async function PostPage({ params }: PageProps) {
         ← Back to all posts
       </Link>
 
-      <article
-        className={`hb-card p-6 ${isCompleted ? "hb-card--completed" : ""}`}
-      >
-        <div className="mb-4 flex items-start justify-between gap-4">
-          <div className="flex min-w-0 flex-1 items-start gap-4">
-            <PostCompleteCheckbox
-              postId={typedPost.id}
-              completed={isCompleted}
-            />
-            <h1
-              className={`text-2xl font-bold ${
-                isCompleted ? "hb-text-subtle line-through" : "hb-text"
-              }`}
-            >
-              {typedPost.title}
-            </h1>
-          </div>
-          {isAdmin && (
-            <div className="flex items-center gap-3">
-              <form action={setPostPinned}>
-                <input type="hidden" name="postId" value={typedPost.id} />
-                <input
-                  type="hidden"
-                  name="pinned"
-                  value={typedPost.pinned ? "false" : "true"}
-                />
-                <button type="submit" className="hb-link text-sm font-medium">
-                  {typedPost.pinned ? "Unpin" : "Pin"}
-                </button>
-              </form>
-              <form action={setPostCommentsLocked}>
-                <input type="hidden" name="postId" value={typedPost.id} />
-                <input
-                  type="hidden"
-                  name="locked"
-                  value={commentsLocked ? "false" : "true"}
-                />
-                <button type="submit" className="hb-link text-sm font-medium">
-                  {commentsLocked ? "Unlock comments" : "Lock comments"}
-                </button>
-              </form>
-              <form action={deletePost}>
-                <input type="hidden" name="postId" value={typedPost.id} />
-                <button
-                  type="submit"
-                  className="hb-text-error text-sm hover:underline"
-                >
-                  Delete post
-                </button>
-              </form>
+      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+        <article
+          className={`hb-card p-6 ${isCompleted ? "hb-card--completed" : ""}`}
+        >
+          <div className="mb-4 flex items-start justify-between gap-4">
+            <div className="flex min-w-0 flex-1 items-start gap-4">
+              <PostCompleteCheckbox
+                postId={typedPost.id}
+                completed={isCompleted}
+              />
+              <h1
+                className={`text-2xl font-bold ${
+                  isCompleted ? "hb-text-subtle line-through" : "hb-text"
+                }`}
+              >
+                {typedPost.title}
+              </h1>
             </div>
-          )}
-        </div>
+            {isAdmin && (
+              <div className="flex items-center gap-3">
+                <form action={setPostPinned}>
+                  <input type="hidden" name="postId" value={typedPost.id} />
+                  <input
+                    type="hidden"
+                    name="pinned"
+                    value={typedPost.pinned ? "false" : "true"}
+                  />
+                  <button type="submit" className="hb-link text-sm font-medium">
+                    {typedPost.pinned ? "Unpin" : "Pin"}
+                  </button>
+                </form>
+                <form action={setPostCommentsLocked}>
+                  <input type="hidden" name="postId" value={typedPost.id} />
+                  <input
+                    type="hidden"
+                    name="locked"
+                    value={commentsLocked ? "false" : "true"}
+                  />
+                  <button type="submit" className="hb-link text-sm font-medium">
+                    {commentsLocked ? "Unlock comments" : "Lock comments"}
+                  </button>
+                </form>
+                <form action={deletePost}>
+                  <input type="hidden" name="postId" value={typedPost.id} />
+                  <button
+                    type="submit"
+                    className="hb-text-error text-sm hover:underline"
+                  >
+                    Delete post
+                  </button>
+                </form>
+              </div>
+            )}
+          </div>
 
-        <div className="hb-text-subtle mb-6 flex flex-wrap items-center gap-2 text-xs">
-          {typedPost.pinned && (
-            <span className="hb-badge-new rounded px-2 py-0.5 text-[10px] font-semibold">
-              Pinned
+          <div className="hb-text-subtle mb-6 flex flex-wrap items-center gap-2 text-xs">
+            {typedPost.pinned && (
+              <span className="hb-badge-new rounded px-2 py-0.5 text-[10px] font-semibold">
+                Pinned
+              </span>
+            )}
+            <span className="text-[10px] font-semibold uppercase tracking-wide">
+              {typedPost.subject}
             </span>
-          )}
-          <span className="text-[10px] font-semibold uppercase tracking-wide">
-            {typedPost.subject}
-          </span>
-          {dueBadge && (
-            <span className={`${dueBadge.className} text-[10px] font-semibold`}>
-              {dueBadge.label}
-            </span>
-          )}
-          {wasEdited && (
-            <span className="hb-text-subtle text-[10px] font-semibold">
-              Edited
-            </span>
-          )}
-          <span className="mx-1 text-slate-300">·</span>
-          <span>{typedPost.profiles?.full_name ?? "Admin"}</span>
-          <span className="text-slate-300">·</span>
-          <time dateTime={typedPost.created_at}>
-            {format(new Date(typedPost.created_at), "MMMM d, yyyy 'at' h:mm a")}
-          </time>
-        </div>
+            {dueBadge && (
+              <span className={`${dueBadge.className} text-[10px] font-semibold`}>
+                {dueBadge.label}
+              </span>
+            )}
+            {wasEdited && (
+              <span className="hb-text-subtle text-[10px] font-semibold">
+                Edited
+              </span>
+            )}
+            <span className="mx-1 text-slate-300">·</span>
+            <span>{typedPost.profiles?.full_name ?? "Admin"}</span>
+            <span className="text-slate-300">·</span>
+            <time dateTime={typedPost.created_at}>
+              {format(new Date(typedPost.created_at), "MMMM d, yyyy 'at' h:mm a")}
+            </time>
+          </div>
 
-        <div className="hb-text-muted whitespace-pre-line text-sm leading-relaxed">
-          {typedPost.content}
-        </div>
+          <div className="hb-text-muted whitespace-pre-line text-sm leading-relaxed">
+            {typedPost.content}
+          </div>
 
-        <AttachmentList attachments={signedPostAttachments} />
-      </article>
+          <AttachmentList attachments={signedPostAttachments} />
+        </article>
+
+        {isAdmin && students.length > 0 ? (
+          <aside className="hb-card p-5">
+            <details>
+              <summary className="hb-link cursor-pointer text-sm font-semibold">
+                Completion ({completedCount}/{students.length})
+              </summary>
+              <div className="hb-text-muted mt-3 text-sm">
+                {completedCount} completed · {remainingCount} remaining
+              </div>
+              <ul className="mt-4 space-y-2">
+                {students.map((student) => {
+                  const done = completedUserIds.has(student.id);
+                  return (
+                    <li
+                      key={student.id}
+                      className="hb-card hb-card-muted flex items-center justify-between gap-3 p-4"
+                    >
+                      <div className="min-w-0">
+                        <div className="hb-text font-medium">{student.full_name}</div>
+                        <div className="hb-text-subtle truncate text-xs">{student.email}</div>
+                      </div>
+                      <div
+                        className={`text-xs font-semibold ${
+                          done ? "hb-text-success" : "hb-text-subtle"
+                        }`}
+                      >
+                        {done ? "Completed" : "Not yet"}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </details>
+          </aside>
+        ) : null}
+      </div>
 
       {isAdmin && (
         <details className="mt-6">
@@ -299,32 +339,6 @@ export default async function PostPage({ params }: PageProps) {
                   </div>
                   <div className="hb-text-muted text-sm">
                     {keys.length > 0 ? keys.join(", ") : "Updated"}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      )}
-
-      {isAdmin && students.length > 0 && (
-        <section className="mt-8">
-          <h2 className="hb-text mb-4 text-lg font-semibold">Completion</h2>
-          <div className="hb-text-muted mb-3 text-sm">
-            {Array.from(completedUserIds).length} completed ·{" "}
-            {students.length - Array.from(completedUserIds).length} remaining
-          </div>
-          <ul className="space-y-2">
-            {students.map((student) => {
-              const done = completedUserIds.has(student.id);
-              return (
-                <li key={student.id} className="hb-card hb-card-muted flex items-center justify-between gap-3 p-4">
-                  <div className="min-w-0">
-                    <div className="hb-text font-medium">{student.full_name}</div>
-                    <div className="hb-text-subtle truncate text-xs">{student.email}</div>
-                  </div>
-                  <div className={`text-xs font-semibold ${done ? "hb-text-success" : "hb-text-subtle"}`}>
-                    {done ? "Completed" : "Not yet"}
                   </div>
                 </li>
               );
