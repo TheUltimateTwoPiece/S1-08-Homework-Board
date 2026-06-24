@@ -12,6 +12,22 @@ function normalizeFileName(name: string): string {
   return name.replace(/[^a-zA-Z0-9._-]+/g, "-");
 }
 
+function normalizeStorageError(message: string): string {
+  if (!message) return "Upload failed.";
+  if (message.toLowerCase().includes("row-level security")) {
+    return "File upload blocked by Supabase Storage security. Add an insert policy on storage.objects for the attachments bucket (and optionally select/delete too).";
+  }
+  return message;
+}
+
+function normalizeDatabaseError(message: string): string {
+  if (!message) return "Request failed.";
+  if (message.toLowerCase().includes("row-level security")) {
+    return "Upload saved, but attaching the file was blocked by database security. Ensure RLS insert policies exist for the attachments table.";
+  }
+  return message;
+}
+
 async function requireAdmin() {
   const supabase = await createClient();
   const {
@@ -98,7 +114,7 @@ export async function createPost(formData: FormData) {
           await supabase.storage.from("attachments").remove(uploadedPaths);
         }
         await supabase.from("posts").delete().eq("id", post.id);
-        return { error: uploadError.message };
+        return { error: normalizeStorageError(uploadError.message) };
       }
 
       uploadedPaths.push(path);
@@ -122,7 +138,7 @@ export async function createPost(formData: FormData) {
         await supabase.storage.from("attachments").remove(uploadedPaths);
       }
       await supabase.from("posts").delete().eq("id", post.id);
-      return { error: attachmentError.message };
+      return { error: normalizeDatabaseError(attachmentError.message) };
     }
   }
 

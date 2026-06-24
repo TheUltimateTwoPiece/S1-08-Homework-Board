@@ -84,6 +84,18 @@
   }
 }
 
+@keyframes hb-gradient-pan {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 @layer components {
   .hb-main {
     background: transparent;
@@ -179,8 +191,24 @@
     overflow: hidden;
     border-radius: 0.5rem;
     color: #ffffff;
-    background: linear-gradient(90deg, var(--hb-blue), var(--hb-red));
-    transition: transform 150ms ease, filter 150ms ease, opacity 150ms ease;
+    background: linear-gradient(
+      90deg,
+      var(--hb-blue),
+      var(--hb-grey),
+      var(--hb-red),
+      var(--hb-grey),
+      var(--hb-blue)
+    );
+    background-size: 200% 200%;
+    box-shadow:
+      0 10px 24px rgba(37, 99, 235, 0.18),
+      0 6px 14px rgba(220, 38, 38, 0.12),
+      0 6px 14px rgba(100, 116, 139, 0.14);
+    transition:
+      transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      filter 180ms ease,
+      box-shadow 180ms ease,
+      opacity 180ms ease;
   }
 
   .hb-btn-primary::after {
@@ -200,13 +228,32 @@
   }
 
   .hb-btn-primary:hover {
-    filter: brightness(0.96);
-    transform: translateY(-1px);
+    filter: brightness(1.02) saturate(1.03);
+    transform: translateY(-2px) scale(1.01);
+    box-shadow:
+      0 16px 34px rgba(37, 99, 235, 0.22),
+      0 10px 22px rgba(220, 38, 38, 0.16),
+      0 10px 18px rgba(100, 116, 139, 0.12);
+    animation: hb-gradient-pan 1400ms ease-in-out infinite;
   }
 
   .hb-btn-primary:hover::after {
     opacity: 1;
     animation: hb-sheen 700ms ease-out;
+  }
+
+  .hb-btn-primary:active {
+    transform: translateY(0px) scale(0.99);
+    filter: brightness(0.99);
+  }
+
+  .hb-btn-primary:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 3px rgba(255, 255, 255, 0.85),
+      0 0 0 6px rgba(37, 99, 235, 0.35),
+      0 16px 34px rgba(37, 99, 235, 0.18),
+      0 10px 22px rgba(220, 38, 38, 0.12);
   }
 
   .hb-btn-primary:disabled {
@@ -215,6 +262,10 @@
 
   .hb-btn--pending {
     cursor: wait;
+    opacity: 0.92;
+  }
+
+  .hb-btn-primary.hb-btn--pending {
     animation: hb-pulse-ring 1200ms ease-out infinite;
   }
 
@@ -224,7 +275,11 @@
     border: 1px solid rgba(100, 116, 139, 0.35);
     color: var(--hb-text-muted);
     background: rgba(248, 250, 252, 0.85);
-    transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease;
+    transition:
+      transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      border-color 180ms ease,
+      background-color 180ms ease,
+      color 180ms ease;
   }
 
   .hb-chip::after {
@@ -247,6 +302,7 @@
     border-color: rgba(37, 99, 235, 0.45);
     background: rgba(37, 99, 235, 0.08);
     color: rgba(37, 99, 235, 1);
+    transform: translateY(-1px) scale(1.02);
   }
 
   .hb-chip:hover::after {
@@ -254,9 +310,18 @@
     animation: hb-sheen 700ms ease-out;
   }
 
+  .hb-chip:active {
+    transform: translateY(0px) scale(0.99);
+  }
+
+  .hb-chip.hb-btn--pending {
+    animation: hb-pulse-ring 1200ms ease-out infinite;
+  }
+
   .hb-segmented button {
     position: relative;
     overflow: hidden;
+    transition: transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
   .hb-segmented button::after {
@@ -280,12 +345,32 @@
     animation: hb-sheen 700ms ease-out;
   }
 
+  .hb-segmented button:hover {
+    transform: translateY(-1px);
+  }
+
+  .hb-segmented button:active {
+    transform: translateY(0px) scale(0.99);
+  }
+
   .hb-action-link {
     color: var(--hb-blue);
+    text-decoration: none;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 2px;
+    transition: background-size 180ms ease, transform 180ms ease, opacity 180ms ease;
   }
 
   .hb-action-link:hover {
-    text-decoration: underline;
+    background-size: 100% 2px;
+    transform: translateY(-1px);
+  }
+
+  .hb-action-link:active {
+    transform: translateY(0px);
+    opacity: 0.85;
   }
 
   .hb-input {
@@ -319,6 +404,7 @@
     border-color: rgba(37, 99, 235, 0.8);
     background: rgba(37, 99, 235, 0.08);
     color: rgba(37, 99, 235, 1);
+    transform: translateY(-1px);
   }
 
   .hb-choice-btn--inactive {
@@ -353,6 +439,12 @@
 
   .hb-choice-btn--inactive:hover {
     border-color: rgba(100, 116, 139, 0.7);
+    transform: translateY(-1px);
+  }
+
+  .hb-choice-btn--inactive:active,
+  .hb-choice-btn--active:active {
+    transform: translateY(0px) scale(0.99);
   }
 
   .hb-badge-admin {
@@ -466,5 +558,28 @@
 
   .hb-skeleton {
     background: rgba(100, 116, 139, 0.18);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hb-btn-primary,
+    .hb-chip,
+    .hb-action-link,
+    .hb-segmented button {
+      transition: none;
+      animation: none;
+    }
+
+    .hb-btn-primary::after,
+    .hb-chip::after,
+    .hb-segmented button::after,
+    .hb-choice-btn--active::after,
+    .hb-choice-btn--inactive::after {
+      animation: none;
+    }
+
+    .hb-btn-primary.hb-btn--pending,
+    .hb-chip.hb-btn--pending {
+      animation: none;
+    }
   }
 }
