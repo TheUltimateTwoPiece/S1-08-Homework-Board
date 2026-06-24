@@ -30,7 +30,7 @@ export default async function PostPage({ params }: PageProps) {
         .single();
     },
     ["post"],
-    { revalidate: 60, tags: ["posts"] }
+    { revalidate: 60 }
   );
 
   const getCachedComments = unstable_cache(
@@ -42,7 +42,7 @@ export default async function PostPage({ params }: PageProps) {
         .order("created_at", { ascending: true });
     },
     ["comments"],
-    { revalidate: 30, tags: ["comments"] }
+    { revalidate: 30 }
   );
 
   const getCachedCompletion = unstable_cache(
@@ -55,7 +55,7 @@ export default async function PostPage({ params }: PageProps) {
         .maybeSingle();
     },
     ["completion"],
-    { revalidate: 30, tags: ["completions"] }
+    { revalidate: 30 }
   );
 
   const [{ data: post }, { data: comments }, { data: completion }] = await Promise.all([

@@ -23,7 +23,7 @@ export default async function NotificationsPage() {
         .order("created_at", { ascending: false });
     },
     ["notifications"],
-    { revalidate: 15, tags: ["notifications"] }
+    { revalidate: 15 }
   );
 
   const { data: notifications } = await getCachedNotifications(profile.id);

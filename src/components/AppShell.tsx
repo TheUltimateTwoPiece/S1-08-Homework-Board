@@ -8,7 +8,9 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
-  const unreadCount = await getUnreadNotificationCount(profile.id);
+  const [unreadCount] = await Promise.all([
+    getUnreadNotificationCount(profile.id),
+  ]);
 
   return (
     <>

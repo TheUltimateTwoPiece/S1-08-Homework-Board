@@ -18,7 +18,7 @@ export default async function HomePage() {
         .order("created_at", { ascending: false });
     },
     ["posts"],
-    { revalidate: 30, tags: ["posts"] }
+    { revalidate: 30 }
   );
 
   const getCachedCompletions = unstable_cache(
@@ -29,7 +29,7 @@ export default async function HomePage() {
         .eq("user_id", userId);
     },
     ["completions"],
-    { revalidate: 30, tags: ["completions"] }
+    { revalidate: 30 }
   );
 
   const [{ data: posts }, { data: completions }] = await Promise.all([

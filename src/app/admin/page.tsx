@@ -26,7 +26,7 @@ export default async function AdminPage() {
         .order("full_name");
     },
     ["students"],
-    { revalidate: 300, tags: ["students"] }
+    { revalidate: 300 }
   );
 
   const getCachedPosts = unstable_cache(
@@ -38,7 +38,7 @@ export default async function AdminPage() {
         .limit(20);
     },
     ["posts"],
-    { revalidate: 30, tags: ["posts"] }
+    { revalidate: 30 }
   );
 
   const [{ data: students }, { data: posts }] = await Promise.all([
