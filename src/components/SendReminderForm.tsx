@@ -189,8 +189,11 @@ export function SendReminderForm({ students, posts }: SendReminderFormProps) {
       <button
         type="submit"
         disabled={pending || (target === "incomplete" && !selectedPostId)}
-        className="hb-btn-primary px-4 py-2 text-sm font-medium"
+        className={`hb-btn-primary flex items-center gap-2 px-4 py-2 text-sm font-medium ${
+          pending ? "hb-btn--pending" : ""
+        }`}
       >
+        {pending && <span className="hb-spinner" aria-hidden="true" />}
         {pending ? "Sending..." : "Send reminder"}
       </button>
     </form>

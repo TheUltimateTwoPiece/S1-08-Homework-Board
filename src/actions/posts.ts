@@ -64,6 +64,7 @@ export async function createPost(formData: FormData) {
 
   if (post && files.length > 0) {
     const maxBytes = 10 * 1024 * 1024;
+    const uploadedPaths: string[] = [];
     const uploads: {
       uploader_id: string;
       post_id: string;
@@ -93,9 +94,14 @@ export async function createPost(formData: FormData) {
         .upload(path, file, { contentType: file.type });
 
       if (uploadError) {
+        if (uploadedPaths.length > 0) {
+          await supabase.storage.from("attachments").remove(uploadedPaths);
+        }
+        await supabase.from("posts").delete().eq("id", post.id);
         return { error: uploadError.message };
       }
 
+      uploadedPaths.push(path);
       uploads.push({
         uploader_id: user.id,
         post_id: post.id,
@@ -112,13 +118,17 @@ export async function createPost(formData: FormData) {
       .insert(uploads);
 
     if (attachmentError) {
+      if (uploadedPaths.length > 0) {
+        await supabase.storage.from("attachments").remove(uploadedPaths);
+      }
+      await supabase.from("posts").delete().eq("id", post.id);
       return { error: attachmentError.message };
     }
   }
 
   revalidatePath("/");
   revalidatePath("/admin");
-  revalidatePath("/posts/[id]");
+  revalidatePath(`/posts/${post.id}`);
   return { success: true };
 }
 

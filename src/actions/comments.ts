@@ -18,11 +18,37 @@ export async function addComment(formData: FormData) {
 
   const postId = formData.get("postId") as string;
   const parentCommentId = (formData.get("parentCommentId") as string | null) ?? "";
-  const content = (formData.get("content") as string).trim();
+  const content = ((formData.get("content") as string | null) ?? "").trim();
   const files = (formData.getAll("files") as File[]).filter((file) => file.size > 0);
+
+  if (!postId) {
+    return { error: "Post not found." };
+  }
 
   if (!content) {
     return { error: "Comment cannot be empty." };
+  }
+
+  const { data: post, error: postError } = await supabase
+    .from("posts")
+    .select("comments_locked")
+    .eq("id", postId)
+    .single();
+
+  if (postError || !post) {
+    return { error: "Post not found." };
+  }
+
+  if (post.comments_locked) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.role !== "admin") {
+      return { error: "Comments are locked for this post." };
+    }
   }
 
   const { data: comment, error } = await supabase
@@ -71,6 +97,12 @@ export async function addComment(formData: FormData) {
         .upload(path, file, { contentType: file.type });
 
       if (uploadError) {
+        if (uploads.length > 0) {
+          await supabase.storage
+            .from("attachments")
+            .remove(uploads.map((upload) => upload.path));
+        }
+        await supabase.from("comments").delete().eq("id", comment.id);
         return { error: uploadError.message };
       }
 
@@ -90,6 +122,10 @@ export async function addComment(formData: FormData) {
       .insert(uploads);
 
     if (attachmentError) {
+      await supabase.storage
+        .from("attachments")
+        .remove(uploads.map((upload) => upload.path));
+      await supabase.from("comments").delete().eq("id", comment.id);
       return { error: attachmentError.message };
     }
   }

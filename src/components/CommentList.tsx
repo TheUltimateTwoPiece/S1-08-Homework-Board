@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { deleteComment } from "@/actions/comments";
 import { CommentForm } from "@/components/CommentForm";
+import { PendingButton } from "@/components/PendingButton";
 import type { Comment } from "@/lib/types";
 
 type CommentListProps = {
@@ -134,7 +135,7 @@ export function CommentList({
             {(!commentsLocked || isAdmin) && (
               <button
                 type="button"
-                className="hb-link text-xs font-medium"
+                className="hb-action-link text-xs font-medium"
                 onClick={() => setReplyTo((prev) => (prev === node.id ? null : node.id))}
               >
                 Reply
@@ -145,9 +146,13 @@ export function CommentList({
               <form action={deleteComment}>
                 <input type="hidden" name="commentId" value={node.id} />
                 <input type="hidden" name="postId" value={node.post_id} />
-                <button type="submit" className="hb-text-error text-xs hover:underline">
+                <PendingButton
+                  type="submit"
+                  pendingContent="Deleting..."
+                  className="hb-text-error flex items-center gap-2 text-xs hover:underline"
+                >
                   Delete
-                </button>
+                </PendingButton>
               </form>
             )}
           </div>

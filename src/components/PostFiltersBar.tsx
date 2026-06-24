@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 type Filters = {
@@ -22,6 +22,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
   const initial = useMemo<Filters>(
     () => ({
@@ -33,11 +34,14 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
     [searchParams],
   );
 
-  const [q, setQ] = useState(initial.q);
+  const qRef = useRef(initial.q);
+  useEffect(() => {
+    qRef.current = initial.q;
+  }, [initial.q]);
 
   function setParams(next: Partial<Filters>) {
     const params = new URLSearchParams(searchParams.toString());
-    const merged = { ...initial, ...next, q };
+    const merged = { ...initial, ...next, q: qRef.current };
 
     for (const [key, value] of Object.entries(merged)) {
       if (!value || value === "all") {
@@ -47,7 +51,9 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
       }
     }
 
-    router.push(`${pathname}?${params.toString()}`);
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`);
+    });
   }
 
   return (
@@ -56,7 +62,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
         className="flex flex-col gap-3 sm:flex-row sm:items-end"
         onSubmit={(e) => {
           e.preventDefault();
-          setParams({ q });
+          setParams({ q: qRef.current });
         }}
       >
         <div className="flex-1">
@@ -64,8 +70,12 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
             Search
           </label>
           <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
+            key={initial.q}
+            defaultValue={initial.q}
+            onChange={(e) => {
+              qRef.current = e.target.value;
+            }}
+            disabled={isPending}
             placeholder="Search title or content..."
             className="hb-input w-full rounded-lg px-3 py-2 text-sm"
           />
@@ -78,6 +88,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
           <select
             defaultValue={initial.subject}
             onChange={(e) => setParams({ subject: e.target.value })}
+            disabled={isPending}
             className="hb-input w-full rounded-lg px-3 py-2 text-sm"
           >
             <option value="">All</option>
@@ -96,6 +107,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
           <select
             defaultValue={initial.due}
             onChange={(e) => setParams({ due: e.target.value })}
+            disabled={isPending}
             className="hb-input w-full rounded-lg px-3 py-2 text-sm"
           >
             <option value="all">All</option>
@@ -106,7 +118,14 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
           </select>
         </div>
 
-        <button type="submit" className="hb-btn-primary px-4 py-2 text-sm font-medium">
+        <button
+          type="submit"
+          disabled={isPending}
+          className={`hb-btn-primary px-4 py-2 text-sm font-medium ${
+            isPending ? "hb-btn--pending" : ""
+          } gap-2`}
+        >
+          {isPending && <span className="hb-spinner" aria-hidden="true" />}
           Apply
         </button>
       </form>
@@ -121,6 +140,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
             key={option.value}
             type="button"
             onClick={() => setParams({ status: option.value })}
+            disabled={isPending}
             className={`flex-1 rounded-md px-3 py-2 text-xs font-semibold ${
               initial.status === option.value
                 ? "hb-segmented-btn--active"
@@ -134,4 +154,3 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
     </div>
   );
 }
-

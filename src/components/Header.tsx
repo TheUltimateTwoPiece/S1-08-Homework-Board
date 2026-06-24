@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { signOut } from "@/actions/auth";
 import { NotificationBell } from "@/components/NotificationBell";
+import { PendingButton } from "@/components/PendingButton";
 import type { Profile } from "@/lib/types";
 
 type HeaderProps = {
@@ -47,12 +48,13 @@ export function Header({ profile, unreadCount }: HeaderProps) {
           </span>
 
           <form action={signOut}>
-            <button
+            <PendingButton
               type="submit"
-              className="hb-link-muted"
+              pendingContent="Signing out..."
+              className="hb-link-muted flex items-center gap-2"
             >
               Sign out
-            </button>
+            </PendingButton>
           </form>
         </nav>
       </div>

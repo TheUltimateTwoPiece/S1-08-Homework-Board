@@ -104,11 +104,13 @@ export function EditPostForm({ post }: EditPostFormProps) {
       <button
         type="submit"
         disabled={pending}
-        className="hb-btn-primary px-4 py-2 text-sm font-medium"
+        className={`hb-btn-primary flex items-center gap-2 px-4 py-2 text-sm font-medium ${
+          pending ? "hb-btn--pending" : ""
+        }`}
       >
+        {pending && <span className="hb-spinner" aria-hidden="true" />}
         {pending ? "Saving..." : "Save changes"}
       </button>
     </form>
   );
 }
-

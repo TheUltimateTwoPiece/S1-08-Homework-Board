@@ -8,6 +8,7 @@ import { AttachmentList } from "@/components/AttachmentList";
 import { CommentForm } from "@/components/CommentForm";
 import { CommentList } from "@/components/CommentList";
 import { EditPostForm } from "@/components/EditPostForm";
+import { PendingButton } from "@/components/PendingButton";
 import { PostCompleteCheckbox } from "@/components/PostCompleteCheckbox";
 import { deletePost, setPostCommentsLocked, setPostPinned } from "@/actions/posts";
 import type { Attachment, Comment, Post, PostEdit, Profile } from "@/lib/types";
@@ -16,7 +17,7 @@ type PageProps = {
   params: Promise<{ id: string }>;
 };
 
-export const revalidate = 30;
+export const revalidate = 0;
 
 export default async function PostPage({ params }: PageProps) {
   const { id } = await params;
@@ -207,9 +208,13 @@ export default async function PostPage({ params }: PageProps) {
                     name="pinned"
                     value={typedPost.pinned ? "false" : "true"}
                   />
-                  <button type="submit" className="hb-link text-sm font-medium">
+                  <PendingButton
+                    type="submit"
+                    pendingContent="Saving..."
+                    className="hb-action-link flex items-center gap-2 text-sm font-medium"
+                  >
                     {typedPost.pinned ? "Unpin" : "Pin"}
-                  </button>
+                  </PendingButton>
                 </form>
                 <form action={setPostCommentsLocked}>
                   <input type="hidden" name="postId" value={typedPost.id} />
@@ -218,18 +223,23 @@ export default async function PostPage({ params }: PageProps) {
                     name="locked"
                     value={commentsLocked ? "false" : "true"}
                   />
-                  <button type="submit" className="hb-link text-sm font-medium">
+                  <PendingButton
+                    type="submit"
+                    pendingContent="Saving..."
+                    className="hb-action-link flex items-center gap-2 text-sm font-medium"
+                  >
                     {commentsLocked ? "Unlock comments" : "Lock comments"}
-                  </button>
+                  </PendingButton>
                 </form>
                 <form action={deletePost}>
                   <input type="hidden" name="postId" value={typedPost.id} />
-                  <button
+                  <PendingButton
                     type="submit"
-                    className="hb-text-error text-sm hover:underline"
+                    pendingContent="Deleting..."
+                    className="hb-text-error flex items-center gap-2 text-sm hover:underline"
                   >
                     Delete post
-                  </button>
+                  </PendingButton>
                 </form>
               </div>
             )}

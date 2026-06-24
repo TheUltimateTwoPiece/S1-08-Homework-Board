@@ -101,8 +101,11 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
           <button
             type="submit"
             disabled={pending}
-            className="hb-btn-primary w-full py-2.5 text-sm font-medium"
+            className={`hb-btn-primary flex w-full items-center justify-center gap-2 py-2.5 text-sm font-medium ${
+              pending ? "hb-btn--pending" : ""
+            }`}
           >
+            {pending && <span className="hb-spinner" aria-hidden="true" />}
             {pending ? "Signing in..." : "Sign in"}
           </button>
         </form>
@@ -210,8 +213,11 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
           <button
             type="submit"
             disabled={pending}
-            className="hb-btn-primary w-full py-2.5 text-sm font-medium"
+            className={`hb-btn-primary flex w-full items-center justify-center gap-2 py-2.5 text-sm font-medium ${
+              pending ? "hb-btn--pending" : ""
+            }`}
           >
+            {pending && <span className="hb-spinner" aria-hidden="true" />}
             {pending
               ? "Creating account..."
               : accountType === "admin"

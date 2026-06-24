@@ -5,6 +5,7 @@ import {
   markAllNotificationsRead,
   markNotificationRead,
 } from "@/actions/notifications";
+import { PendingButton } from "@/components/PendingButton";
 import type { Notification } from "@/lib/types";
 
 export const revalidate = 15;
@@ -38,12 +39,13 @@ export default async function NotificationsPage() {
 
         {unreadCount > 0 && (
           <form action={markAllNotificationsRead}>
-            <button
+            <PendingButton
               type="submit"
-              className="hb-link text-sm font-medium"
+              pendingContent="Saving..."
+              className="hb-action-link flex items-center gap-2 text-sm font-medium"
             >
               Mark all as read
-            </button>
+            </PendingButton>
           </form>
         )}
       </div>
@@ -89,12 +91,13 @@ export default async function NotificationsPage() {
                       name="notificationId"
                       value={notification.id}
                     />
-                    <button
+                    <PendingButton
                       type="submit"
-                      className="hb-link shrink-0 text-xs font-medium"
+                      pendingContent="Saving..."
+                      className="hb-action-link flex shrink-0 items-center gap-2 text-xs font-medium"
                     >
                       Mark read
-                    </button>
+                    </PendingButton>
                   </form>
                 )}
               </div>

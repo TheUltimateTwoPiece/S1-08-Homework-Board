@@ -131,9 +131,11 @@ export function CreatePostForm() {
           type="button"
           onClick={handleEnhanceWithAI}
           disabled={enhancing || !content.trim()}
-          className="hb-chip mt-2 flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+          className={`hb-chip mt-2 flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium disabled:opacity-50 ${
+            enhancing ? "hb-btn--pending" : ""
+          }`}
         >
-          <span>✨</span>
+          {enhancing ? <span className="hb-spinner" aria-hidden="true" /> : <span>✨</span>}
           {enhancing ? "Enhancing..." : "Enhance with Gemini AI"}
         </button>
         {aiError && <p className="hb-text-error mt-1 text-xs">{aiError}</p>}
@@ -147,8 +149,11 @@ export function CreatePostForm() {
       <button
         type="submit"
         disabled={pending}
-        className="hb-btn-primary px-4 py-2 text-sm font-medium"
+        className={`hb-btn-primary flex items-center gap-2 px-4 py-2 text-sm font-medium ${
+          pending ? "hb-btn--pending" : ""
+        }`}
       >
+        {pending && <span className="hb-spinner" aria-hidden="true" />}
         {pending ? "Publishing..." : "Publish post"}
       </button>
     </form>
