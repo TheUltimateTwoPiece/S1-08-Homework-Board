@@ -1,20 +1,64 @@
 import Link from "next/link";
+import { addDays, format } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
 import { PostCard } from "@/components/PostCard";
+import { PostFiltersBar } from "@/components/PostFiltersBar";
 import { requireProfile } from "@/lib/auth";
 import type { Post } from "@/lib/types";
 
 export const revalidate = 30;
 
-export default async function HomePage() {
+type HomePageProps = {
+  searchParams: Promise<{
+    q?: string;
+    subject?: string;
+    status?: string;
+    due?: string;
+  }>;
+};
+
+export default async function HomePage({ searchParams }: HomePageProps) {
+  const params = await searchParams;
   const profile = await requireProfile();
   const supabase = await createClient();
 
+  const q = (params.q ?? "").trim().slice(0, 100);
+  const subject = (params.subject ?? "").trim();
+  const status = (params.status ?? "all").trim();
+  const due = (params.due ?? "all").trim();
+
+  const todayStr = format(new Date(), "yyyy-MM-dd");
+  const tomorrowStr = format(addDays(new Date(), 1), "yyyy-MM-dd");
+
+  let postsQuery = supabase
+    .from("posts")
+    .select("*, profiles(full_name)")
+    .order("pinned", { ascending: false })
+    .order("due_at", { ascending: true, nullsFirst: false })
+    .order("created_at", { ascending: false });
+
+  if (q) {
+    const qSafe = q.replace(/[,]/g, " ");
+    postsQuery = postsQuery.or(
+      `title.ilike.%${qSafe}%,content.ilike.%${qSafe}%`,
+    );
+  }
+
+  if (subject) {
+    postsQuery = postsQuery.eq("subject", subject);
+  }
+
+  if (due !== "all") {
+    postsQuery = postsQuery.not("due_at", "is", null);
+
+    if (due === "today") postsQuery = postsQuery.eq("due_at", todayStr);
+    if (due === "tomorrow") postsQuery = postsQuery.eq("due_at", tomorrowStr);
+    if (due === "overdue") postsQuery = postsQuery.lt("due_at", todayStr);
+    if (due === "upcoming") postsQuery = postsQuery.gt("due_at", todayStr);
+  }
+
   const [{ data: posts }, { data: completions }] = await Promise.all([
-    supabase
-      .from("posts")
-      .select("*, profiles(full_name)")
-      .order("created_at", { ascending: false }),
+    postsQuery,
     supabase
       .from("post_completions")
       .select("post_id")
@@ -24,6 +68,16 @@ export default async function HomePage() {
   const completedPostIds = new Set(
     completions?.map((completion) => completion.post_id) ?? [],
   );
+
+  const typedPosts = (posts as Post[]) ?? [];
+  const filteredPosts = typedPosts.filter((post) => {
+    const isCompleted = completedPostIds.has(post.id);
+    if (status === "completed") return isCompleted;
+    if (status === "todo") return !isCompleted;
+    return true;
+  });
+
+  const subjects = ["General", "Math", "Science", "English", "History", "Language"];
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
@@ -46,9 +100,11 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {posts && posts.length > 0 ? (
+      <PostFiltersBar subjects={subjects} />
+
+      {filteredPosts.length > 0 ? (
         <div className="space-y-4">
-          {(posts as Post[]).map((post) => (
+          {filteredPosts.map((post) => (
             <PostCard
               key={post.id}
               post={post}
@@ -58,7 +114,7 @@ export default async function HomePage() {
         </div>
       ) : (
         <div className="hb-card border-dashed p-12 text-center">
-          <p className="hb-text-muted">No homework posted yet.</p>
+          <p className="hb-text-muted">No homework matches these filters.</p>
           {profile.role === "admin" && (
             <p className="hb-text-subtle mt-2 text-sm">
               Head to the{" "}

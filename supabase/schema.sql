@@ -14,6 +14,10 @@ create table public.posts (
   id uuid primary key default gen_random_uuid(),
   title text not null,
   content text not null,
+  subject text not null default 'General',
+  due_at date,
+  pinned boolean not null default false,
+  comments_locked boolean not null default false,
   author_id uuid not null references public.profiles(id),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -29,9 +33,35 @@ create table public.comments (
   created_at timestamptz not null default now()
 );
 
+create table public.attachments (
+  id uuid primary key default gen_random_uuid(),
+  post_id uuid references public.posts(id) on delete cascade,
+  comment_id uuid references public.comments(id) on delete cascade,
+  uploader_id uuid not null references public.profiles(id),
+  bucket text not null default 'attachments',
+  path text not null,
+  original_name text not null,
+  mime_type text not null,
+  size_bytes bigint not null default 0,
+  created_at timestamptz not null default now(),
+  constraint attachments_target_check check (
+    (post_id is not null and comment_id is null) or
+    (post_id is null and comment_id is not null)
+  )
+);
+
+create table public.post_edits (
+  id uuid primary key default gen_random_uuid(),
+  post_id uuid not null references public.posts(id) on delete cascade,
+  edited_by uuid not null references public.profiles(id),
+  changes jsonb not null,
+  created_at timestamptz not null default now()
+);
+
 create table public.feedback (
   id uuid primary key default gen_random_uuid(),
   author_id uuid not null references public.profiles(id),
+  category text not null default 'website' check (category in ('post', 'website')),
   message text not null,
   created_at timestamptz not null default now()
 );
@@ -95,6 +125,8 @@ $$;
 alter table public.profiles enable row level security;
 alter table public.posts enable row level security;
 alter table public.comments enable row level security;
+alter table public.attachments enable row level security;
+alter table public.post_edits enable row level security;
 alter table public.feedback enable row level security;
 alter table public.notifications enable row level security;
 alter table public.post_completions enable row level security;
@@ -158,7 +190,17 @@ create policy "Comments are viewable by authenticated users"
 create policy "Authenticated users can comment"
   on public.comments for insert
   to authenticated
-  with check (auth.uid() = author_id);
+  with check (
+    auth.uid() = author_id and
+    (
+      public.is_admin() or
+      exists (
+        select 1
+        from public.posts p
+        where p.id = post_id and p.comments_locked = false
+      )
+    )
+  );
 
 create policy "Users can update own comments"
   on public.comments for update
@@ -169,6 +211,46 @@ create policy "Users can delete own comments"
   on public.comments for delete
   to authenticated
   using (auth.uid() = author_id);
+
+create policy "Admins can delete any comments"
+  on public.comments for delete
+  to authenticated
+  using (public.is_admin());
+
+create policy "Attachments are viewable by authenticated users"
+  on public.attachments for select
+  to authenticated
+  using (true);
+
+create policy "Admins can add post attachments"
+  on public.attachments for insert
+  to authenticated
+  with check (public.is_admin() and auth.uid() = uploader_id and post_id is not null);
+
+create policy "Authenticated users can add comment attachments"
+  on public.attachments for insert
+  to authenticated
+  with check (auth.uid() = uploader_id and comment_id is not null);
+
+create policy "Users can delete own attachments"
+  on public.attachments for delete
+  to authenticated
+  using (auth.uid() = uploader_id);
+
+create policy "Admins can delete any attachments"
+  on public.attachments for delete
+  to authenticated
+  using (public.is_admin());
+
+create policy "Post edits are viewable by authenticated users"
+  on public.post_edits for select
+  to authenticated
+  using (true);
+
+create policy "Admins can create post edits"
+  on public.post_edits for insert
+  to authenticated
+  with check (public.is_admin() and auth.uid() = edited_by);
 
 create policy "Users can create feedback"
   on public.feedback for insert

@@ -14,7 +14,9 @@ export function NotificationBell({ unreadCount }: NotificationBellProps) {
           : "Reminders"
       }
       title="Reminders"
-      className="hb-icon-btn relative flex h-9 w-9 items-center justify-center rounded-lg"
+      className={`hb-icon-btn relative flex h-9 w-9 items-center justify-center rounded-lg ${
+        unreadCount > 0 ? "hb-bell--shake" : ""
+      }`}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

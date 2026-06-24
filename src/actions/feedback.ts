@@ -12,6 +12,8 @@ export async function submitFeedback(formData: FormData) {
 
   if (!user) redirect("/login");
 
+  const categoryRaw = ((formData.get("category") as string | null) ?? "website").trim();
+  const category = categoryRaw === "post" ? "post" : "website";
   const message = (formData.get("message") as string | null)?.trim() ?? "";
 
   if (!message) {
@@ -20,6 +22,7 @@ export async function submitFeedback(formData: FormData) {
 
   const { error } = await supabase.from("feedback").insert({
     author_id: user.id,
+    category,
     message,
   });
 

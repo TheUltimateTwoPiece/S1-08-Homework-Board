@@ -5,6 +5,7 @@ import { submitFeedback } from "@/actions/feedback";
 
 export function FeedbackForm() {
   const [message, setMessage] = useState("");
+  const [category, setCategory] = useState<"post" | "website">("website");
 
   const [state, formAction, pending] = useActionState(
     async (_prev: { error?: string; success?: boolean } | null, formData: FormData) => {
@@ -24,6 +25,35 @@ export function FeedbackForm() {
         <p className="hb-text-muted mt-1 text-sm">
           Share ideas, report issues, or suggest improvements.
         </p>
+      </div>
+
+      <div>
+        <div className="hb-text-muted mb-1 text-sm font-medium">Category</div>
+        <div className="hb-segmented flex w-full items-center gap-2 rounded-lg p-1 text-sm">
+          <button
+            type="button"
+            onClick={() => setCategory("post")}
+            className={`flex-1 rounded-md px-3 py-2 text-xs font-semibold ${
+              category === "post"
+                ? "hb-segmented-btn--active"
+                : "hb-segmented-btn--inactive"
+            }`}
+          >
+            Posts
+          </button>
+          <button
+            type="button"
+            onClick={() => setCategory("website")}
+            className={`flex-1 rounded-md px-3 py-2 text-xs font-semibold ${
+              category === "website"
+                ? "hb-segmented-btn--active"
+                : "hb-segmented-btn--inactive"
+            }`}
+          >
+            Website
+          </button>
+        </div>
+        <input type="hidden" name="category" value={category} />
       </div>
 
       <div>

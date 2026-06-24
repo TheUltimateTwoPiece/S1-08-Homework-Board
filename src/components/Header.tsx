@@ -19,6 +19,10 @@ export function Header({ profile, unreadCount }: HeaderProps) {
         <nav className="flex items-center gap-3 text-sm">
           <NotificationBell unreadCount={unreadCount} />
 
+          <Link href="/calendar" className="hb-link font-medium">
+            Calendar
+          </Link>
+
           {profile.role === "admin" && (
             <>
               <Link href="/admin/feedback" className="hb-link font-medium">

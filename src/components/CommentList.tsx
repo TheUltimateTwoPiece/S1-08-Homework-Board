@@ -9,6 +9,12 @@ import type { Comment } from "@/lib/types";
 type CommentListProps = {
   comments: Comment[];
   currentUserId: string;
+  isAdmin: boolean;
+  commentsLocked: boolean;
+  attachmentsByCommentId: Record<
+    string,
+    { id: string; url: string; original_name: string; mime_type: string }[]
+  >;
 };
 
 type CommentNode = Comment & { replies: CommentNode[] };
@@ -45,7 +51,13 @@ function buildCommentTree(comments: Comment[]): CommentNode[] {
   return roots;
 }
 
-export function CommentList({ comments, currentUserId }: CommentListProps) {
+export function CommentList({
+  comments,
+  currentUserId,
+  isAdmin,
+  commentsLocked,
+  attachmentsByCommentId,
+}: CommentListProps) {
   const tree = useMemo(() => buildCommentTree(comments), [comments]);
   const [replyTo, setReplyTo] = useState<string | null>(null);
 
@@ -61,6 +73,7 @@ export function CommentList({ comments, currentUserId }: CommentListProps) {
     const isReply = depth > 0;
     const showReplyForm = replyTo === node.id;
     const marginLeft = Math.min(depth, 6) * 16;
+    const attachments = attachmentsByCommentId[node.id] ?? [];
 
     return (
       <li key={node.id} style={{ marginLeft }}>
@@ -83,16 +96,52 @@ export function CommentList({ comments, currentUserId }: CommentListProps) {
             </p>
           </div>
 
-          <div className="mt-3 flex items-center gap-3">
-            <button
-              type="button"
-              className="hb-link text-xs font-medium"
-              onClick={() => setReplyTo((prev) => (prev === node.id ? null : node.id))}
-            >
-              Reply
-            </button>
+          {attachments.length > 0 && (
+            <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+              {attachments.map((attachment) => {
+                const isImage = attachment.mime_type.startsWith("image/");
 
-            {node.author_id === currentUserId && (
+                return (
+                  <li key={attachment.id} className="hb-card overflow-hidden">
+                    <a
+                      href={attachment.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="block"
+                    >
+                      {isImage ? (
+                        <img
+                          src={attachment.url}
+                          alt={attachment.original_name}
+                          className="h-28 w-full object-cover"
+                        />
+                      ) : (
+                        <div className="hb-text flex h-28 items-center justify-center text-xs font-semibold">
+                          PDF
+                        </div>
+                      )}
+                      <div className="hb-text-muted truncate px-3 py-2 text-xs">
+                        {attachment.original_name}
+                      </div>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+
+          <div className="mt-3 flex items-center gap-3">
+            {(!commentsLocked || isAdmin) && (
+              <button
+                type="button"
+                className="hb-link text-xs font-medium"
+                onClick={() => setReplyTo((prev) => (prev === node.id ? null : node.id))}
+              >
+                Reply
+              </button>
+            )}
+
+            {(node.author_id === currentUserId || isAdmin) && (
               <form action={deleteComment}>
                 <input type="hidden" name="commentId" value={node.id} />
                 <input type="hidden" name="postId" value={node.post_id} />

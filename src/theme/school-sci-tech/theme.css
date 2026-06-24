@@ -39,6 +39,25 @@
   }
 }
 
+@keyframes hb-shake {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-12deg);
+  }
+  40% {
+    transform: rotate(12deg);
+  }
+  60% {
+    transform: rotate(-8deg);
+  }
+  80% {
+    transform: rotate(8deg);
+  }
+}
+
 @layer components {
   .hb-main {
     background: transparent;
@@ -218,8 +237,12 @@
     color: var(--hb-text);
   }
 
+  .hb-bell--shake {
+    animation: hb-shake 650ms ease-in-out 0s 2;
+  }
+
   .hb-notif-badge {
-    background: linear-gradient(90deg, var(--hb-blue), var(--hb-red));
+    background: var(--hb-red);
     color: #ffffff;
   }
 

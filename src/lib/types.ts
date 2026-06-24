@@ -12,6 +12,10 @@ export type Post = {
   id: string;
   title: string;
   content: string;
+  subject: string;
+  due_at: string | null;
+  pinned: boolean;
+  comments_locked: boolean;
   author_id: string;
   created_at: string;
   updated_at: string;
@@ -28,9 +32,31 @@ export type Comment = {
   profiles?: Pick<Profile, "full_name">;
 };
 
+export type Attachment = {
+  id: string;
+  post_id: string | null;
+  comment_id: string | null;
+  uploader_id: string;
+  bucket: string;
+  path: string;
+  original_name: string;
+  mime_type: string;
+  size_bytes: number;
+  created_at: string;
+};
+
+export type PostEdit = {
+  id: string;
+  post_id: string;
+  edited_by: string;
+  changes: Record<string, unknown>;
+  created_at: string;
+};
+
 export type Feedback = {
   id: string;
   author_id: string;
+  category: "post" | "website";
   message: string;
   created_at: string;
   profiles?: Pick<Profile, "full_name" | "email">;

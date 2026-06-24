@@ -31,7 +31,7 @@ export function CommentForm({
   );
 
   return (
-    <form action={formAction} className="space-y-3">
+    <form action={formAction} className="space-y-3" encType="multipart/form-data">
       <input type="hidden" name="postId" value={postId} />
       {parentCommentId && (
         <input type="hidden" name="parentCommentId" value={parentCommentId} />
@@ -44,6 +44,13 @@ export function CommentForm({
         onChange={(e) => setContent(e.target.value)}
         placeholder={placeholder}
         className="hb-input hb-text w-full rounded-lg px-3 py-2 text-sm placeholder:text-slate-400"
+      />
+      <input
+        type="file"
+        name="files"
+        multiple
+        accept="image/*,application/pdf"
+        className="hb-input w-full rounded-lg px-3 py-2 text-sm"
       />
       {state?.error && (
         <p className="hb-text-error text-sm">{state.error}</p>
