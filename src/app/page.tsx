@@ -7,15 +7,16 @@ export default async function HomePage() {
   const profile = await requireProfile();
   const supabase = await createClient();
 
-  const { data: posts } = await supabase
-    .from("posts")
-    .select("*, profiles(full_name)")
-    .order("created_at", { ascending: false });
-
-  const { data: completions } = await supabase
-    .from("post_completions")
-    .select("post_id")
-    .eq("user_id", profile.id);
+  const [{ data: posts }, { data: completions }] = await Promise.all([
+    supabase
+      .from("posts")
+      .select("*, profiles(full_name)")
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("post_completions")
+      .select("post_id")
+      .eq("user_id", profile.id),
+  ]);
 
   const completedPostIds = new Set(
     completions?.map((completion) => completion.post_id) ?? [],

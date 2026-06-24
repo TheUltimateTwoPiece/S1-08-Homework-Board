@@ -18,26 +18,26 @@ export default async function PostPage({ params }: PageProps) {
   const profile = await requireProfile();
   const supabase = await createClient();
 
-  const { data: post } = await supabase
-    .from("posts")
-    .select("*, profiles(full_name)")
-    .eq("id", id)
-    .single();
+  const [{ data: post }, { data: comments }, { data: completion }] = await Promise.all([
+    supabase
+      .from("posts")
+      .select("*, profiles(full_name)")
+      .eq("id", id)
+      .single(),
+    supabase
+      .from("comments")
+      .select("*, profiles(full_name)")
+      .eq("post_id", id)
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("post_completions")
+      .select("id")
+      .eq("post_id", id)
+      .eq("user_id", profile.id)
+      .maybeSingle(),
+  ]);
 
   if (!post) notFound();
-
-  const { data: comments } = await supabase
-    .from("comments")
-    .select("*, profiles(full_name)")
-    .eq("post_id", id)
-    .order("created_at", { ascending: true });
-
-  const { data: completion } = await supabase
-    .from("post_completions")
-    .select("id")
-    .eq("post_id", id)
-    .eq("user_id", profile.id)
-    .maybeSingle();
 
   const typedPost = post as Post;
   const isCompleted = Boolean(completion);
