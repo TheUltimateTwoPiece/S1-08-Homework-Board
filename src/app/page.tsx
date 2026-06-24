@@ -2,20 +2,39 @@ import { createClient } from "@/lib/supabase/server";
 import { PostCard } from "@/components/PostCard";
 import { requireProfile } from "@/lib/auth";
 import type { Post } from "@/lib/types";
+import { unstable_cache } from "next/cache";
+
+export const revalidate = 30;
 
 export default async function HomePage() {
   const profile = await requireProfile();
   const supabase = await createClient();
 
+  const getCachedPosts = unstable_cache(
+    async () => {
+      return await supabase
+        .from("posts")
+        .select("*, profiles(full_name)")
+        .order("created_at", { ascending: false });
+    },
+    ["posts"],
+    { revalidate: 30, tags: ["posts"] }
+  );
+
+  const getCachedCompletions = unstable_cache(
+    async (userId: string) => {
+      return await supabase
+        .from("post_completions")
+        .select("post_id")
+        .eq("user_id", userId);
+    },
+    ["completions"],
+    { revalidate: 30, tags: ["completions"] }
+  );
+
   const [{ data: posts }, { data: completions }] = await Promise.all([
-    supabase
-      .from("posts")
-      .select("*, profiles(full_name)")
-      .order("created_at", { ascending: false }),
-    supabase
-      .from("post_completions")
-      .select("post_id")
-      .eq("user_id", profile.id),
+    getCachedPosts(),
+    getCachedCompletions(profile.id),
   ]);
 
   const completedPostIds = new Set(

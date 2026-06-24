@@ -49,6 +49,7 @@ export async function createPost(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/admin");
+  revalidatePath("/posts/[id]");
   return { success: true };
 }
 
