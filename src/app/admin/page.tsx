@@ -4,7 +4,6 @@ import { requireProfile } from "@/lib/auth";
 import { CreatePostForm } from "@/components/CreatePostForm";
 import { SendReminderForm } from "@/components/SendReminderForm";
 import type { Post, Profile } from "@/lib/types";
-import { unstable_cache } from "next/cache";
 
 export const revalidate = 60;
 
@@ -17,33 +16,17 @@ export default async function AdminPage() {
 
   const supabase = await createClient();
 
-  const getCachedStudents = unstable_cache(
-    async () => {
-      return await supabase
-        .from("profiles")
-        .select("id, full_name, email")
-        .eq("role", "student")
-        .order("full_name");
-    },
-    ["students"],
-    { revalidate: 300 }
-  );
-
-  const getCachedPosts = unstable_cache(
-    async () => {
-      return await supabase
-        .from("posts")
-        .select("id, title")
-        .order("created_at", { ascending: false })
-        .limit(20);
-    },
-    ["posts"],
-    { revalidate: 30 }
-  );
-
   const [{ data: students }, { data: posts }] = await Promise.all([
-    getCachedStudents(),
-    getCachedPosts(),
+    supabase
+      .from("profiles")
+      .select("id, full_name, email")
+      .eq("role", "student")
+      .order("full_name"),
+    supabase
+      .from("posts")
+      .select("id, title")
+      .order("created_at", { ascending: false })
+      .limit(20),
   ]);
 
   return (

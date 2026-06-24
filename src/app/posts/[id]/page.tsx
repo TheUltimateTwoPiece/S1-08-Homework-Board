@@ -8,7 +8,6 @@ import { CommentList } from "@/components/CommentList";
 import { PostCompleteCheckbox } from "@/components/PostCompleteCheckbox";
 import { deletePost } from "@/actions/posts";
 import type { Comment, Post } from "@/lib/types";
-import { unstable_cache } from "next/cache";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -21,47 +20,23 @@ export default async function PostPage({ params }: PageProps) {
   const profile = await requireProfile();
   const supabase = await createClient();
 
-  const getCachedPost = unstable_cache(
-    async (postId: string) => {
-      return await supabase
-        .from("posts")
-        .select("*, profiles(full_name)")
-        .eq("id", postId)
-        .single();
-    },
-    ["post"],
-    { revalidate: 60 }
-  );
-
-  const getCachedComments = unstable_cache(
-    async (postId: string) => {
-      return await supabase
-        .from("comments")
-        .select("*, profiles(full_name)")
-        .eq("post_id", postId)
-        .order("created_at", { ascending: true });
-    },
-    ["comments"],
-    { revalidate: 30 }
-  );
-
-  const getCachedCompletion = unstable_cache(
-    async (postId: string, userId: string) => {
-      return await supabase
-        .from("post_completions")
-        .select("id")
-        .eq("post_id", postId)
-        .eq("user_id", userId)
-        .maybeSingle();
-    },
-    ["completion"],
-    { revalidate: 30 }
-  );
-
   const [{ data: post }, { data: comments }, { data: completion }] = await Promise.all([
-    getCachedPost(id),
-    getCachedComments(id),
-    getCachedCompletion(id, profile.id),
+    supabase
+      .from("posts")
+      .select("*, profiles(full_name)")
+      .eq("id", id)
+      .single(),
+    supabase
+      .from("comments")
+      .select("*, profiles(full_name)")
+      .eq("post_id", id)
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("post_completions")
+      .select("id")
+      .eq("post_id", id)
+      .eq("user_id", profile.id)
+      .maybeSingle(),
   ]);
 
   if (!post) notFound();

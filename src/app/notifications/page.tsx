@@ -6,7 +6,6 @@ import {
   markNotificationRead,
 } from "@/actions/notifications";
 import type { Notification } from "@/lib/types";
-import { unstable_cache } from "next/cache";
 
 export const revalidate = 15;
 
@@ -14,19 +13,11 @@ export default async function NotificationsPage() {
   const profile = await requireProfile();
   const supabase = await createClient();
 
-  const getCachedNotifications = unstable_cache(
-    async (userId: string) => {
-      return await supabase
-        .from("notifications")
-        .select("id, user_id, title, message, created_by, read_at, created_at")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
-    },
-    ["notifications"],
-    { revalidate: 15 }
-  );
-
-  const { data: notifications } = await getCachedNotifications(profile.id);
+  const { data: notifications } = await supabase
+    .from("notifications")
+    .select("id, user_id, title, message, created_by, read_at, created_at")
+    .eq("user_id", profile.id)
+    .order("created_at", { ascending: false });
 
   const unreadCount =
     notifications?.filter((n) => !n.read_at).length ?? 0;

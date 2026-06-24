@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types";
 import { redirect } from "next/navigation";
-import { unstable_cache } from "next/cache";
 
 export async function getCurrentProfile(): Promise<Profile | null> {
   const supabase = await createClient();
@@ -11,21 +10,13 @@ export async function getCurrentProfile(): Promise<Profile | null> {
 
   if (!user) return null;
 
-  const getCachedProfile = unstable_cache(
-    async (userId: string) => {
-      const client = await createClient();
-      const { data: profile } = await client
-        .from("profiles")
-        .select("*")
-        .eq("id", userId)
-        .single();
-      return profile;
-    },
-    ["profile"],
-    { revalidate: 300 }
-  );
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
 
-  return await getCachedProfile(user.id);
+  return profile;
 }
 
 export async function requireProfile(): Promise<Profile> {
@@ -35,19 +26,12 @@ export async function requireProfile(): Promise<Profile> {
 }
 
 export async function getUnreadNotificationCount(userId: string): Promise<number> {
-  const getCachedCount = unstable_cache(
-    async (uid: string) => {
-      const client = await createClient();
-      const { count } = await client
-        .from("notifications")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", uid)
-        .is("read_at", null);
-      return count ?? 0;
-    },
-    ["notification-count"],
-    { revalidate: 30 }
-  );
+  const supabase = await createClient();
+  const { count } = await supabase
+    .from("notifications")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .is("read_at", null);
 
-  return await getCachedCount(userId);
+  return count ?? 0;
 }
