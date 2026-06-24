@@ -22,9 +22,9 @@ export function Header({ profile, unreadCount }: HeaderProps) {
           {profile.role === "admin" && (
             <Link
               href="/admin"
-              className="text-slate-600 hover:text-slate-900"
+              className="rounded-lg bg-indigo-600 px-3 py-1.5 font-medium text-white hover:bg-indigo-700"
             >
-              Admin
+              Create Post
             </Link>
           )}
 
