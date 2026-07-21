@@ -20,7 +20,7 @@ function formatDueLabel(due: string | null) {
   if (due === today) return { text: "Due today", className: "text-amber-600 dark:text-amber-400" };
   return {
     text: `Due ${format(date, "MMM d")}`,
-    className: "text-slate-500 dark:text-slate-400",
+    className: "text-slate-700 dark:text-slate-300",
   };
 }
 
@@ -46,7 +46,7 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
             <h2 className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">
               {firstName}&apos;s homework
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-slate-700 dark:text-slate-300">
               {totalDone} of {top.length} done · tap a card to open
             </p>
           </div>
@@ -65,13 +65,13 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
       {top.length === 0 ? (
         <div className="flex h-[calc(100%-56px)] flex-col items-center justify-center text-center">
           <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-slate-400" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-slate-600 dark:text-slate-200" aria-hidden="true">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
               <polyline points="14 2 14 8 20 8" />
             </svg>
           </div>
           <p className="text-sm font-medium text-slate-600 dark:text-slate-300">All caught up!</p>
-          <p className="text-xs text-slate-400 dark:text-slate-500">No homework waiting for you.</p>
+          <p className="text-xs text-slate-600 dark:text-slate-200">No homework waiting for you.</p>
         </div>
       ) : (
         <ul className="-mx-2 max-h-[calc(100%-56px)] space-y-1 overflow-y-auto">
@@ -104,7 +104,7 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
                     <span
                       className={`truncate text-sm font-medium ${
                         done
-                          ? "line-through text-slate-500 dark:text-slate-400"
+                          ? "line-through text-slate-700 dark:text-slate-300"
                           : "text-slate-800 dark:text-slate-100"
                       }`}
                     >

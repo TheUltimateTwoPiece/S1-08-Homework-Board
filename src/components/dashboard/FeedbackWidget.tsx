@@ -39,7 +39,7 @@ export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
       </div>
       {top.length === 0 ? (
         <div className="flex h-[calc(100%-44px)] items-center justify-center text-center">
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-slate-700 dark:text-slate-300">
             No feedback yet
           </p>
         </div>
@@ -57,14 +57,14 @@ export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
               <div className="min-w-0 flex-1">
                 <div className="line-clamp-1 text-sm font-medium text-slate-800 dark:text-slate-100">
                   {f.profiles?.full_name ?? "Student"}
-                  <span className="ml-1.5 rounded bg-slate-100 px-1 py-0.5 text-[10px] font-semibold text-slate-500 dark:bg-slate-700 dark:text-slate-300">
+                  <span className="ml-1.5 rounded bg-slate-100 px-1 py-0.5 text-[10px] font-semibold text-slate-700 dark:text-slate-300 dark:bg-slate-700 dark:text-slate-300">
                     {f.category}
                   </span>
                 </div>
-                <div className="line-clamp-1 text-xs text-slate-500 dark:text-slate-400">
+                <div className="line-clamp-1 text-xs text-slate-700 dark:text-slate-300">
                   {f.message}
                 </div>
-                <div className="text-[10px] text-slate-400 dark:text-slate-500">
+                <div className="text-[10px] text-slate-600 dark:text-slate-200">
                   {formatDistanceToNow(new Date(f.created_at), { addSuffix: true })}
                 </div>
               </div>

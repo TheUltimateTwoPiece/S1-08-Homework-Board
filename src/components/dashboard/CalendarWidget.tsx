@@ -56,7 +56,7 @@ export function CalendarWidget({ posts }: CalendarWidgetProps) {
             <h2 className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">
               Calendar
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-slate-700 dark:text-slate-300">
               {format(today, "MMMM yyyy")} · {totalThisMonth} due
             </p>
           </div>

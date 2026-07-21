@@ -66,13 +66,13 @@ export function CommentList({
     return (
       <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-slate-200 py-12 text-center">
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-slate-400" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-slate-600 dark:text-slate-200" aria-hidden="true">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
         </div>
         <div>
           <p className="text-sm font-medium text-slate-600">No comments yet</p>
-          <p className="mt-0.5 text-xs text-slate-400">Be the first to ask a question!</p>
+          <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-200">Be the first to ask a question!</p>
         </div>
       </div>
     );
@@ -108,12 +108,12 @@ export function CommentList({
                 {node.profiles?.full_name ?? "Student"}
               </span>
               {isReply && (
-                <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
+                <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-700 dark:text-slate-300">
                   Reply
                 </span>
               )}
             </div>
-            <time className="shrink-0 text-xs text-slate-400" dateTime={node.created_at}>
+            <time className="shrink-0 text-xs text-slate-600 dark:text-slate-200" dateTime={node.created_at}>
               {formatDistanceToNow(new Date(node.created_at), {
                 addSuffix: true,
               })}
@@ -145,7 +145,7 @@ export function CommentList({
                           className="h-28 w-full object-cover"
                         />
                       ) : (
-                        <div className="flex h-28 items-center justify-center bg-slate-50 text-xs font-semibold text-slate-500">
+                        <div className="flex h-28 items-center justify-center bg-slate-50 text-xs font-semibold text-slate-700 dark:text-slate-300">
                           <div className="flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden="true">
                               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -155,7 +155,7 @@ export function CommentList({
                           </div>
                         </div>
                       )}
-                      <div className="truncate px-3 py-2 text-xs text-slate-500">
+                      <div className="truncate px-3 py-2 text-xs text-slate-700 dark:text-slate-300">
                         {attachment.original_name}
                       </div>
                     </a>

@@ -36,7 +36,7 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
             <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
               Nothing on the horizon
             </p>
-            <p className="text-xs text-slate-400 dark:text-slate-500">
+            <p className="text-xs text-slate-600 dark:text-slate-200">
               Enjoy the breathing room ✨
             </p>
           </div>
@@ -56,7 +56,7 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
                   className={`flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-lg text-[10px] font-bold ${
                     today
                       ? "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
-                      : "bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-300"
+                      : "bg-slate-100 text-slate-700 dark:text-slate-300 dark:bg-slate-700 dark:text-slate-300"
                   }`}
                 >
                   <span className="leading-none">{format(due, "MMM")}</span>
@@ -68,7 +68,7 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
                   <div className="line-clamp-1 text-sm font-medium text-slate-800 dark:text-slate-100">
                     {post.title}
                   </div>
-                  <div className={`text-[11px] ${today ? "font-semibold text-amber-700 dark:text-amber-400" : "text-slate-500 dark:text-slate-400"}`}>
+                  <div className={`text-[11px] ${today ? "font-semibold text-amber-700 dark:text-amber-400" : "text-slate-700 dark:text-slate-300"}`}>
                     {today
                       ? "Today"
                       : formatDistanceToNow(due, { addSuffix: true })}

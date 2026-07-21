@@ -116,7 +116,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
         <div className="ml-auto flex items-center gap-2">
           <Link
             href="/feedback"
-            className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-700"
+            className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-200 dark:hover:bg-slate-700"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -128,7 +128,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
 
       <PostFiltersBar subjects={subjects} />
 
-      <div className="mt-4 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+      <div className="mt-4 flex items-center justify-between text-xs text-slate-700 dark:text-slate-300">
         <span>
           {filteredPosts.length} match
           {filteredPosts.length === 1 ? "" : "es"}
@@ -142,7 +142,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
         {filteredPosts.length === 0 ? (
           <div className="hb-empty-state flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 py-16 text-center dark:border-slate-700">
             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 text-slate-400" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 text-slate-600 dark:text-slate-200" aria-hidden="true">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                 <polyline points="14 2 14 8 20 8" />
                 <line x1="16" y1="13" x2="8" y2="13" />
@@ -152,7 +152,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
             <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
               No homework matches these filters
             </p>
-            <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
+            <p className="mt-1 text-xs text-slate-600 dark:text-slate-200">
               Try adjusting your search or filter criteria
             </p>
             {profile.role === "admin" && (

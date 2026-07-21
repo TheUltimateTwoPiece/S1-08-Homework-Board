@@ -17,7 +17,7 @@ export function NotificationBell({ unreadCount }: NotificationBellProps) {
       className={`relative flex h-9 w-9 items-center justify-center rounded-lg transition ${
         unreadCount > 0
           ? "hb-bell--shake text-slate-600 hover:bg-slate-100"
-          : "text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+          : "text-slate-600 dark:text-slate-200 hover:bg-slate-100 hover:text-slate-600"
       }`}
     >
       <svg

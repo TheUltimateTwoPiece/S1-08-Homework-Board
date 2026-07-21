@@ -66,7 +66,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
         }}
       >
         <div className="flex-1">
-          <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-slate-500">
+          <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-300">
             Search
           </label>
           <div className="relative">
@@ -78,7 +78,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-600 dark:text-slate-200"
               aria-hidden="true"
             >
               <circle cx="11" cy="11" r="8" />
@@ -98,7 +98,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
         </div>
 
         <div className="sm:w-44">
-          <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-slate-500">
+          <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-300">
             Subject
           </label>
           <select
@@ -117,7 +117,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
         </div>
 
         <div className="sm:w-40">
-          <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-slate-500">
+          <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-300">
             Due
           </label>
           <select
@@ -160,7 +160,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
             className={`flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition ${
               initial.status === option.value
                 ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-500 hover:bg-white/60 hover:text-slate-700"
+                : "text-slate-700 dark:text-slate-300 hover:bg-white/60 hover:text-slate-700"
             }`}
           >
             {option.label}

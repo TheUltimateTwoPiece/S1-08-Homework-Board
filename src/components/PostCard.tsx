@@ -43,33 +43,33 @@ export function PostCard({ post, completed }: PostCardProps) {
                 </span>
               )}
               {wasEdited && (
-                <span className="inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold text-slate-400">
+                <span className="inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold text-slate-600 dark:text-slate-200">
                   Edited
                 </span>
               )}
             </div>
             <h2
               className={`text-base font-semibold leading-snug transition-colors duration-150 group-hover:text-blue-600 ${
-                completed ? "text-slate-400 line-through" : "text-slate-900"
+                completed ? "text-slate-600 dark:text-slate-200 line-through" : "text-slate-900"
               }`}
             >
               {post.title}
             </h2>
           </div>
           <time
-            className="shrink-0 whitespace-nowrap text-[11px] font-medium text-slate-400"
+            className="shrink-0 whitespace-nowrap text-[11px] font-medium text-slate-600 dark:text-slate-200"
             dateTime={post.created_at}
           >
             {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
           </time>
         </div>
         <p className={`mt-1.5 line-clamp-2 whitespace-pre-line text-sm leading-relaxed ${
-          completed ? "text-slate-400" : "text-slate-600"
+          completed ? "text-slate-600 dark:text-slate-200" : "text-slate-600"
         }`}>
           {post.content}
         </p>
         {post.profiles?.full_name && (
-          <div className="mt-3 flex items-center gap-1.5 text-[11px] font-medium text-slate-400">
+          <div className="mt-3 flex items-center gap-1.5 text-[11px] font-medium text-slate-600 dark:text-slate-200">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden="true">
               <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
               <circle cx="12" cy="7" r="4" />

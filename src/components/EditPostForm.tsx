@@ -29,7 +29,7 @@ export function EditPostForm({ post }: EditPostFormProps) {
         </div>
         <div>
           <h2 className="text-base font-semibold text-slate-900">Edit post</h2>
-          <p className="text-xs text-slate-500">Update the assignment details</p>
+          <p className="text-xs text-slate-700 dark:text-slate-300">Update the assignment details</p>
         </div>
       </div>
 

@@ -58,7 +58,7 @@ export function DutyWidget({
             <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
               No admins assigned today
             </p>
-            <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
+            <p className="mt-1 text-xs text-slate-600 dark:text-slate-200">
               Assign someone on the schedule page
             </p>
           </div>
@@ -87,7 +87,7 @@ export function DutyWidget({
             <h2 className="text-sm font-bold tracking-tight text-slate-900 dark:text-slate-100">
               Today&apos;s duty · {format(parseISO(todayStr), "EEE")}
             </h2>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+            <p className="text-[11px] text-slate-700 dark:text-slate-300">
               {completedSet.size}/{todaySchedules.length} completed
             </p>
           </div>
@@ -125,7 +125,7 @@ export function DutyWidget({
                     <span className="ml-1.5 text-[10px] font-semibold text-blue-600">you</span>
                   )}
                 </div>
-                <div className={`text-[11px] font-medium ${done ? "text-emerald-600 dark:text-emerald-400" : "text-slate-500 dark:text-slate-400"}`}>
+                <div className={`text-[11px] font-medium ${done ? "text-emerald-600 dark:text-emerald-400" : "text-slate-700 dark:text-slate-300"}`}>
                   {done ? "✓ Posted" : "Pending"}
                 </div>
               </div>

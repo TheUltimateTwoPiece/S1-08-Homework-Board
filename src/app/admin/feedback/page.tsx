@@ -29,7 +29,7 @@ export default async function AdminFeedbackPage() {
     if (items.length === 0) {
       return (
         <div className="hb-empty-state flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 py-12 text-center">
-          <p className="text-sm font-medium text-slate-500">No feedback yet.</p>
+          <p className="text-sm font-medium text-slate-700 dark:text-slate-300">No feedback yet.</p>
         </div>
       );
     }
@@ -49,10 +49,10 @@ export default async function AdminFeedbackPage() {
                   </div>
                 </div>
                 {item.profiles?.email && (
-                  <div className="mt-0.5 pl-9 text-xs text-slate-400">{item.profiles.email}</div>
+                  <div className="mt-0.5 pl-9 text-xs text-slate-600 dark:text-slate-200">{item.profiles.email}</div>
                 )}
               </div>
-              <time className="shrink-0 text-xs text-slate-400" dateTime={item.created_at}>
+              <time className="shrink-0 text-xs text-slate-600 dark:text-slate-200" dateTime={item.created_at}>
                 {new Date(item.created_at).toLocaleString()}
               </time>
             </div>
@@ -76,7 +76,7 @@ export default async function AdminFeedbackPage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-slate-900">Feedback</h1>
-            <p className="mt-0.5 text-sm text-slate-500">
+            <p className="mt-0.5 text-sm text-slate-700 dark:text-slate-300">
               Messages submitted from the homepage feedback button.
             </p>
           </div>
@@ -87,7 +87,7 @@ export default async function AdminFeedbackPage() {
         <section>
           <div className="mb-4 flex items-center gap-2">
             <h2 className="text-base font-semibold text-slate-700">Posts</h2>
-            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500">{postFeedback.length}</span>
+            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700 dark:text-slate-300">{postFeedback.length}</span>
           </div>
           {renderItems(postFeedback)}
         </section>
@@ -95,7 +95,7 @@ export default async function AdminFeedbackPage() {
         <section>
           <div className="mb-4 flex items-center gap-2">
             <h2 className="text-base font-semibold text-slate-700">Website</h2>
-            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500">{websiteFeedback.length}</span>
+            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700 dark:text-slate-300">{websiteFeedback.length}</span>
           </div>
           {renderItems(websiteFeedback)}
         </section>

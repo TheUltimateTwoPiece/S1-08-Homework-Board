@@ -74,7 +74,7 @@ export function AdminScheduleClient({
                 }`}
               >
                 <div className={`text-[10px] font-bold uppercase tracking-wider ${
-                  isToday ? "text-blue-600 dark:text-blue-400" : "text-slate-400 dark:text-slate-500"
+                  isToday ? "text-blue-600 dark:text-blue-400" : "text-slate-600 dark:text-slate-200"
                 }`}>
                   {DAYS_SHORT[i]}
                 </div>
@@ -86,7 +86,7 @@ export function AdminScheduleClient({
                     {admins
                       .filter((a) => assignedAdmins.has(a.id))
                       .map((a) => (
-                        <div key={a.id} className="truncate text-[9px] text-slate-500 dark:text-slate-400">
+                        <div key={a.id} className="truncate text-[9px] text-slate-700 dark:text-slate-300">
                           {a.full_name.split(" ")[0]}
                         </div>
                       ))}
@@ -115,7 +115,7 @@ export function AdminScheduleClient({
               >
                 <div>
                   <div className="text-sm font-medium text-slate-700 dark:text-slate-300">{admin.full_name}</div>
-                  <div className="text-xs text-slate-400 dark:text-slate-500">{admin.email}</div>
+                  <div className="text-xs text-slate-600 dark:text-slate-200">{admin.email}</div>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className={`text-xs font-semibold ${done ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}`}>
@@ -141,7 +141,7 @@ export function AdminScheduleClient({
           })}
 
           {admins.filter((a) => scheduleByDay.get(dayOfWeek)?.has(a.id)).length === 0 && (
-            <p className="text-sm text-slate-400 dark:text-slate-500">No admins scheduled for today.</p>
+            <p className="text-sm text-slate-600 dark:text-slate-200">No admins scheduled for today.</p>
           )}
         </div>
       </div>
@@ -152,7 +152,7 @@ export function AdminScheduleClient({
         <form action={scheduleAction} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label htmlFor="adminId" className="mb-1.5 block text-xs font-medium text-slate-600 dark:text-slate-400">Admin</label>
+              <label htmlFor="adminId" className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-200">Admin</label>
               <select
                 id="adminId"
                 name="adminId"
@@ -168,7 +168,7 @@ export function AdminScheduleClient({
               </select>
             </div>
             <div>
-              <label htmlFor="dayOfWeek" className="mb-1.5 block text-xs font-medium text-slate-600 dark:text-slate-400">Day of week</label>
+              <label htmlFor="dayOfWeek" className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-200">Day of week</label>
               <select
                 id="dayOfWeek"
                 name="dayOfWeek"
@@ -186,7 +186,7 @@ export function AdminScheduleClient({
           </div>
 
           <div className="flex items-center gap-3">
-            <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+            <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200">
               <input
                 type="checkbox"
                 name="isActive"
@@ -223,7 +223,7 @@ export function AdminScheduleClient({
       {/* Send Reminders */}
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800/80">
         <h2 className="mb-3 text-base font-semibold text-slate-700 dark:text-slate-300">Send duty reminders</h2>
-        <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mb-4 text-sm text-slate-700 dark:text-slate-300">
           Send a reminder to all admins scheduled for today who haven&apos;t marked their post as complete.
         </p>
 

@@ -45,7 +45,7 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-slate-900">S1-08 Homework Board</h1>
-          <p className="mt-1.5 text-sm text-slate-500">
+          <p className="mt-1.5 text-sm text-slate-700 dark:text-slate-300">
             {mode === "signin"
               ? "Sign in to view homework and notifications"
               : "Create an account to join your class"}
@@ -59,7 +59,7 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
             className={`flex-1 rounded-md py-2 text-sm font-medium transition ${
               mode === "signin"
                 ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-500 hover:text-slate-700"
+                : "text-slate-700 dark:text-slate-300 hover:text-slate-700"
             }`}
           >
             Sign in
@@ -70,7 +70,7 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
             className={`flex-1 rounded-md py-2 text-sm font-medium transition ${
               mode === "signup"
                 ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-500 hover:text-slate-700"
+                : "text-slate-700 dark:text-slate-300 hover:text-slate-700"
             }`}
           >
             Sign up
