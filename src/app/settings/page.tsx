@@ -11,7 +11,7 @@ export default async function SettingsPage() {
     <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 sm:py-8">
       <PageTopBar
         profile={profile}
-        greetingName="Settings"
+        greetingName={profile.full_name}
         subtitle="Update how you appear across the homework board."
         showAdminCta={false}
       />
