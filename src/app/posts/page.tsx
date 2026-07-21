@@ -34,9 +34,13 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
   let postsQuery = supabase
     .from("posts")
     .select("*, profiles(full_name, avatar_url)")
+    // Cap the posts list at 200. Without a limit this scans the entire
+    // posts table on every render of /posts. A real homework term easily
+    // exceeds this.
     .order("pinned", { ascending: false })
     .order("due_at", { ascending: true, nullsFirst: false })
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(200);
 
   if (q) {
     const qSafe = q.replace(/[,]/g, " ");
@@ -58,14 +62,18 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
     if (due === "upcoming") postsQuery = postsQuery.gt("due_at", todayStr);
   }
 
-  const { data: posts } = await postsQuery;
-  const { data: completions } = await supabase
-    .from("post_completions")
-    .select("post_id")
-    .eq("user_id", profile.id);
+  // Run the posts query and the completion lookup in parallel — they have
+  // no dependency on each other.
+  const [{ data: posts }, { data: completions }] = await Promise.all([
+    postsQuery,
+    supabase
+      .from("post_completions")
+      .select("post_id")
+      .eq("user_id", profile.id),
+  ]);
 
   const completedPostIds = new Set(
-    completions?.map((completion) => completion.post_id) ?? [],
+    completions?.map((completion) => completion.post_id as string) ?? [],
   );
 
   const typedPosts = (posts as Post[]) ?? [];

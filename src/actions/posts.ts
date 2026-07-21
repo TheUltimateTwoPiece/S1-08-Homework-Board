@@ -80,63 +80,65 @@ export async function createPost(formData: FormData) {
 
   if (post && files.length > 0) {
     const maxBytes = 10 * 1024 * 1024;
-    const uploadedPaths: string[] = [];
-    const uploads: {
-      uploader_id: string;
-      post_id: string;
-      bucket: string;
-      path: string;
-      original_name: string;
-      mime_type: string;
-      size_bytes: number;
-    }[] = [];
 
+    // Validate every file up front so we don't half-upload and have to
+    // roll back on a single bad file later in the loop.
     for (const file of files) {
       if (file.size > maxBytes) {
         return { error: `File "${file.name}" is too large.` };
       }
-
       const isAllowed =
         file.type === "application/pdf" || file.type.startsWith("image/");
       if (!isAllowed) {
         return { error: `File type not allowed: "${file.name}".` };
       }
-
-      const bucket = "attachments";
-      const path = `posts/${post.id}/${crypto.randomUUID()}-${normalizeFileName(file.name)}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from(bucket)
-        .upload(path, file, { contentType: file.type });
-
-      if (uploadError) {
-        if (uploadedPaths.length > 0) {
-          await supabase.storage.from("attachments").remove(uploadedPaths);
-        }
-        await supabase.from("posts").delete().eq("id", post.id);
-        return { error: normalizeStorageError(uploadError.message) };
-      }
-
-      uploadedPaths.push(path);
-      uploads.push({
-        uploader_id: user.id,
-        post_id: post.id,
-        bucket,
-        path,
-        original_name: file.name,
-        mime_type: file.type,
-        size_bytes: file.size,
-      });
     }
+
+    const bucket = "attachments";
+    const paths = files.map(
+      (file) => `posts/${post.id}/${crypto.randomUUID()}-${normalizeFileName(file.name)}`,
+    );
+
+    // Upload all files in parallel — was sequential before, which stalled
+    // the request when multiple files were attached.
+    const uploadResults = await Promise.all(
+      files.map((file, i) =>
+        supabase.storage
+          .from(bucket)
+          .upload(paths[i], file, { contentType: file.type })
+          .then(({ error }) => ({ error, path: paths[i], file })),
+      ),
+    );
+
+    const failed = uploadResults.find((r) => r.error);
+    if (failed) {
+      // Roll back any successful uploads and the post row itself.
+      const successfulPaths = uploadResults
+        .filter((r) => !r.error)
+        .map((r) => r.path);
+      if (successfulPaths.length > 0) {
+        await supabase.storage.from(bucket).remove(successfulPaths);
+      }
+      await supabase.from("posts").delete().eq("id", post.id);
+      return { error: normalizeStorageError(failed.error!.message) };
+    }
+
+    const uploads = files.map((file, i) => ({
+      uploader_id: user.id,
+      post_id: post.id,
+      bucket,
+      path: paths[i],
+      original_name: file.name,
+      mime_type: file.type,
+      size_bytes: file.size,
+    }));
 
     const { error: attachmentError } = await supabase
       .from("attachments")
       .insert(uploads);
 
     if (attachmentError) {
-      if (uploadedPaths.length > 0) {
-        await supabase.storage.from("attachments").remove(uploadedPaths);
-      }
+      await supabase.storage.from(bucket).remove(paths);
       await supabase.from("posts").delete().eq("id", post.id);
       return { error: normalizeDatabaseError(attachmentError.message) };
     }
@@ -221,10 +223,60 @@ export async function deletePost(formData: FormData) {
   const { supabase } = await requireAdmin();
   const postId = formData.get("postId") as string;
 
+  // Fetch every attachment row (post + comment attachments cascade via FK)
+  // BEFORE deleting the DB rows, so we can clean up the physical storage
+  // objects. Otherwise deleting the post leaves orphaned files in the
+  // attachments bucket forever.
+  //
+  // We do two parameterised reads instead of interpolating postId into a
+  // PostgREST `.or()` filter string — admin-only, but defense in depth
+  // against accidental bad input or future code that constructs postId
+  // from an untrusted source.
+  const [{ data: postAttachments }, { data: commentIdRows }] = await Promise.all([
+    supabase
+      .from("attachments")
+      .select("bucket, path")
+      .eq("post_id", postId),
+    supabase
+      .from("comments")
+      .select("id")
+      .eq("post_id", postId),
+  ]);
+
+  const commentIds = (commentIdRows ?? []).map((row) => row.id);
+
+  const { data: commentAttachments } = commentIds.length > 0
+    ? await supabase
+        .from("attachments")
+        .select("bucket, path")
+        .in("comment_id", commentIds)
+    : { data: [] as { bucket: string; path: string }[] | null };
+
+  const attachments = [
+    ...(postAttachments ?? []),
+    ...(commentAttachments ?? []),
+  ];
+
   const { error } = await supabase.from("posts").delete().eq("id", postId);
 
   if (error) {
     throw new Error(error.message);
+  }
+
+  // Best-effort storage cleanup — never block the redirect on this.
+  if (attachments.length > 0) {
+    const byBucket = new Map<string, string[]>();
+    for (const a of attachments) {
+      if (!a.bucket || !a.path) continue;
+      const list = byBucket.get(a.bucket) ?? [];
+      list.push(a.path);
+      byBucket.set(a.bucket, list);
+    }
+    await Promise.all(
+      Array.from(byBucket.entries()).map(([bucket, paths]) =>
+        supabase.storage.from(bucket).remove(paths),
+      ),
+    );
   }
 
   revalidatePath("/");

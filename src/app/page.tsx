@@ -34,9 +34,13 @@ export default async function DashboardPage() {
     supabase
       .from("posts")
       .select("*, profiles(full_name, avatar_url)")
+      // Cap the dashboard post list at 100. Without a limit this scans the
+      // entire posts table on every render — every visit, every nav,
+      // every revalidate. A real homework term could easily exceed this.
       .order("pinned", { ascending: false })
       .order("due_at", { ascending: true, nullsFirst: false })
-      .order("created_at", { ascending: false }),
+      .order("created_at", { ascending: false })
+      .limit(100),
     supabase
       .from("post_completions")
       .select("post_id")

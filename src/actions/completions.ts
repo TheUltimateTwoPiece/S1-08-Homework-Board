@@ -14,6 +14,10 @@ export async function togglePostComplete(formData: FormData) {
 
   const postId = formData.get("postId") as string;
 
+  // Look-then-insert/delete has a TOCTOU race: two rapid clicks fire this
+  // action twice in parallel, both see `existing` as null, both try to
+  // insert, and the second one crashes on the (post_id, user_id) unique
+  // constraint. We handle that gracefully below instead of throwing.
   const { data: existing } = await supabase
     .from("post_completions")
     .select("id")
@@ -36,7 +40,10 @@ export async function togglePostComplete(formData: FormData) {
       user_id: user.id,
     });
 
-    if (error) {
+    // Unique-constraint violation (Postgres 23505) means another
+    // concurrent insert won the race — treat as a successful no-op
+    // rather than crashing the action.
+    if (error && error.code !== "23505") {
       throw new Error(error.message);
     }
   }

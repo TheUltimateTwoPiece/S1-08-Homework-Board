@@ -79,44 +79,71 @@ export default async function PostPage({ params }: PageProps) {
   const commentAttachments =
     (commentAttachmentsResult.data as Attachment[] | null) ?? [];
 
-  const signedPostAttachments = (
+  // Bulk-fetch signed URLs (one network round-trip per bucket, not per
+  // attachment). Previous version did N sequential `createSignedUrl` calls
+  // — on a post with 20 attachments that's 20 sequential Supabase Storage
+  // round-trips blocking page render on every visit.
+  const SIGNED_URL_TTL_SECONDS = 60 * 60 * 24 * 7;
+
+  const buildSignedAttachmentMap = async <T extends { id: string; bucket: string; path: string }>(
+    rows: T[],
+  ): Promise<Map<string, { signedUrl: string }>> => {
+    const byBucket = new Map<string, { row: T; signedUrl: string }[]>();
+    for (const row of rows) {
+      const list = byBucket.get(row.bucket) ?? [];
+      list.push({ row, signedUrl: "" });
+      byBucket.set(row.bucket, list);
+    }
+    const result = new Map<string, { signedUrl: string }>();
     await Promise.all(
-      postAttachments.map(async (attachment) => {
+      Array.from(byBucket.entries()).map(async ([bucket, items]) => {
+        const paths = items.map((item) => item.row.path);
         const { data } = await supabase.storage
-          .from(attachment.bucket)
-          .createSignedUrl(attachment.path, 60 * 60 * 24 * 7);
-
-        if (!data?.signedUrl) return null;
-
-        return {
-          id: attachment.id,
-          url: data.signedUrl,
-          original_name: attachment.original_name,
-          mime_type: attachment.mime_type,
-        };
+          .from(bucket)
+          .createSignedUrls(paths, SIGNED_URL_TTL_SECONDS);
+        if (!data) return;
+        for (let i = 0; i < items.length; i++) {
+          const signed = data[i];
+          if (signed?.signedUrl) {
+            result.set(items[i].row.id, { signedUrl: signed.signedUrl });
+          }
+        }
       }),
-    )
-  ).filter(Boolean) as { id: string; url: string; original_name: string; mime_type: string }[];
+    );
+    return result;
+  };
 
-  const signedCommentAttachments = (
-    await Promise.all(
-      commentAttachments.map(async (attachment) => {
-        const { data } = await supabase.storage
-          .from(attachment.bucket)
-          .createSignedUrl(attachment.path, 60 * 60 * 24 * 7);
+  const [postSignedMap, commentSignedMap] = await Promise.all([
+    buildSignedAttachmentMap(postAttachments),
+    buildSignedAttachmentMap(commentAttachments),
+  ]);
 
-        if (!data?.signedUrl) return null;
+  const signedPostAttachments = postAttachments
+    .map((attachment) => {
+      const signed = postSignedMap.get(attachment.id);
+      if (!signed) return null;
+      return {
+        id: attachment.id,
+        url: signed.signedUrl,
+        original_name: attachment.original_name,
+        mime_type: attachment.mime_type,
+      };
+    })
+    .filter(Boolean) as { id: string; url: string; original_name: string; mime_type: string }[];
 
-        return {
-          id: attachment.id,
-          comment_id: attachment.comment_id,
-          url: data.signedUrl,
-          original_name: attachment.original_name,
-          mime_type: attachment.mime_type,
-        };
-      }),
-    )
-  ).filter(Boolean) as {
+  const signedCommentAttachments = commentAttachments
+    .map((attachment) => {
+      const signed = commentSignedMap.get(attachment.id);
+      if (!signed) return null;
+      return {
+        id: attachment.id,
+        comment_id: attachment.comment_id,
+        url: signed.signedUrl,
+        original_name: attachment.original_name,
+        mime_type: attachment.mime_type,
+      };
+    })
+    .filter(Boolean) as {
     id: string;
     comment_id: string | null;
     url: string;

@@ -84,63 +84,65 @@ export async function addComment(formData: FormData) {
 
   if (comment && files.length > 0) {
     const maxBytes = 10 * 1024 * 1024;
-    const uploads: {
-      uploader_id: string;
-      comment_id: string;
-      bucket: string;
-      path: string;
-      original_name: string;
-      mime_type: string;
-      size_bytes: number;
-    }[] = [];
 
+    // Validate every file up front so we don't half-upload and have to
+    // roll back on a single bad file later in the loop.
     for (const file of files) {
       if (file.size > maxBytes) {
         return { error: `File "${file.name}" is too large.` };
       }
-
       const isAllowed =
         file.type === "application/pdf" || file.type.startsWith("image/");
       if (!isAllowed) {
         return { error: `File type not allowed: "${file.name}".` };
       }
-
-      const bucket = "attachments";
-      const path = `comments/${comment.id}/${crypto.randomUUID()}-${normalizeFileName(file.name)}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from(bucket)
-        .upload(path, file, { contentType: file.type });
-
-      if (uploadError) {
-        if (uploads.length > 0) {
-          await supabase.storage
-            .from("attachments")
-            .remove(uploads.map((upload) => upload.path));
-        }
-        await supabase.from("comments").delete().eq("id", comment.id);
-        return { error: normalizeStorageError(uploadError.message) };
-      }
-
-      uploads.push({
-        uploader_id: user.id,
-        comment_id: comment.id,
-        bucket,
-        path,
-        original_name: file.name,
-        mime_type: file.type,
-        size_bytes: file.size,
-      });
     }
+
+    const bucket = "attachments";
+    const paths = files.map(
+      (file) =>
+        `comments/${comment.id}/${crypto.randomUUID()}-${normalizeFileName(file.name)}`,
+    );
+
+    // Upload all files in parallel — was sequential before, which stalled
+    // the request when multiple files were attached.
+    const uploadResults = await Promise.all(
+      files.map((file, i) =>
+        supabase.storage
+          .from(bucket)
+          .upload(paths[i], file, { contentType: file.type })
+          .then(({ error }) => ({ error, path: paths[i] })),
+      ),
+    );
+
+    const failed = uploadResults.find((r) => r.error);
+    if (failed) {
+      const successfulPaths = uploadResults
+        .filter((r) => !r.error)
+        .map((r) => r.path);
+      if (successfulPaths.length > 0) {
+        await supabase.storage.from(bucket).remove(successfulPaths);
+      }
+      await supabase.from("comments").delete().eq("id", comment.id);
+      return { error: normalizeStorageError(failed.error!.message) };
+    }
+
+    const uploads = files.map((file, i) => ({
+      uploader_id: user.id,
+      comment_id: comment.id,
+      bucket,
+      path: paths[i],
+      original_name: file.name,
+      mime_type: file.type,
+      size_bytes: file.size,
+    }));
 
     const { error: attachmentError } = await supabase
       .from("attachments")
       .insert(uploads);
 
     if (attachmentError) {
-      await supabase.storage
-        .from("attachments")
-        .remove(uploads.map((upload) => upload.path));
+      await supabase.storage.from(bucket).remove(paths);
       await supabase.from("comments").delete().eq("id", comment.id);
       return { error: normalizeDatabaseError(attachmentError.message) };
     }
@@ -169,6 +171,14 @@ export async function deleteComment(formData: FormData) {
 
   const isAdmin = profile?.role === "admin";
 
+  // Fetch the comment's attachments BEFORE deleting the row, so we can
+  // clean up the physical storage objects. Otherwise deleting the
+  // comment leaves orphaned files in the attachments bucket.
+  const { data: attachments } = await supabase
+    .from("attachments")
+    .select("bucket, path")
+    .eq("comment_id", commentId);
+
   const query = supabase.from("comments").delete().eq("id", commentId);
 
   if (!isAdmin) {
@@ -179,6 +189,22 @@ export async function deleteComment(formData: FormData) {
 
   if (error) {
     throw new Error(error.message);
+  }
+
+  // Best-effort storage cleanup — never block the revalidate on this.
+  if (attachments && attachments.length > 0) {
+    const byBucket = new Map<string, string[]>();
+    for (const a of attachments) {
+      if (!a.bucket || !a.path) continue;
+      const list = byBucket.get(a.bucket) ?? [];
+      list.push(a.path);
+      byBucket.set(a.bucket, list);
+    }
+    await Promise.all(
+      Array.from(byBucket.entries()).map(([bucket, paths]) =>
+        supabase.storage.from(bucket).remove(paths),
+      ),
+    );
   }
 
   revalidatePath(`/posts/${postId}`);
