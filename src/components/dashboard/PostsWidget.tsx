@@ -28,7 +28,7 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
   return (
     <section
       className="hb-bento-card hb-bento-card--clickable group relative "
-      style={{ gridColumn: "span 7", gridRow: "span 2", animationDelay: "60ms" }}
+      style={{ gridColumn: "span 7", gridRow: "span 2", animationDelay: "40ms" }}
     >
       <div className="hb-bento-head relative z-[1]">
         <div className="flex items-center gap-3">
@@ -67,7 +67,7 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
             const due = formatDueLabel(post.due_at);
             const rowClass = done ? "hb-posts-widget-row--done" : post.pinned ? "hb-posts-widget-row--pinned" : "hb-posts-widget-row--todo";
             return (
-              <li key={post.id} className={"hb-posts-widget-row " + rowClass} style={{ animationDelay: (100 + i * 50) + "ms" }}>
+              <li key={post.id} className={"hb-posts-widget-row " + rowClass} style={{ animationDelay: (60 + i * 28) + "ms" }}>
                 <form action={togglePostComplete} className="hb-posts-widget-check relative z-[3]">
                   <input type="hidden" name="postId" value={post.id} />
                   <PostCompleteButton completed={done} compact />

@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { ReactNode, MouseEvent as ReactMouseEvent } from "react";
 import { signOut } from "@/actions/auth";
 import { PendingButton } from "@/components/PendingButton";
 import type { Profile } from "@/lib/types";
 
 type SideRailProps = {
   profile: Profile;
-  unreadCount: number;
+  unreadBadgeSlot?: ReactNode;
 };
 
 type RailItem = {
@@ -16,7 +18,6 @@ type RailItem = {
   label: string;
   icon: React.ReactNode;
   exactMatch?: boolean;
-  badge?: number;
   adminOnly?: boolean;
 };
 
@@ -142,24 +143,61 @@ const ADMIN_NAV_ITEMS: RailItem[] = [
   },
 ];
 
-export function SideRail({ profile, unreadCount }: SideRailProps) {
+// Routes the user hits often — prefetch the full RSC payload eagerly so the
+// first click feels instant. Other routes use Next's default "auto"
+// (prefetched when scrolled into viewport), which is plenty for less-used
+// destinations.
+const EAGER_PREFETCH = new Set<string>(["/", "/calendar", "/admin"]);
+
+export function SideRail({ profile, unreadBadgeSlot }: SideRailProps) {
   const pathname = usePathname();
+  const [pulsedHref, setPulsedHref] = useState<string | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function activeFor(path: string, exact?: boolean) {
     if (exact) return pathname === path;
     return pathname === path || pathname.startsWith(`${path}/`);
   }
 
-  const itemsWithBadge = NAV_ITEMS.map((item) =>
-    item.href === "/notifications" && unreadCount > 0
-      ? { ...item, badge: unreadCount }
-      : item,
+  // Single delegated click handler attached to the parent <nav>. Reads the
+  // href off the closest <a>, so each Link doesn't need its own onClick
+  // closure (one closure per nav render, not per Link per render).
+  const handleNavClick = useCallback((e: ReactMouseEvent<HTMLElement>) => {
+    if (
+      e.defaultPrevented ||
+      e.button !== 0 ||
+      e.metaKey ||
+      e.ctrlKey ||
+      e.shiftKey ||
+      e.altKey
+    ) {
+      return;
+    }
+    const anchor = (e.target as HTMLElement | null)?.closest("a");
+    if (!anchor) return;
+    const href = anchor.getAttribute("href");
+    if (!href) return;
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setPulsedHref(href);
+    timerRef.current = setTimeout(() => {
+      setPulsedHref(null);
+      timerRef.current = null;
+    }, 600);
+  }, []);
+
+  // Clear any pending pulse timer when the siderail unmounts (e.g. on
+  // sign-out) so we don't call setPulsedHref on an unmounted component.
+  useEffect(
+    () => () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    },
+    [],
   );
 
   const allItems =
     profile.role === "admin"
-      ? [...itemsWithBadge, ...ADMIN_NAV_ITEMS]
-      : itemsWithBadge;
+      ? [...NAV_ITEMS, ...ADMIN_NAV_ITEMS]
+      : NAV_ITEMS;
 
   return (
     <aside className="hb-siderail" aria-label="Primary navigation">
@@ -167,6 +205,7 @@ export function SideRail({ profile, unreadCount }: SideRailProps) {
         href="/"
         className="hb-siderail-brand"
         aria-label="Homework Board home"
+        prefetch={true}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -188,23 +227,22 @@ export function SideRail({ profile, unreadCount }: SideRailProps) {
 
       <div className="hb-siderail-divider" />
 
-      <nav className="hb-siderail-nav">
+      <nav className="hb-siderail-nav" onClick={handleNavClick}>
         {allItems.map((item) => {
           const isActive = activeFor(item.href, item.exactMatch);
+          const isPulsed = pulsedHref === item.href;
+          const eager = EAGER_PREFETCH.has(item.href);
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`hb-siderail-btn ${isActive ? "hb-siderail-btn--active" : ""}`}
+              prefetch={eager ? true : undefined}
+              className={`hb-siderail-btn ${isActive ? "hb-siderail-btn--active" : ""} ${isPulsed ? "hb-siderail-btn--pulse" : ""}`}
               aria-current={isActive ? "page" : undefined}
               aria-label={item.label}
             >
               {item.icon}
-              {item.badge !== undefined && (
-                <span className="hb-siderail-btn-badge" aria-label={`${item.badge} unread`}>
-                  {item.badge > 99 ? "99+" : item.badge}
-                </span>
-              )}
+              {item.href === "/notifications" && unreadBadgeSlot}
               <span className="hb-siderail-tooltip">{item.label}</span>
             </Link>
           );

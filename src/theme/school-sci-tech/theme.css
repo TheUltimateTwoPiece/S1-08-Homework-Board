@@ -172,18 +172,44 @@
 @keyframes hb-skeleton-pulse {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
-}
+}@keyframes hb-bento-enter {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
 
-@keyframes hb-bento-enter {
-  from {
-    opacity: 0;
-    transform: translateY(14px) scale(0.97);
+  @keyframes hb-page-enter {
+    0% {
+      opacity: 0;
+      transform: translateY(6px) scale(0.998);
+      filter: blur(2px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
   }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+
+  @keyframes hb-siderail-burst {
+    0% {
+      box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.55);
+      transform: scale(1);
+    }
+    40% {
+      box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
+      transform: scale(1.18);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+      transform: scale(1);
+    }
   }
-}
 
 @keyframes hb-bubble-pop {
   0% { transform: scale(0); opacity: 0; }
@@ -239,7 +265,10 @@
 @layer components {
   .hb-main {
     background: transparent;
-    animation: hb-fade-in 300ms ease-out;
+  }
+
+  .hb-page-enter {
+    animation: hb-page-enter 180ms cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
   }
 
   /* ── Header ─────────────────────────────────── */
@@ -1162,6 +1191,21 @@
     animation: hb-bubble-pop 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
+  .hb-siderail-btn-badge-skeleton {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 16px;
+    height: 16px;
+    border-radius: 9999px;
+    background: var(--hb-surface-hover);
+    animation: hb-skeleton-pulse 1500ms ease-in-out infinite;
+  }
+
+  .hb-siderail-btn--pulse {
+    animation: hb-siderail-burst 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
   .hb-siderail-tooltip {
     position: absolute;
     left: calc(100% + 14px);
@@ -1306,7 +1350,7 @@
       transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
       box-shadow 220ms ease,
       border-color 220ms ease;
-    animation: hb-bento-enter 500ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+    animation: hb-bento-enter 380ms cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
   }
 
   .hb-bento-card:hover {

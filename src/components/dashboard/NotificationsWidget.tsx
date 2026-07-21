@@ -11,7 +11,7 @@ export function NotificationsWidget({ notifications }: NotificationsWidgetProps)
   return (
     <section
       className="hb-bento-card hb-bento-card--clickable group relative "
-      style={{ gridColumn: "span 4", gridRow: "span 1", animationDelay: "300ms" }}
+      style={{ gridColumn: "span 4", gridRow: "span 1", animationDelay: "160ms" }}
     >
       <div className="hb-bento-head relative z-[1]">
         <div className="flex items-center gap-2">
@@ -41,7 +41,7 @@ export function NotificationsWidget({ notifications }: NotificationsWidgetProps)
       ) : (
         <ul className="-mx-1 space-y-1 pb-5">
           {recent.map((n, i) => (
-            <li key={n.id} className={"hb-snippet " + (!n.read_at ? "hb-snippet--unread" : "")} style={{ animationDelay: (320 + i * 50) + "ms" }}>
+            <li key={n.id} className={"hb-snippet " + (!n.read_at ? "hb-snippet--unread" : "")} style={{ animationDelay: (200 + i * 28) + "ms" }}>
               <div className={"mt-0.5 h-2 w-2 shrink-0 rounded-full " + (n.read_at ? "bg-zinc-400 dark:bg-zinc-600" : "bg-amber-500 hb-pulse-dot")} />
               <div className="min-w-0 flex-1">
                 <div className="hb-card-section line-clamp-1 text-sm">{n.title}</div>

@@ -10,7 +10,7 @@ export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
   return (
     <section
       className="hb-bento-card hb-bento-card--clickable group relative "
-      style={{ gridColumn: "span 6", gridRow: "span 1", animationDelay: "120ms" }}
+      style={{ gridColumn: "span 6", gridRow: "span 1", animationDelay: "80ms" }}
     >
       <div className="hb-bento-head relative z-[1]">
         <div className="flex items-center gap-2">
@@ -38,7 +38,7 @@ export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
       ) : (
         <ul className="space-y-1.5 pb-5">
           {top.map((f, i) => (
-            <li key={f.id} className="hb-snippet relative z-[3]" style={{ animationDelay: (140 + i * 50) + "ms" }}>
+            <li key={f.id} className="hb-snippet relative z-[3]" style={{ animationDelay: (120 + i * 28) + "ms" }}>
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-200 to-blue-100 text-xs font-bold text-blue-900 dark:from-blue-800/50 dark:to-blue-700/30 dark:text-blue-50">
                 {(f.profiles?.full_name ?? "S").charAt(0).toUpperCase()}
               </div>

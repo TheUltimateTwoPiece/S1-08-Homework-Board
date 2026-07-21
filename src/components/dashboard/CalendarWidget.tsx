@@ -30,7 +30,7 @@ export function CalendarWidget({ posts }: CalendarWidgetProps) {
   return (
     <section
       className="hb-bento-card hb-bento-card--clickable group relative "
-      style={{ gridColumn: "span 5", gridRow: "span 2", animationDelay: "120ms" }}
+      style={{ gridColumn: "span 5", gridRow: "span 2", animationDelay: "80ms" }}
     >
       <div className="hb-bento-head relative z-[1]">
         <div className="flex items-center gap-3">
@@ -68,7 +68,7 @@ export function CalendarWidget({ posts }: CalendarWidgetProps) {
               key={key}
               className={"hb-mini-cal-cell hb-mini-cal-cell--link " + cellClass}
               title={count > 0 ? count + " due" : undefined}
-              style={{ animationDelay: (200 + idx * 10) + "ms" }}
+              style={{ animationDelay: (140 + idx * 6) + "ms" }}
             >
               <span>{format(day, "d")}</span>
               {count > 0 && <span className="hb-mini-cal-dot" />}

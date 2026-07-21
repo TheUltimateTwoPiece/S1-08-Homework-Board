@@ -28,7 +28,7 @@ export function StatsWidget({
       style={{
         gridColumn: "span 4",
         gridRow: "span 1",
-        animationDelay: "180ms",
+        animationDelay: "120ms",
       }}
     >
       <div className="hb-bento-head relative z-[1]">

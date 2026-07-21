@@ -12,7 +12,7 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
   return (
     <section
       className="hb-bento-card hb-bento-card--clickable group relative "
-      style={{ gridColumn: "span 4", gridRow: "span 1", animationDelay: "240ms" }}
+      style={{ gridColumn: "span 4", gridRow: "span 1", animationDelay: "160ms" }}
     >
       <div className="hb-bento-head relative z-[1]">
         <div className="flex items-center gap-2">
@@ -42,7 +42,7 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
             const due = parseISO(post.due_at as string);
             const today = isToday(due);
             return (
-              <li key={post.id} className="hb-snippet relative z-[3]" style={{ animationDelay: (260 + i * 40) + "ms" }}>
+              <li key={post.id} className="hb-snippet relative z-[3]" style={{ animationDelay: (200 + i * 28) + "ms" }}>
                 <div className={"flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-lg text-[10px] font-bold " + (today ? "bg-amber-200 text-amber-900 dark:bg-amber-800/60 dark:text-amber-50" : "hb-card-meta bg-zinc-100")}>
                   <span className="leading-none">{format(due, "MMM")}</span>
                   <span className="text-sm font-bold leading-tight">{format(due, "d")}</span>
