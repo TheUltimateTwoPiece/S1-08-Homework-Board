@@ -26,7 +26,7 @@ export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
             </span>
           )}
         </div>
-        <span className="rounded-md px-2 py-1 text-[11px] font-bold text-blue-700 transition group-hover:bg-blue-100 dark:text-blue-400 dark:group-hover:bg-blue-900/40">
+        <span className="rounded-md px-2 py-1 text-[11px] font-bold text-blue-700 transition group-hover:bg-blue-100">
           View all →
         </span>
       </div>
@@ -47,7 +47,7 @@ export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
                   <div className="hb-card-section line-clamp-1 text-sm">
                     {f.profiles?.full_name ?? "Student"}
                   </div>
-                  <span className="hb-card-meta rounded bg-zinc-200 px-1 py-0.5 text-[10px] font-bold dark:bg-zinc-700">
+                  <span className="hb-card-meta rounded bg-zinc-200 px-1 py-0.5 text-[10px] font-bold">
                     {f.category}
                   </span>
                 </div>

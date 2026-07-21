@@ -120,7 +120,7 @@ export function SendReminderForm({ students, admins, posts }: SendReminderFormPr
         {posts.length > 0 && (
           <div>
             <label htmlFor="postId" className="hb-card-section mb-1.5 block text-sm">
-              Remind about assignment {target === "incomplete" && <span className="text-amber-700 dark:text-amber-300">(required)</span>}
+              Remind about assignment {target === "incomplete" && <span className="text-amber-700">(required)</span>}
             </label>
             <select
               id="postId"

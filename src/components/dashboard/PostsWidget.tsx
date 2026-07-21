@@ -14,10 +14,10 @@ function formatDueLabel(due: string | null) {
   if (!due) return null;
   const date = parseISO(due);
   if (isPast(date) && due < format(new Date(), "yyyy-MM-dd")) {
-    return { text: "Overdue", className: "text-rose-700 dark:text-rose-300" };
+    return { text: "Overdue", className: "text-rose-700" };
   }
   const today = format(new Date(), "yyyy-MM-dd");
-  if (due === today) return { text: "Due today", className: "text-amber-700 dark:text-amber-300" };
+  if (due === today) return { text: "Due today", className: "text-amber-700" };
   return { text: "Due " + format(date, "MMM d"), className: "hb-card-meta" };
 }
 
@@ -44,14 +44,14 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
             <p className="hb-card-body text-xs font-semibold">{totalDone} of {top.length} done · tap to open</p>
           </div>
         </div>
-        <span className="rounded-md px-2.5 py-1.5 text-xs font-bold text-blue-700 transition group-hover:bg-blue-100 dark:text-blue-400 dark:group-hover:bg-blue-900/40">
+        <span className="rounded-md px-2.5 py-1.5 text-xs font-bold text-blue-700 transition group-hover:bg-blue-100">
           View all →
         </span>
       </div>
 
       {top.length === 0 ? (
         <div className="flex h-[calc(100%-56px)] flex-col items-center justify-center text-center">
-          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-700">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="hb-card-meta h-6 w-6" aria-hidden="true">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
               <polyline points="14 2 14 8 20 8" />

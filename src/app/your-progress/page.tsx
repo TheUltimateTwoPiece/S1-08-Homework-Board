@@ -291,7 +291,7 @@ export default async function YourProgressPage() {
                           ? "bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-200"
                           : daysUntil === 0
                           ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200"
-                          : "hb-card-meta bg-slate-100 dark:bg-slate-700"
+                          : "hb-card-meta bg-slate-100"
                       }`}
                     >
                       {overdue
@@ -380,27 +380,27 @@ type StatTileProps = {
 function StatTile({ label, value, variant, suffix, hint }: StatTileProps) {
   const styles: Record<StatTileProps["variant"], string> = {
     success:
-      "bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800/60",
+      "bg-emerald-50 border-emerald-200 text-emerald-800",
     warning:
-      "bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800/60",
+      "bg-amber-50 border-amber-200 text-amber-800",
     danger:
-      "bg-rose-50 dark:bg-rose-900/30 border-rose-200 dark:border-rose-800/60",
+      "bg-rose-50 border-rose-200 text-rose-800",
     info:
-      "bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800/60",
+      "bg-blue-50 border-blue-200 text-blue-800",
   };
   return (
     <div className={`rounded-lg border px-3 py-2.5 ${styles[variant]}`}>
-      <div className="hb-card-meta text-[10px] font-bold uppercase tracking-wider">
+      <div className="text-[10px] font-bold uppercase tracking-wider opacity-80">
         {label}
       </div>
-      <div className="hb-card-section mt-0.5 flex items-baseline gap-1">
-        <span className="text-2xl tabular-nums">{value}</span>
+      <div className="mt-0.5 flex items-baseline gap-1">
+        <span className="text-2xl font-bold tabular-nums">{value}</span>
         {suffix && (
-          <span className="hb-card-meta text-xs font-medium">{suffix}</span>
+          <span className="text-xs font-medium opacity-80">{suffix}</span>
         )}
       </div>
       {hint && (
-        <div className="hb-card-meta mt-0.5 text-[10px]">{hint}</div>
+        <div className="mt-0.5 text-[10px] opacity-80">{hint}</div>
       )}
     </div>
   );

@@ -49,7 +49,7 @@ export function StatsWidget({
             Your progress
           </h2>
         </div>
-        <span className="rounded-md px-2.5 py-1.5 text-[11px] font-bold text-blue-700 transition group-hover:bg-blue-100 dark:text-blue-400 dark:group-hover:bg-blue-900/40">
+        <span className="rounded-md px-2.5 py-1.5 text-[11px] font-bold text-blue-700 transition group-hover:bg-blue-100">
           View →
         </span>
       </div>
@@ -80,7 +80,7 @@ export function StatsWidget({
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-2xl font-bold tabular-nums text-slate-800 dark:text-slate-200">
               {safePct}
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-700">%</span>
+              <span className="text-xs font-bold text-slate-700">%</span>
             </span>
           </div>
         </div>

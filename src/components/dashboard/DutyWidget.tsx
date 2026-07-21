@@ -44,7 +44,7 @@ export function DutyWidget({ todaySchedules, completedToday, todayStr, currentAd
             </p>
           </div>
         </div>
-        <span className="rounded-md px-2 py-1 text-[11px] font-bold text-blue-700 transition group-hover:bg-blue-100 dark:text-blue-400 dark:group-hover:bg-blue-900/40">
+        <span className="rounded-md px-2 py-1 text-[11px] font-bold text-blue-700 transition group-hover:bg-blue-100">
           Schedule →
         </span>
       </div>
@@ -69,9 +69,9 @@ export function DutyWidget({ todaySchedules, completedToday, todayStr, currentAd
                 <div className="min-w-0 flex-1">
                   <div className="hb-card-section line-clamp-1 text-sm">
                     {s.profiles?.full_name ?? "Admin"}
-                    {isMe && <span className="ml-1.5 text-[10px] font-bold text-blue-700 dark:text-blue-400">you</span>}
+                    {isMe && <span className="ml-1.5 text-[10px] font-bold text-blue-700">you</span>}
                   </div>
-                  <div className={"text-[11px] font-bold " + (done ? "text-emerald-700 dark:text-emerald-300" : "hb-card-meta")}>
+                  <div className={"text-[11px] font-bold " + (done ? "text-emerald-700" : "hb-card-meta")}>
                     {done ? "✓ Posted" : "Pending"}
                   </div>
                 </div>

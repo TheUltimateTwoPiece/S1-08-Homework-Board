@@ -47,7 +47,7 @@ export function CalendarWidget({ posts }: CalendarWidgetProps) {
             <p className="hb-card-body text-xs font-semibold">{format(today, "MMMM yyyy")} · {totalThisMonth} due</p>
           </div>
         </div>
-        <span className="rounded-md px-2.5 py-1.5 text-xs font-bold text-blue-700 transition group-hover:bg-blue-100 dark:text-blue-400 dark:group-hover:bg-blue-900/40">
+        <span className="rounded-md px-2.5 py-1.5 text-xs font-bold text-blue-700 transition group-hover:bg-blue-100">
           Expand →
         </span>
       </div>

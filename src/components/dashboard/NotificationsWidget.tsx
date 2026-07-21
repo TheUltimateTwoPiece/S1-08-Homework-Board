@@ -28,7 +28,7 @@ export function NotificationsWidget({ notifications }: NotificationsWidgetProps)
             </span>
           )}
         </div>
-        <span className="rounded-md px-2 py-1 text-[11px] font-bold text-blue-700 transition group-hover:bg-blue-100 dark:text-blue-400 dark:group-hover:bg-blue-900/40">
+        <span className="rounded-md px-2 py-1 text-[11px] font-bold text-blue-700 transition group-hover:bg-blue-100">
           View all →
         </span>
       </div>

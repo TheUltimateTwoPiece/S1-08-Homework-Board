@@ -69,12 +69,12 @@ export function AdminScheduleClient({
                 key={i}
                 className={`rounded-lg border p-3 text-center transition ${
                   isToday
-                    ? "border-blue-300 bg-blue-50 dark:border-blue-600 dark:bg-blue-900/20"
-                    : "border-slate-100 bg-slate-50 dark:border-slate-600 dark:bg-slate-700/50"
+                    ? "border-blue-300 bg-blue-50"
+                    : "border-slate-100 bg-slate-50"
                 }`}
               >
                 <div className={`text-[10px] font-bold uppercase tracking-wider ${
-                  isToday ? "text-blue-600 dark:text-blue-400" : "hb-card-meta"
+                  isToday ? "text-blue-700" : "hb-card-meta"
                 }`}>
                   {DAYS_SHORT[i]}
                 </div>
@@ -111,14 +111,14 @@ export function AdminScheduleClient({
             return (
               <div
                 key={admin.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 dark:border-slate-600 dark:bg-slate-700/50"
+                className="flex items-center justify-between gap-3 rounded-lg border border-slate-100 bg-slate-50 px-4 py-3"
               >
                 <div>
                   <div className="hb-card-section text-sm">{admin.full_name}</div>
                   <div className="hb-card-meta text-xs">{admin.email}</div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className={`text-xs font-semibold ${done ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}`}>
+                  <span className={`text-xs font-semibold ${done ? "text-green-700" : "text-amber-700"}`}>
                     {done ? "✓ Completed" : "Pending"}
                   </span>
                   <form action={dutyAction}>
@@ -128,7 +128,7 @@ export function AdminScheduleClient({
                       type="submit"
                       className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                         done
-                          ? "bg-slate-200 text-slate-600 hover:bg-slate-300 dark:bg-slate-600 dark:text-slate-700"
+                          ? "bg-slate-200 text-slate-700 hover:bg-slate-300"
                           : "hb-btn-primary px-3 py-1.5 text-xs font-medium"
                       }`}
                     >
@@ -159,7 +159,7 @@ export function AdminScheduleClient({
                 value={selectedAdmin}
                 onChange={(e) => setSelectedAdmin(e.target.value)}
                 required
-                className="hb-input w-full rounded-lg px-3 py-2.5 text-sm dark:bg-slate-700 dark:text-slate-200"
+                className="hb-input w-full rounded-lg px-3 py-2.5 text-sm"
               >
                 <option value="">Select an admin</option>
                 {admins.map((admin) => (
@@ -175,7 +175,7 @@ export function AdminScheduleClient({
                 value={selectedDay}
                 onChange={(e) => setSelectedDay(e.target.value)}
                 required
-                className="hb-input w-full rounded-lg px-3 py-2.5 text-sm dark:bg-slate-700 dark:text-slate-200"
+                className="hb-input w-full rounded-lg px-3 py-2.5 text-sm"
               >
                 <option value="">Select a day</option>
                 {DAY_NAMES.map((name, i) => (
