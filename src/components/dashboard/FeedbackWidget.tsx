@@ -9,7 +9,7 @@ export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
 
   return (
     <section
-      className="hb-bento-card hb-bento-card--clickable group relative bg-white dark:bg-slate-800"
+      className="hb-bento-card hb-bento-card--clickable group relative "
       style={{ gridColumn: "span 6", gridRow: "span 1", animationDelay: "120ms" }}
     >
       <div className="hb-bento-head relative z-[1]">
@@ -19,7 +19,7 @@ export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
           </div>
-          <h2 className="hb-section-title text-sm tracking-tight">Feedback inbox</h2>
+          <h2 className="hb-card-section text-sm tracking-tight">Feedback inbox</h2>
           {feedback.length > 0 && (
             <span className="rounded-full bg-amber-200 px-1.5 py-0.5 text-[10px] font-bold text-amber-900 dark:bg-amber-800/60 dark:text-amber-100">
               {feedback.length}
@@ -33,7 +33,7 @@ export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
 
       {top.length === 0 ? (
         <div className="flex h-[calc(100%-44px)] items-center justify-center text-center">
-          <p className="hb-section-title text-sm">No feedback yet</p>
+          <p className="hb-card-section text-sm">No feedback yet</p>
         </div>
       ) : (
         <ul className="space-y-1.5 pb-5">
@@ -44,15 +44,15 @@ export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
-                  <div className="hb-section-title line-clamp-1 text-sm">
+                  <div className="hb-card-section line-clamp-1 text-sm">
                     {f.profiles?.full_name ?? "Student"}
                   </div>
-                  <span className="hb-muted-text rounded bg-zinc-200 px-1 py-0.5 text-[10px] font-bold dark:bg-zinc-700">
+                  <span className="hb-card-meta rounded bg-zinc-200 px-1 py-0.5 text-[10px] font-bold dark:bg-zinc-700">
                     {f.category}
                   </span>
                 </div>
-                <div className="hb-body-text line-clamp-1 text-xs">{f.message}</div>
-                <div className="hb-muted-text text-[10px]">
+                <div className="hb-card-body line-clamp-1 text-xs">{f.message}</div>
+                <div className="hb-card-meta text-[10px]">
                   {formatDistanceToNow(new Date(f.created_at), { addSuffix: true })}
                 </div>
               </div>

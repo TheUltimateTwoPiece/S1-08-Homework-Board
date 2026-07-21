@@ -66,7 +66,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
         }}
       >
         <div className="flex-1">
-          <label className="hb-section-title mb-1.5 block text-[10px] font-semibold uppercase tracking-widest">
+          <label className="hb-card-section mb-1.5 block text-[10px] font-semibold uppercase tracking-widest">
             Search
           </label>
           <div className="relative">
@@ -78,7 +78,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="hb-muted-text pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
+              className="hb-card-meta pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
               aria-hidden="true"
             >
               <circle cx="11" cy="11" r="8" />
@@ -98,7 +98,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
         </div>
 
         <div className="sm:w-44">
-          <label className="hb-section-title mb-1.5 block text-[10px] font-semibold uppercase tracking-widest">
+          <label className="hb-card-section mb-1.5 block text-[10px] font-semibold uppercase tracking-widest">
             Subject
           </label>
           <select
@@ -117,7 +117,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
         </div>
 
         <div className="sm:w-40">
-          <label className="hb-section-title mb-1.5 block text-[10px] font-semibold uppercase tracking-widest">
+          <label className="hb-card-section mb-1.5 block text-[10px] font-semibold uppercase tracking-widest">
             Due
           </label>
           <select
@@ -158,8 +158,8 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
             onClick={() => setParams({ status: option.value })}
             disabled={isPending}              className={`flex-1 rounded-md px-3 py-1.5 text-xs transition ${
                 initial.status === option.value
-                  ? "hb-section-title bg-white shadow-sm"
-                  : "hb-muted-text hover:bg-white/60"
+                  ? "hb-card-section bg-white shadow-sm"
+                  : "hb-card-meta hover:bg-white/60"
               }`}
           >
             {option.label}

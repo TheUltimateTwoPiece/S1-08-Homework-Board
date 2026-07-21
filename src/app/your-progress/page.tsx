@@ -153,7 +153,7 @@ export default async function YourProgressPage() {
               r={radius}
               fill="none"
               strokeWidth="11"
-              className="hb-faded-text"
+              className="hb-card-faded"
               stroke="currentColor"
               opacity="0.35"
             />
@@ -177,18 +177,18 @@ export default async function YourProgressPage() {
             </defs>
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="hb-page-title text-5xl tabular-nums">{pct}</span>
-            <span className="hb-muted-text text-sm font-semibold uppercase tracking-wider">
+            <span className="hb-card-title text-5xl tabular-nums">{pct}</span>
+            <span className="hb-card-meta text-sm font-semibold uppercase tracking-wider">
               % done
             </span>
           </div>
         </div>
 
         <div className="flex-1 space-y-3">
-          <h2 className="hb-page-title text-2xl tracking-tight">
+          <h2 className="hb-card-title text-2xl tracking-tight">
             {completedCount} of {totalPosts} complete
           </h2>
-          <p className="hb-body-text text-sm">
+          <p className="hb-card-body text-sm">
             {totalPosts === 0
               ? "Welcome! Once your admin posts homework, you'll see your progress here."
               : todoCount === 0
@@ -209,19 +209,19 @@ export default async function YourProgressPage() {
         <div className="mb-4 flex items-center gap-3">
           <div className="hb-bento-icon-box" aria-hidden="true">📚</div>
           <div>
-            <h3 className="hb-section-title text-base">By subject</h3>
-            <p className="hb-muted-text text-xs">Completion percentage per subject</p>
+            <h3 className="hb-card-section text-base">By subject</h3>
+            <p className="hb-card-meta text-xs">Completion percentage per subject</p>
           </div>
         </div>
         {subjectRows.length === 0 ? (
-          <p className="hb-muted-text py-8 text-center text-sm">No posts yet.</p>
+          <p className="hb-card-meta py-8 text-center text-sm">No posts yet.</p>
         ) : (
           <ul className="space-y-3">
             {subjectRows.map((row) => (
               <li key={row.subject}>
                 <div className="mb-1 flex items-center justify-between">
-                  <span className="hb-section-title text-sm">{row.subject}</span>
-                  <span className="hb-muted-text text-xs tabular-nums">
+                  <span className="hb-card-section text-sm">{row.subject}</span>
+                  <span className="hb-card-meta text-xs tabular-nums">
                     {row.done} / {row.total} · {row.pct}%
                   </span>
                 </div>
@@ -249,19 +249,19 @@ export default async function YourProgressPage() {
               ⏳
             </div>
             <div>
-              <h3 className="hb-section-title text-base">Up next</h3>
-              <p className="hb-muted-text text-xs">Earliest assignments to knock out</p>
+              <h3 className="hb-card-section text-base">Up next</h3>
+              <p className="hb-card-meta text-xs">Earliest assignments to knock out</p>
             </div>
           </div>
           <Link
             href="/posts"
-            className="hb-section-title rounded-md px-3 py-1.5 text-xs transition hover:bg-slate-100 dark:hover:bg-slate-700"
+            className="hb-card-section rounded-md px-3 py-1.5 text-xs transition hover:bg-slate-100 dark:hover:bg-slate-700"
           >
             View all →
           </Link>
         </div>
         {upNext.length === 0 ? (
-          <p className="hb-muted-text py-8 text-center text-sm">
+          <p className="hb-card-meta py-8 text-center text-sm">
             You&apos;re completely caught up. 🎉
           </p>
         ) : (
@@ -280,10 +280,10 @@ export default async function YourProgressPage() {
                     className="hb-snippet flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/40"
                   >
                     <div className="min-w-0 flex-1">
-                      <div className="hb-section-title line-clamp-1 text-sm">
+                      <div className="hb-card-section line-clamp-1 text-sm">
                         {post.title}
                       </div>
-                      <div className="hb-muted-text text-xs">{post.subject}</div>
+                      <div className="hb-card-meta text-xs">{post.subject}</div>
                     </div>
                     <div
                       className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-bold ${
@@ -291,7 +291,7 @@ export default async function YourProgressPage() {
                           ? "bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-200"
                           : daysUntil === 0
                           ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200"
-                          : "hb-muted-text bg-slate-100 dark:bg-slate-700"
+                          : "hb-card-meta bg-slate-100 dark:bg-slate-700"
                       }`}
                     >
                       {overdue
@@ -325,12 +325,12 @@ export default async function YourProgressPage() {
             ✓
           </div>
           <div>
-            <h3 className="hb-section-title text-base">Recently completed</h3>
-            <p className="hb-muted-text text-xs">Your last handful of wins</p>
+            <h3 className="hb-card-section text-base">Recently completed</h3>
+            <p className="hb-card-meta text-xs">Your last handful of wins</p>
           </div>
         </div>
         {recentCompletions.length === 0 ? (
-          <p className="hb-muted-text py-8 text-center text-sm">
+          <p className="hb-card-meta py-8 text-center text-sm">
             Mark a post complete to see it here.
           </p>
         ) : (
@@ -342,12 +342,12 @@ export default async function YourProgressPage() {
                   className="hb-snippet flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/40"
                 >
                   <div className="min-w-0 flex-1">
-                    <div className="hb-section-title line-clamp-1 text-sm">
+                    <div className="hb-card-section line-clamp-1 text-sm">
                       {post.title}
                     </div>
-                    <div className="hb-muted-text text-xs">{post.subject}</div>
+                    <div className="hb-card-meta text-xs">{post.subject}</div>
                   </div>
-                  <div className="hb-muted-text shrink-0 text-xs">
+                  <div className="hb-card-meta shrink-0 text-xs">
                     {formatDistanceToNow(new Date(completedAt), { addSuffix: true })}
                   </div>
                 </Link>
@@ -360,7 +360,7 @@ export default async function YourProgressPage() {
       <div className="pb-6 text-center">
         <Link
           href="/posts"
-          className="hb-action-link hb-section-title inline-flex items-center gap-2 text-sm"
+          className="hb-action-link hb-card-section inline-flex items-center gap-2 text-sm"
         >
           Back to all homework →
         </Link>
@@ -390,17 +390,17 @@ function StatTile({ label, value, variant, suffix, hint }: StatTileProps) {
   };
   return (
     <div className={`rounded-lg border px-3 py-2.5 ${styles[variant]}`}>
-      <div className="hb-muted-text text-[10px] font-bold uppercase tracking-wider">
+      <div className="hb-card-meta text-[10px] font-bold uppercase tracking-wider">
         {label}
       </div>
-      <div className="hb-section-title mt-0.5 flex items-baseline gap-1">
+      <div className="hb-card-section mt-0.5 flex items-baseline gap-1">
         <span className="text-2xl tabular-nums">{value}</span>
         {suffix && (
-          <span className="hb-muted-text text-xs font-medium">{suffix}</span>
+          <span className="hb-card-meta text-xs font-medium">{suffix}</span>
         )}
       </div>
       {hint && (
-        <div className="hb-muted-text mt-0.5 text-[10px]">{hint}</div>
+        <div className="hb-card-meta mt-0.5 text-[10px]">{hint}</div>
       )}
     </div>
   );

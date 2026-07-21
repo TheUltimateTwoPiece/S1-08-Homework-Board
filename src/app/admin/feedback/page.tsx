@@ -37,26 +37,26 @@ export default async function AdminFeedbackPage() {
     return (
       <ul className="space-y-3">
         {items.map((item) => (
-          <li key={item.id} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md dark:border-slate-700 dark:bg-slate-800/80">
+          <li key={item.id} className="hb-card-surface rounded-xl border p-5 transition hover:shadow-md">
             <div className="mb-3 flex items-start justify-between gap-4">
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-blue-50 text-[10px] font-bold text-blue-700">
                     {(item.profiles?.full_name ?? "S").charAt(0).toUpperCase()}
                   </div>
-                  <div className="hb-section-title text-sm">
+                  <div className="hb-card-section text-sm">
                     {item.profiles?.full_name ?? "Student"}
                   </div>
                 </div>
                 {item.profiles?.email && (
-                  <div className="hb-muted-text mt-0.5 pl-9 text-xs">{item.profiles.email}</div>
+                  <div className="hb-card-meta mt-0.5 pl-9 text-xs">{item.profiles.email}</div>
                 )}
               </div>
-              <time className="hb-muted-text shrink-0 text-xs" dateTime={item.created_at}>
+              <time className="hb-card-meta shrink-0 text-xs" dateTime={item.created_at}>
                 {new Date(item.created_at).toLocaleString()}
               </time>
             </div>
-            <p className="hb-body-text whitespace-pre-line text-sm leading-relaxed">
+            <p className="hb-card-body whitespace-pre-line text-sm leading-relaxed">
               {item.message}
             </p>
           </li>

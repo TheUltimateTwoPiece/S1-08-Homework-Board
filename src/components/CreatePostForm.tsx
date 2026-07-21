@@ -37,7 +37,7 @@ export function CreatePostForm() {
   }
 
   return (
-    <form action={formAction} className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm" encType="multipart/form-data">
+    <form action={formAction} className="rounded-xl border hb-card-surface p-6" encType="multipart/form-data">
       <div className="mb-5 flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden="true">
@@ -46,14 +46,14 @@ export function CreatePostForm() {
           </svg>
         </div>
         <div>
-          <h2 className="hb-section-title text-base">New homework post</h2>
-          <p className="hb-body-text text-xs">Create a new assignment for your class</p>
+          <h2 className="hb-card-section text-base">New homework post</h2>
+          <p className="hb-card-body text-xs">Create a new assignment for your class</p>
         </div>
       </div>
 
       <div className="space-y-4">
         <div>
-          <label htmlFor="title" className="hb-section-title mb-1.5 block text-sm">
+          <label htmlFor="title" className="hb-card-section mb-1.5 block text-sm">
             Title
           </label>
           <input
@@ -67,7 +67,7 @@ export function CreatePostForm() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor="subject" className="hb-section-title mb-1.5 block text-sm">
+            <label htmlFor="subject" className="hb-card-section mb-1.5 block text-sm">
               Subject
             </label>
             <select
@@ -85,7 +85,7 @@ export function CreatePostForm() {
             </select>
           </div>
           <div>
-            <label htmlFor="dueAt" className="hb-section-title mb-1.5 block text-sm">
+            <label htmlFor="dueAt" className="hb-card-section mb-1.5 block text-sm">
               Due date
             </label>
             <input
@@ -104,13 +104,13 @@ export function CreatePostForm() {
             id="pinned"
             className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
           />
-          <label htmlFor="pinned" className="hb-section-title text-sm">
+          <label htmlFor="pinned" className="hb-card-section text-sm">
             Pin this post to the top
           </label>
         </div>
 
         <div>
-          <label htmlFor="files" className="hb-section-title mb-1.5 block text-sm">
+          <label htmlFor="files" className="hb-card-section mb-1.5 block text-sm">
             Attachments (PDF/images)
           </label>
           <div className="relative">
@@ -126,7 +126,7 @@ export function CreatePostForm() {
         </div>
 
         <div>
-          <label htmlFor="content" className="hb-section-title mb-1.5 block text-sm">
+          <label htmlFor="content" className="hb-card-section mb-1.5 block text-sm">
             Homework details
           </label>
           <textarea

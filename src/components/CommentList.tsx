@@ -71,8 +71,8 @@ export function CommentList({
           </svg>
         </div>
         <div>
-          <p className="hb-section-title text-sm">No comments yet</p>
-          <p className="hb-muted-text mt-0.5 text-xs">Be the first to ask a question!</p>
+          <p className="hb-card-section text-sm">No comments yet</p>
+          <p className="hb-card-meta mt-0.5 text-xs">Be the first to ask a question!</p>
         </div>
       </div>
     );
@@ -104,16 +104,16 @@ export function CommentList({
               <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-blue-50 text-[10px] font-bold text-blue-700">
                 {(node.profiles?.full_name ?? "S").charAt(0).toUpperCase()}
               </div>
-              <span className="hb-section-title text-sm">
+              <span className="hb-card-section text-sm">
                 {node.profiles?.full_name ?? "Student"}
               </span>
               {isReply && (
-                <span className="hb-muted-text rounded bg-slate-100 px-1.5 py-0.5 text-[10px] dark:bg-slate-700">
+                <span className="hb-card-meta rounded bg-slate-100 px-1.5 py-0.5 text-[10px] dark:bg-slate-700">
                   Reply
                 </span>
               )}
             </div>
-            <time className="hb-muted-text shrink-0 text-xs" dateTime={node.created_at}>
+            <time className="hb-card-meta shrink-0 text-xs" dateTime={node.created_at}>
               {formatDistanceToNow(new Date(node.created_at), {
                 addSuffix: true,
               })}
@@ -125,7 +125,7 @@ export function CommentList({
             {isReply && (
               <div className="absolute left-0 top-0 h-full w-0.5 rounded-full bg-gradient-to-b from-blue-200 to-blue-100" />
             )}
-            <p className="hb-body-text whitespace-pre-line text-sm leading-relaxed">
+            <p className="hb-card-body whitespace-pre-line text-sm leading-relaxed">
               {node.content}
             </p>
           </div>
@@ -145,7 +145,7 @@ export function CommentList({
                           className="h-28 w-full object-cover"
                         />
                       ) : (
-                        <div className="hb-section-title flex h-28 items-center justify-center bg-slate-50 text-xs font-semibold dark:bg-slate-700/40">
+                        <div className="hb-card-section flex h-28 items-center justify-center bg-slate-50 text-xs font-semibold dark:bg-slate-700/40">
                           <div className="flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden="true">
                               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -155,7 +155,7 @@ export function CommentList({
                           </div>
                         </div>
                       )}
-                      <div className="hb-muted-text truncate px-3 py-2 text-xs">
+                      <div className="hb-card-meta truncate px-3 py-2 text-xs">
                         {attachment.original_name}
                       </div>
                     </a>

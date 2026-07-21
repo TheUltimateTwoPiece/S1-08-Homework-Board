@@ -43,21 +43,21 @@ export function PostCard({ post, completed }: PostCardProps) {
                 </span>
               )}
               {wasEdited && (
-                <span className="hb-muted-text inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px]">
+                <span className="hb-card-meta inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px]">
                   Edited
                 </span>
               )}
             </div>
             <h2
               className={`text-base leading-snug transition-colors duration-150 group-hover:text-blue-600 ${
-                completed ? "hb-faded-text line-through" : "hb-section-title"
+                completed ? "hb-card-faded line-through" : "hb-card-section"
               }`}
             >
               {post.title}
             </h2>
           </div>
           <time
-            className="hb-muted-text shrink-0 whitespace-nowrap text-[11px]"
+            className="hb-card-meta shrink-0 whitespace-nowrap text-[11px]"
             dateTime={post.created_at}
           >
             {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
@@ -65,13 +65,13 @@ export function PostCard({ post, completed }: PostCardProps) {
         </div>
         <p
           className={`mt-1.5 line-clamp-2 whitespace-pre-line text-sm leading-relaxed ${
-            completed ? "hb-faded-text" : "hb-body-text"
+            completed ? "hb-card-faded" : "hb-card-body"
           }`}
         >
           {post.content}
         </p>
         {post.profiles?.full_name && (
-          <div className="hb-muted-text mt-3 flex items-center gap-1.5 text-[11px]">
+          <div className="hb-card-meta mt-3 flex items-center gap-1.5 text-[11px]">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden="true">
               <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
               <circle cx="12" cy="7" r="4" />

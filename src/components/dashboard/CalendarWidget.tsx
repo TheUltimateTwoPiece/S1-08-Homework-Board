@@ -29,7 +29,7 @@ export function CalendarWidget({ posts }: CalendarWidgetProps) {
 
   return (
     <section
-      className="hb-bento-card hb-bento-card--clickable group relative bg-white dark:bg-slate-800"
+      className="hb-bento-card hb-bento-card--clickable group relative "
       style={{ gridColumn: "span 5", gridRow: "span 2", animationDelay: "120ms" }}
     >
       <div className="hb-bento-head relative z-[1]">
@@ -43,8 +43,8 @@ export function CalendarWidget({ posts }: CalendarWidgetProps) {
             </svg>
           </div>
           <div>
-            <h2 className="hb-section-title text-base tracking-tight">Calendar</h2>
-            <p className="hb-body-text text-xs font-semibold">{format(today, "MMMM yyyy")} · {totalThisMonth} due</p>
+            <h2 className="hb-card-section text-base tracking-tight">Calendar</h2>
+            <p className="hb-card-body text-xs font-semibold">{format(today, "MMMM yyyy")} · {totalThisMonth} due</p>
           </div>
         </div>
         <span className="rounded-md px-2.5 py-1.5 text-xs font-bold text-blue-700 transition group-hover:bg-blue-100 dark:text-blue-400 dark:group-hover:bg-blue-900/40">

@@ -21,7 +21,7 @@ export function DutyWidget({ todaySchedules, completedToday, todayStr, currentAd
 
   return (
     <section
-      className="hb-bento-card hb-bento-card--clickable group relative bg-white dark:bg-slate-800"
+      className="hb-bento-card hb-bento-card--clickable group relative "
       style={{ gridColumn: "span 6", gridRow: "span 1", animationDelay: "360ms" }}
     >
       <div className="hb-bento-head relative z-[1]">
@@ -36,10 +36,10 @@ export function DutyWidget({ todaySchedules, completedToday, todayStr, currentAd
             </svg>
           </div>
           <div>
-            <h2 className="hb-section-title text-sm tracking-tight">
+            <h2 className="hb-card-section text-sm tracking-tight">
               Today&apos;s duty · {format(parseISO(todayStr), "EEE")}
             </h2>
-            <p className="hb-body-text text-xs font-semibold">
+            <p className="hb-card-body text-xs font-semibold">
               {completedSet.size}/{todaySchedules.length} completed
             </p>
           </div>
@@ -52,8 +52,8 @@ export function DutyWidget({ todaySchedules, completedToday, todayStr, currentAd
       {todaySchedules.length === 0 ? (
         <div className="flex h-[calc(100%-44px)] items-center justify-center text-center">
           <div>
-            <p className="hb-section-title text-sm">No admins assigned today</p>
-            <p className="hb-muted-text mt-1 text-xs">Assign someone on the schedule page</p>
+            <p className="hb-card-section text-sm">No admins assigned today</p>
+            <p className="hb-card-meta mt-1 text-xs">Assign someone on the schedule page</p>
           </div>
         </div>
       ) : (
@@ -67,11 +67,11 @@ export function DutyWidget({ todaySchedules, completedToday, todayStr, currentAd
                   {(s.profiles?.full_name ?? "A").charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="hb-section-title line-clamp-1 text-sm">
+                  <div className="hb-card-section line-clamp-1 text-sm">
                     {s.profiles?.full_name ?? "Admin"}
                     {isMe && <span className="ml-1.5 text-[10px] font-bold text-blue-700 dark:text-blue-400">you</span>}
                   </div>
-                  <div className={"text-[11px] font-bold " + (done ? "text-emerald-700 dark:text-emerald-300" : "hb-muted-text")}>
+                  <div className={"text-[11px] font-bold " + (done ? "text-emerald-700 dark:text-emerald-300" : "hb-card-meta")}>
                     {done ? "✓ Posted" : "Pending"}
                   </div>
                 </div>

@@ -69,7 +69,7 @@ export function SendReminderForm({ students, admins, posts }: SendReminderFormPr
   }
 
   return (
-    <form action={formAction} className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <form action={formAction} className="rounded-xl border hb-card-surface p-6">
       <div className="mb-5 flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden="true">
@@ -78,8 +78,8 @@ export function SendReminderForm({ students, admins, posts }: SendReminderFormPr
           </svg>
         </div>
         <div>
-          <h2 className="hb-section-title text-base">Send reminder</h2>
-          <p className="hb-body-text text-xs">
+          <h2 className="hb-card-section text-base">Send reminder</h2>
+          <p className="hb-card-body text-xs">
             Students will see this in their reminders bell icon.
           </p>
         </div>
@@ -87,7 +87,7 @@ export function SendReminderForm({ students, admins, posts }: SendReminderFormPr
 
       <div className="space-y-4">
         <div>
-          <label htmlFor="target" className="hb-section-title mb-1.5 block text-sm">
+          <label htmlFor="target" className="hb-card-section mb-1.5 block text-sm">
             Send to
           </label>
           <select
@@ -119,7 +119,7 @@ export function SendReminderForm({ students, admins, posts }: SendReminderFormPr
 
         {posts.length > 0 && (
           <div>
-            <label htmlFor="postId" className="hb-section-title mb-1.5 block text-sm">
+            <label htmlFor="postId" className="hb-card-section mb-1.5 block text-sm">
               Remind about assignment {target === "incomplete" && <span className="text-amber-700 dark:text-amber-300">(required)</span>}
             </label>
             <select
@@ -154,7 +154,7 @@ export function SendReminderForm({ students, admins, posts }: SendReminderFormPr
         )}
 
         <div>
-          <span className="hb-section-title mb-2 block text-sm">Quick reminders</span>
+          <span className="hb-card-section mb-2 block text-sm">Quick reminders</span>
           <div className="flex flex-wrap gap-2">
             {QUICK_REMINDERS.map((reminder) => (
               <button
@@ -170,7 +170,7 @@ export function SendReminderForm({ students, admins, posts }: SendReminderFormPr
         </div>
 
         <div>
-          <label htmlFor="reminder-title" className="hb-section-title mb-1.5 block text-sm">
+          <label htmlFor="reminder-title" className="hb-card-section mb-1.5 block text-sm">
             Reminder title
           </label>
           <input
@@ -185,7 +185,7 @@ export function SendReminderForm({ students, admins, posts }: SendReminderFormPr
         </div>
 
         <div>
-          <label htmlFor="message" className="hb-section-title mb-1.5 block text-sm">
+          <label htmlFor="message" className="hb-card-section mb-1.5 block text-sm">
             Reminder message
           </label>
           <textarea

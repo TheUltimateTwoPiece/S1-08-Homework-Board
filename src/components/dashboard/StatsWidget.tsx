@@ -24,7 +24,7 @@ export function StatsWidget({
 
   return (
     <section
-      className="hb-bento-card hb-bento-card--clickable group relative overflow-hidden bg-white dark:bg-slate-800"
+      className="hb-bento-card hb-bento-card--clickable group relative overflow-hidden "
       style={{
         gridColumn: "span 4",
         gridRow: "span 1",
