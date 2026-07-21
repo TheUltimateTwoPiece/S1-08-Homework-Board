@@ -1,61 +1,74 @@
 @layer base {
   :root {
     --hb-blue: #2563eb;
+    --hb-blue-light: #3b82f6;
     --hb-red: #dc2626;
     --hb-grey: #64748b;
     --hb-danger: var(--hb-red);
     --hb-success: #16a34a;
+    --hb-success-light: #22c55e;
     --hb-warning: #d97706;
+    --hb-warning-light: #f59e0b;
     --hb-surface: #ffffff;
     --hb-surface-muted: #f8fafc;
+    --hb-surface-hover: #f1f5f9;
     --hb-border: #e2e8f0;
+    --hb-border-hover: #cbd5e1;
     --hb-text: #0f172a;
     --hb-text-muted: #475569;
     --hb-text-subtle: #64748b;
     --background: var(--hb-surface-muted);
     --foreground: var(--hb-text);
+    --hb-radius: 0.75rem;
+    --hb-radius-sm: 0.5rem;
+    --hb-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+    --hb-shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+    --hb-shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+    --hb-shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
   }
 
   body {
     background:
       radial-gradient(
-        1200px circle at 20% 0%,
-        rgba(37, 99, 235, 0.1),
-        transparent 55%
+        1000px circle at 20% -5%,
+        rgba(37, 99, 235, 0.08),
+        transparent 50%
       ),
       radial-gradient(
-        1200px circle at 80% 0%,
-        rgba(220, 38, 38, 0.1),
-        transparent 55%
+        900px circle at 80% -5%,
+        rgba(220, 38, 38, 0.07),
+        transparent 50%
+      ),
+      radial-gradient(
+        600px circle at 50% 100%,
+        rgba(100, 116, 139, 0.04),
+        transparent 50%
       ),
       linear-gradient(to bottom, #f8fafc, #f1f5f9);
     color: var(--hb-text);
+    background-attachment: fixed;
+  }
+
+  *:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--hb-surface), 0 0 0 4px rgba(37, 99, 235, 0.35);
+    border-radius: 4px;
+    transition: box-shadow 150ms ease;
   }
 }
 
+/* ── Animations ───────────────────────────────────── */
+
 @keyframes hb-spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 
 @keyframes hb-shake {
-  0%,
-  100% {
-    transform: rotate(0deg);
-  }
-  20% {
-    transform: rotate(-12deg);
-  }
-  40% {
-    transform: rotate(12deg);
-  }
-  60% {
-    transform: rotate(-8deg);
-  }
-  80% {
-    transform: rotate(8deg);
-  }
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-12deg); }
+  40% { transform: rotate(12deg); }
+  60% { transform: rotate(-8deg); }
+  80% { transform: rotate(8deg); }
 }
 
 @keyframes hb-sheen {
@@ -63,9 +76,7 @@
     transform: translateX(-140%) skewX(-18deg);
     opacity: 0;
   }
-  30% {
-    opacity: 0.65;
-  }
+  30% { opacity: 0.65; }
   100% {
     transform: translateX(140%) skewX(-18deg);
     opacity: 0;
@@ -73,63 +84,100 @@
 }
 
 @keyframes hb-pulse-ring {
-  0% {
-    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.22);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
-  }
+  0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.22); }
+  70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
 }
 
 @keyframes hb-gradient-pan {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
+
+@keyframes hb-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes hb-slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes hb-scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes hb-skeleton-pulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Component Classes ──────────────────────────── */
 
 @layer components {
   .hb-main {
     background: transparent;
+    animation: hb-fade-in 300ms ease-out;
   }
 
+  /* ── Header ─────────────────────────────────── */
+
   .hb-header {
-    border-bottom: 1px solid var(--hb-border);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.7);
     background: linear-gradient(
       90deg,
-      rgba(37, 99, 235, 0.12),
-      rgba(220, 38, 38, 0.12)
+      rgba(37, 99, 235, 0.1),
+      rgba(220, 38, 38, 0.1)
     );
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: box-shadow 200ms ease;
+  }
+
+  .hb-header.scrolled {
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
   }
 
   .hb-brand {
     color: var(--hb-text);
+    transition: opacity 150ms ease;
   }
+
+  .hb-brand:hover {
+    opacity: 0.8;
+  }
+
+  /* ── Cards ──────────────────────────────────── */
 
   .hb-card {
     border: 1px solid var(--hb-border);
     background: var(--hb-surface);
-    border-radius: 0.75rem;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+    border-radius: var(--hb-radius);
+    box-shadow: var(--hb-shadow-sm);
+    transition: transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1),
+                box-shadow 200ms ease,
+                border-color 200ms ease;
   }
 
   .hb-card--interactive {
-    transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+    cursor: pointer;
   }
 
   .hb-card--interactive:hover {
-    border-color: rgba(37, 99, 235, 0.45);
-    box-shadow: 0 10px 15px rgba(15, 23, 42, 0.08);
-    transform: translateY(-1px);
+    border-color: rgba(37, 99, 235, 0.4);
+    box-shadow: var(--hb-shadow-lg);
+    transform: translateY(-2px);
+  }
+
+  .hb-card--interactive:active {
+    transform: translateY(0px);
+    box-shadow: var(--hb-shadow-sm);
   }
 
   .hb-card-muted {
@@ -137,51 +185,59 @@
     background: rgba(248, 250, 252, 0.75);
   }
 
+  .hb-card-muted:hover {
+    border-color: rgba(100, 116, 139, 0.25);
+  }
+
   .hb-card--completed {
     border-color: rgba(22, 163, 74, 0.35);
     background: linear-gradient(
-      180deg,
-      rgba(22, 163, 74, 0.08),
-      rgba(22, 163, 74, 0.03)
+      135deg,
+      rgba(22, 163, 74, 0.07),
+      rgba(22, 163, 74, 0.02)
     );
   }
 
   .hb-card--unread {
     border-color: rgba(217, 119, 6, 0.35);
     background: linear-gradient(
-      180deg,
-      rgba(217, 119, 6, 0.14),
-      rgba(217, 119, 6, 0.05)
+      135deg,
+      rgba(217, 119, 6, 0.12),
+      rgba(217, 119, 6, 0.04)
     );
   }
 
-  .hb-text {
-    color: var(--hb-text);
-  }
+  /* ── Typography ─────────────────────────────── */
 
-  .hb-text-muted {
-    color: var(--hb-text-muted);
-  }
-
-  .hb-text-subtle {
-    color: var(--hb-text-subtle);
-  }
+  .hb-text { color: var(--hb-text); }
+  .hb-text-muted { color: var(--hb-text-muted); }
+  .hb-text-subtle { color: var(--hb-text-subtle); }
 
   .hb-link {
     color: var(--hb-blue);
+    text-decoration: none;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    transition: background-size 180ms ease, color 180ms ease;
   }
 
   .hb-link:hover {
-    text-decoration: underline;
+    background-size: 100% 1px;
+    color: var(--hb-blue-light);
   }
 
   .hb-link-muted {
     color: var(--hb-text-muted);
+    transition: color 150ms ease;
   }
 
   .hb-link-muted:hover {
     color: var(--hb-text);
   }
+
+  /* ── Primary Button ─────────────────────────── */
 
   .hb-btn-primary {
     display: inline-flex;
@@ -189,8 +245,9 @@
     justify-content: center;
     position: relative;
     overflow: hidden;
-    border-radius: 0.5rem;
+    border-radius: var(--hb-radius-sm);
     color: #ffffff;
+    font-weight: 500;
     background: linear-gradient(
       90deg,
       var(--hb-blue),
@@ -201,26 +258,27 @@
     );
     background-size: 200% 200%;
     box-shadow:
-      0 10px 24px rgba(37, 99, 235, 0.18),
-      0 6px 14px rgba(220, 38, 38, 0.12),
-      0 6px 14px rgba(100, 116, 139, 0.14);
+      0 8px 20px rgba(37, 99, 235, 0.15),
+      0 4px 10px rgba(220, 38, 38, 0.1),
+      0 4px 10px rgba(100, 116, 139, 0.1);
     transition:
       transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
       filter 180ms ease,
       box-shadow 180ms ease,
       opacity 180ms ease;
+    user-select: none;
   }
 
   .hb-btn-primary::after {
     content: "";
     position: absolute;
-    inset: -1px;
+    inset: 0;
     left: -60%;
     width: 55%;
     background: linear-gradient(
       90deg,
       transparent,
-      rgba(255, 255, 255, 0.55),
+      rgba(255, 255, 255, 0.5),
       transparent
     );
     opacity: 0;
@@ -228,12 +286,12 @@
   }
 
   .hb-btn-primary:hover {
-    filter: brightness(1.02) saturate(1.03);
+    filter: brightness(1.03) saturate(1.04);
     transform: translateY(-2px) scale(1.01);
     box-shadow:
-      0 16px 34px rgba(37, 99, 235, 0.22),
-      0 10px 22px rgba(220, 38, 38, 0.16),
-      0 10px 18px rgba(100, 116, 139, 0.12);
+      0 14px 28px rgba(37, 99, 235, 0.2),
+      0 8px 18px rgba(220, 38, 38, 0.14),
+      0 8px 14px rgba(100, 116, 139, 0.1);
     animation: hb-gradient-pan 1400ms ease-in-out infinite;
   }
 
@@ -243,55 +301,58 @@
   }
 
   .hb-btn-primary:active {
-    transform: translateY(0px) scale(0.99);
-    filter: brightness(0.99);
-  }
-
-  .hb-btn-primary:focus-visible {
-    outline: none;
-    box-shadow:
-      0 0 0 3px rgba(255, 255, 255, 0.85),
-      0 0 0 6px rgba(37, 99, 235, 0.35),
-      0 16px 34px rgba(37, 99, 235, 0.18),
-      0 10px 22px rgba(220, 38, 38, 0.12);
+    transform: translateY(0px) scale(0.98);
+    filter: brightness(0.98);
   }
 
   .hb-btn-primary:disabled {
-    opacity: 0.5;
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  .hb-btn-primary:disabled::after {
+    display: none;
   }
 
   .hb-btn--pending {
     cursor: wait;
-    opacity: 0.92;
+    opacity: 0.9;
   }
 
   .hb-btn-primary.hb-btn--pending {
     animation: hb-pulse-ring 1200ms ease-out infinite;
   }
 
+  /* ── Chips / Pill Buttons ────────────────────── */
+
   .hb-chip {
     position: relative;
     overflow: hidden;
-    border: 1px solid rgba(100, 116, 139, 0.35);
+    border: 1px solid rgba(100, 116, 139, 0.3);
     color: var(--hb-text-muted);
     background: rgba(248, 250, 252, 0.85);
+    border-radius: 9999px;
     transition:
       transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
       border-color 180ms ease,
       background-color 180ms ease,
-      color 180ms ease;
+      color 180ms ease,
+      box-shadow 180ms ease;
+    user-select: none;
   }
 
   .hb-chip::after {
     content: "";
     position: absolute;
-    inset: -1px;
+    inset: 0;
     left: -60%;
     width: 55%;
     background: linear-gradient(
       90deg,
       transparent,
-      rgba(37, 99, 235, 0.18),
+      rgba(37, 99, 235, 0.16),
       transparent
     );
     opacity: 0;
@@ -300,9 +361,10 @@
 
   .hb-chip:hover {
     border-color: rgba(37, 99, 235, 0.45);
-    background: rgba(37, 99, 235, 0.08);
+    background: rgba(37, 99, 235, 0.07);
     color: rgba(37, 99, 235, 1);
     transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.1);
   }
 
   .hb-chip:hover::after {
@@ -311,92 +373,75 @@
   }
 
   .hb-chip:active {
-    transform: translateY(0px) scale(0.99);
+    transform: translateY(0px) scale(0.98);
+  }
+
+  .hb-chip:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
   }
 
   .hb-chip.hb-btn--pending {
     animation: hb-pulse-ring 1200ms ease-out infinite;
   }
 
+  /* ── Segmented Controls ──────────────────────── */
+
+  .hb-segmented {
+    background: rgba(100, 116, 139, 0.08);
+    border-radius: 0.625rem;
+  }
+
   .hb-segmented button {
     position: relative;
     overflow: hidden;
+    border-radius: 0.5rem;
     transition: transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    user-select: none;
   }
 
   .hb-segmented button::after {
     content: "";
     position: absolute;
-    inset: -1px;
+    inset: 0;
     left: -60%;
     width: 55%;
     background: linear-gradient(
       90deg,
       transparent,
-      rgba(37, 99, 235, 0.18),
+      rgba(37, 99, 235, 0.14),
       transparent
     );
     opacity: 0;
     pointer-events: none;
   }
 
-  .hb-segmented button:hover::after {
+  .hb-segmented button:hover:not(:disabled)::after {
     opacity: 1;
     animation: hb-sheen 700ms ease-out;
   }
 
-  .hb-segmented button:hover {
+  .hb-segmented button:hover:not(:disabled) {
     transform: translateY(-1px);
   }
 
-  .hb-segmented button:active {
-    transform: translateY(0px) scale(0.99);
-  }
-
-  .hb-action-link {
-    color: var(--hb-blue);
-    text-decoration: none;
-    background-image: linear-gradient(currentColor, currentColor);
-    background-position: 0 100%;
-    background-repeat: no-repeat;
-    background-size: 0% 2px;
-    transition: background-size 180ms ease, transform 180ms ease, opacity 180ms ease;
-  }
-
-  .hb-action-link:hover {
-    background-size: 100% 2px;
-    transform: translateY(-1px);
-  }
-
-  .hb-action-link:active {
-    transform: translateY(0px);
-    opacity: 0.85;
-  }
-
-  .hb-input {
-    border: 1px solid rgba(100, 116, 139, 0.4);
-    background: var(--hb-surface);
-  }
-
-  .hb-input:focus {
-    outline: none;
-    border-color: rgba(37, 99, 235, 0.9);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
-  }
-
-  .hb-segmented {
-    background: rgba(100, 116, 139, 0.1);
+  .hb-segmented button:active:not(:disabled) {
+    transform: translateY(0px) scale(0.98);
   }
 
   .hb-segmented-btn--active {
     background: var(--hb-surface);
     color: var(--hb-text);
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1), 0 1px 2px rgba(15, 23, 42, 0.06);
+    font-weight: 600;
   }
 
   .hb-segmented-btn--inactive {
     color: var(--hb-text-muted);
   }
+
+  /* ── Choice Buttons (Auth form) ──────────────── */
 
   .hb-choice-btn--active {
     position: relative;
@@ -405,6 +450,7 @@
     background: rgba(37, 99, 235, 0.08);
     color: rgba(37, 99, 235, 1);
     transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.1);
   }
 
   .hb-choice-btn--inactive {
@@ -418,13 +464,13 @@
   .hb-choice-btn--inactive::after {
     content: "";
     position: absolute;
-    inset: -1px;
+    inset: 0;
     left: -60%;
     width: 55%;
     background: linear-gradient(
       90deg,
       transparent,
-      rgba(37, 99, 235, 0.14),
+      rgba(37, 99, 235, 0.12),
       transparent
     );
     opacity: 0;
@@ -444,27 +490,107 @@
 
   .hb-choice-btn--inactive:active,
   .hb-choice-btn--active:active {
-    transform: translateY(0px) scale(0.99);
+    transform: translateY(0px) scale(0.98);
   }
 
+  /* ── Action Link ─────────────────────────────── */
+
+  .hb-action-link {
+    color: var(--hb-blue);
+    text-decoration: none;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 2px;
+    transition:
+      background-size 180ms ease,
+      transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      opacity 180ms ease;
+  }
+
+  .hb-action-link:hover {
+    background-size: 100% 2px;
+    transform: translateY(-1px);
+  }
+
+  .hb-action-link:active {
+    transform: translateY(0px);
+    opacity: 0.8;
+  }
+
+  /* ── Inputs ──────────────────────────────────── */
+
+  .hb-input {
+    border: 1px solid rgba(100, 116, 139, 0.35);
+    background: var(--hb-surface);
+    border-radius: var(--hb-radius-sm);
+    transition:
+      border-color 180ms ease,
+      box-shadow 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .hb-input:hover {
+    border-color: rgba(100, 116, 139, 0.55);
+  }
+
+  .hb-input:focus {
+    outline: none;
+    border-color: rgba(37, 99, 235, 0.7);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    background-color: var(--hb-surface);
+  }
+
+  .hb-input::placeholder {
+    color: rgba(100, 116, 139, 0.45);
+  }
+
+  textarea.hb-input {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  select.hb-input {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 32px;
+  }
+
+  /* ── Badges ──────────────────────────────────── */
+
   .hb-badge-admin {
-    background: rgba(37, 99, 235, 0.12);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(37, 99, 235, 0.06));
     color: rgba(37, 99, 235, 1);
   }
 
   .hb-badge-new {
-    background: rgba(217, 119, 6, 0.25);
+    background: linear-gradient(135deg, rgba(217, 119, 6, 0.2), rgba(217, 119, 6, 0.08));
     color: rgba(120, 53, 15, 1);
   }
 
+  .hb-badge-subject {
+    background: rgba(100, 116, 139, 0.1);
+    color: var(--hb-text-muted);
+    font-weight: 500;
+  }
+
+  /* ── Icon Button ─────────────────────────────── */
+
   .hb-icon-btn {
     color: var(--hb-text-muted);
-    transition: background-color 150ms ease, color 150ms ease;
+    transition: background-color 150ms ease, color 150ms ease, transform 150ms ease;
   }
 
   .hb-icon-btn:hover {
-    background: rgba(100, 116, 139, 0.12);
+    background: rgba(100, 116, 139, 0.1);
     color: var(--hb-text);
+    transform: scale(1.05);
+  }
+
+  .hb-icon-btn:active {
+    transform: scale(0.95);
   }
 
   .hb-bell--shake {
@@ -472,58 +598,84 @@
   }
 
   .hb-notif-badge {
-    background: var(--hb-red);
+    background: linear-gradient(135deg, var(--hb-red), #ef4444);
     color: #ffffff;
+    box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
   }
 
-  .hb-text-error {
-    color: var(--hb-danger);
-  }
+  /* ── Text Colors ─────────────────────────────── */
 
-  .hb-text-success {
-    color: var(--hb-success);
-  }
+  .hb-text-error { color: var(--hb-danger); }
+  .hb-text-success { color: var(--hb-success); }
+  .hb-text-warning { color: var(--hb-warning); }
 
-  .hb-text-warning {
-    color: var(--hb-warning);
-  }
+  /* ── Check Button (Complete) ─────────────────── */
 
   .hb-check-btn--done {
-    border-color: rgba(22, 163, 74, 0.5);
-    background: rgba(22, 163, 74, 0.08);
+    border-color: rgba(22, 163, 74, 0.45);
+    background: linear-gradient(135deg, rgba(22, 163, 74, 0.08), rgba(22, 163, 74, 0.03));
     color: rgba(21, 128, 61, 1);
+    transition:
+      transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      border-color 180ms ease,
+      background-color 180ms ease,
+      box-shadow 180ms ease;
   }
 
   .hb-check-btn--done:hover {
     border-color: rgba(22, 163, 74, 0.65);
-    background: rgba(22, 163, 74, 0.12);
+    background: linear-gradient(135deg, rgba(22, 163, 74, 0.12), rgba(22, 163, 74, 0.06));
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.12);
+    transform: translateY(-1px);
+  }
+
+  .hb-check-btn--done:active {
+    transform: translateY(0px);
   }
 
   .hb-check-btn--todo {
-    border-color: rgba(100, 116, 139, 0.45);
+    border-color: rgba(100, 116, 139, 0.4);
     background: rgba(255, 255, 255, 0.85);
     color: var(--hb-text-muted);
+    transition:
+      transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      border-color 180ms ease,
+      background-color 180ms ease,
+      box-shadow 180ms ease;
   }
 
   .hb-check-btn--todo:hover {
     border-color: rgba(37, 99, 235, 0.55);
-    background: rgba(37, 99, 235, 0.07);
+    background: rgba(37, 99, 235, 0.06);
     color: rgba(37, 99, 235, 1);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+    transform: translateY(-1px);
+  }
+
+  .hb-check-btn--todo:active {
+    transform: translateY(0px);
   }
 
   .hb-check-icon--done {
     border-color: rgba(22, 163, 74, 1);
     background: rgba(22, 163, 74, 1);
     color: #ffffff;
+    transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .hb-check-btn--done:hover .hb-check-icon--done {
+    transform: scale(1.1);
   }
 
   .hb-check-icon--todo {
     border-color: rgba(100, 116, 139, 0.8);
     background: #ffffff;
+    transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .hb-check-btn--todo:hover .hb-check-icon--todo {
     border-color: rgba(37, 99, 235, 0.9);
+    transform: scale(1.1);
   }
 
   .hb-check-btn--pending {
@@ -531,55 +683,181 @@
     opacity: 0.9;
   }
 
+  /* ── Spinner ─────────────────────────────────── */
+
   .hb-spinner {
+    display: inline-block;
     height: 12px;
     width: 12px;
     border-radius: 9999px;
-    border: 2px solid rgba(37, 99, 235, 0.25);
+    border: 2px solid rgba(37, 99, 235, 0.2);
     border-top-color: rgba(37, 99, 235, 1);
-    animation: hb-spin 800ms linear infinite;
+    animation: hb-spin 700ms linear infinite;
   }
 
   .hb-check-btn--done .hb-spinner {
-    border-color: rgba(255, 255, 255, 0.35);
+    border-color: rgba(255, 255, 255, 0.3);
     border-top-color: rgba(255, 255, 255, 1);
   }
 
+  .hb-btn-primary .hb-spinner {
+    border-color: rgba(255, 255, 255, 0.3);
+    border-top-color: rgba(255, 255, 255, 1);
+  }
+
+  /* ── Comment Reply ───────────────────────────── */
+
   .hb-reply {
     display: flex;
-    gap: 8px;
+    gap: 10px;
+    position: relative;
   }
 
   .hb-reply-arrow {
     flex: none;
     margin-top: 2px;
     color: var(--hb-text-subtle);
+    font-size: 1rem;
   }
+
+  .hb-comment-thread-line {
+    position: absolute;
+    left: -16px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(
+      180deg,
+      rgba(100, 116, 139, 0.2),
+      rgba(100, 116, 139, 0.05) 80%
+    );
+    border-radius: 1px;
+  }
+
+  .hb-comment-thread-dot {
+    position: absolute;
+    left: -20px;
+    top: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    border: 2px solid rgba(100, 116, 139, 0.3);
+    background: var(--hb-surface);
+  }
+
+  /* ── Skeleton ────────────────────────────────── */
 
   .hb-skeleton {
-    background: rgba(100, 116, 139, 0.18);
+    background: linear-gradient(
+      90deg,
+      rgba(100, 116, 139, 0.12) 25%,
+      rgba(100, 116, 139, 0.22) 50%,
+      rgba(100, 116, 139, 0.12) 75%
+    );
+    background-size: 200% 100%;
+    animation: hb-skeleton-pulse 1500ms ease-in-out infinite;
   }
 
+  /* ── Responsive Utility ──────────────────────── */
+
+  .hb-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .hb-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  /* ── Calendar ────────────────────────────────── */
+
+  .hb-calendar-cell {
+    transition:
+      transform 150ms ease,
+      box-shadow 150ms ease,
+      border-color 150ms ease;
+    cursor: default;
+  }
+
+  .hb-calendar-cell--has-items:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--hb-shadow-md);
+    border-color: rgba(37, 99, 235, 0.35);
+    cursor: pointer;
+  }
+
+  .hb-calendar-cell--today {
+    border-color: rgba(37, 99, 235, 0.5);
+    background: linear-gradient(
+      180deg,
+      rgba(37, 99, 235, 0.06),
+      rgba(37, 99, 235, 0.02)
+    );
+  }
+
+  .hb-calendar-nav {
+    transition: transform 150ms ease, color 150ms ease;
+  }
+
+  .hb-calendar-nav:hover {
+    transform: scale(1.05);
+  }
+
+  .hb-calendar-nav:active {
+    transform: scale(0.95);
+  }
+
+  /* ── Notification List ───────────────────────── */
+
+  .hb-notification-item {
+    transition: transform 150ms ease, box-shadow 150ms ease;
+  }
+
+  .hb-notification-item:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--hb-shadow-md);
+  }
+
+  /* ── Form Section Divider ────────────────────── */
+
+  .hb-form-section {
+    border-bottom: 1px solid var(--hb-border);
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .hb-form-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+
+  /* ── Empty State ─────────────────────────────── */
+
+  .hb-empty-state {
+    animation: hb-fade-in 400ms ease-out;
+  }
+
+  /* ── Reduced Motion ──────────────────────────── */
+
   @media (prefers-reduced-motion: reduce) {
-    .hb-btn-primary,
-    .hb-chip,
-    .hb-action-link,
-    .hb-segmented button {
-      transition: none;
-      animation: none;
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
     }
 
-    .hb-btn-primary::after,
-    .hb-chip::after,
-    .hb-segmented button::after,
-    .hb-choice-btn--active::after,
-    .hb-choice-btn--inactive::after {
-      animation: none;
+    .hb-header {
+      backdrop-filter: none;
     }
 
-    .hb-btn-primary.hb-btn--pending,
-    .hb-chip.hb-btn--pending {
-      animation: none;
+    .hb-skeleton {
+      background: rgba(100, 116, 139, 0.12);
     }
   }
 }

@@ -57,7 +57,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
   }
 
   return (
-    <div className="hb-card mb-6 space-y-3 p-4">
+    <div className="mb-6 rounded-xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur-sm">
       <form
         className="flex flex-col gap-3 sm:flex-row sm:items-end"
         onSubmit={(e) => {
@@ -66,23 +66,39 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
         }}
       >
         <div className="flex-1">
-          <label className="hb-text-muted mb-1 block text-xs font-semibold uppercase tracking-wide">
+          <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-slate-500">
             Search
           </label>
-          <input
-            key={initial.q}
-            defaultValue={initial.q}
-            onChange={(e) => {
-              qRef.current = e.target.value;
-            }}
-            disabled={isPending}
-            placeholder="Search title or content..."
-            className="hb-input w-full rounded-lg px-3 py-2 text-sm"
-          />
+          <div className="relative">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+              aria-hidden="true"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            <input
+              key={initial.q}
+              defaultValue={initial.q}
+              onChange={(e) => {
+                qRef.current = e.target.value;
+              }}
+              disabled={isPending}
+              placeholder="Search title or content..."
+              className="hb-input w-full rounded-lg py-2 pl-9 pr-3 text-sm"
+            />
+          </div>
         </div>
 
-        <div className="sm:w-48">
-          <label className="hb-text-muted mb-1 block text-xs font-semibold uppercase tracking-wide">
+        <div className="sm:w-44">
+          <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-slate-500">
             Subject
           </label>
           <select
@@ -91,7 +107,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
             disabled={isPending}
             className="hb-input w-full rounded-lg px-3 py-2 text-sm"
           >
-            <option value="">All</option>
+            <option value="">All subjects</option>
             {subjects.map((subject) => (
               <option key={subject} value={subject}>
                 {subject}
@@ -100,8 +116,8 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
           </select>
         </div>
 
-        <div className="sm:w-44">
-          <label className="hb-text-muted mb-1 block text-xs font-semibold uppercase tracking-wide">
+        <div className="sm:w-40">
+          <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-slate-500">
             Due
           </label>
           <select
@@ -110,7 +126,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
             disabled={isPending}
             className="hb-input w-full rounded-lg px-3 py-2 text-sm"
           >
-            <option value="all">All</option>
+            <option value="all">All dates</option>
             <option value="today">Today</option>
             <option value="tomorrow">Tomorrow</option>
             <option value="overdue">Overdue</option>
@@ -121,30 +137,30 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
         <button
           type="submit"
           disabled={isPending}
-          className={`hb-btn-primary px-4 py-2 text-sm font-medium ${
+          className={`hb-btn-primary h-[38px] px-4 text-sm font-medium ${
             isPending ? "hb-btn--pending" : ""
-          } gap-2`}
+          } gap-2 sm:mb-0`}
         >
           {isPending && <span className="hb-spinner" aria-hidden="true" />}
-          Apply
+          {isPending ? "Searching..." : "Search"}
         </button>
       </form>
 
-      <div className="hb-segmented flex w-full items-center gap-2 rounded-lg p-1 text-sm">
+      <div className="mt-3 flex items-center gap-1 rounded-lg bg-slate-100/70 p-1">
         {[
           { value: "all", label: "All" },
-          { value: "todo", label: "Uncompleted" },
-          { value: "completed", label: "Completed" },
+          { value: "todo", label: "To do" },
+          { value: "completed", label: "Done" },
         ].map((option) => (
           <button
             key={option.value}
             type="button"
             onClick={() => setParams({ status: option.value })}
             disabled={isPending}
-            className={`flex-1 rounded-md px-3 py-2 text-xs font-semibold ${
+            className={`flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition ${
               initial.status === option.value
-                ? "hb-segmented-btn--active"
-                : "hb-segmented-btn--inactive"
+                ? "bg-white text-slate-900 shadow-sm"
+                : "text-slate-500 hover:bg-white/60 hover:text-slate-700"
             }`}
           >
             {option.label}

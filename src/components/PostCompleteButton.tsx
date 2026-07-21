@@ -19,14 +19,14 @@ export function PostCompleteButton({
       aria-label={completed ? "Mark as not done" : "Mark as done"}
       title={completed ? "Mark as not done" : "Mark as done"}
       disabled={pending}
-      className={`group flex items-center gap-2 rounded-lg border transition ${
+      className={`group flex items-center gap-2 rounded-lg border transition-all duration-200 ${
         compact ? "p-2" : "px-3 py-2"
       } ${
         completed ? "hb-check-btn--done" : "hb-check-btn--todo"
       } ${pending ? "hb-check-btn--pending" : ""}`}
     >
       <span
-        className={`flex h-5 w-5 items-center justify-center rounded border-2 ${
+        className={`flex h-5 w-5 items-center justify-center rounded border-2 transition-all duration-200 ${
           completed ? "hb-check-icon--done" : "hb-check-icon--todo"
         }`}
       >
@@ -38,7 +38,7 @@ export function PostCompleteButton({
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
               fill="currentColor"
-              className="h-3.5 w-3.5"
+              className="h-3.5 w-3.5 animate-[hb-scale-in_200ms_ease-out]"
               aria-hidden="true"
             >
               <path

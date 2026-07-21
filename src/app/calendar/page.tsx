@@ -41,6 +41,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
 
   const startStr = format(monthStart, "yyyy-MM-dd");
   const endStr = format(monthEnd, "yyyy-MM-dd");
+  const todayStr = format(new Date(), "yyyy-MM-dd");
 
   const supabase = await createClient();
   const { data: posts } = await supabase
@@ -76,27 +77,44 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
       <div className="mb-6 flex items-center justify-between gap-3">
-        <h1 className="hb-text text-2xl font-bold">Homework calendar</h1>
-        <Link href="/" className="hb-link text-sm font-medium">
-          Back to posts
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Homework calendar</h1>
+        </div>
+        <Link href="/" className="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-700">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+          Posts
         </Link>
       </div>
 
-      <div className="hb-card mb-6 flex items-center justify-between gap-3 p-4">
-        <Link href={`/calendar?month=${prevMonth}`} className="hb-link text-sm font-medium">
-          ← {format(addMonths(monthStart, -1), "MMM yyyy")}
+      <div className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <Link
+          href={`/calendar?month=${prevMonth}`}
+          className="hb-calendar-nav inline-flex items-center gap-1 text-sm font-medium text-slate-600 transition hover:text-blue-600"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+          {format(addMonths(monthStart, -1), "MMM")}
         </Link>
-        <div className="hb-text text-sm font-semibold">
+        <div className="text-base font-bold text-slate-800">
           {format(monthStart, "MMMM yyyy")}
         </div>
-        <Link href={`/calendar?month=${nextMonth}`} className="hb-link text-sm font-medium">
-          {format(addMonths(monthStart, 1), "MMM yyyy")} →
+        <Link
+          href={`/calendar?month=${nextMonth}`}
+          className="hb-calendar-nav inline-flex items-center gap-1 text-sm font-medium text-slate-600 transition hover:text-blue-600"
+        >
+          {format(addMonths(monthStart, 1), "MMM")}
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
         </Link>
       </div>
 
-      <div className="grid grid-cols-7 gap-2">
+      <div className="grid grid-cols-7 gap-1.5">
         {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((label) => (
-          <div key={label} className="hb-text-subtle px-2 text-xs font-semibold uppercase tracking-wide">
+          <div key={label} className="px-2 py-1.5 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">
             {label}
           </div>
         ))}
@@ -105,14 +123,28 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
           const key = format(day, "yyyy-MM-dd");
           const items = byDay[key] ?? [];
           const inMonth = isSameMonth(day, monthStart);
+          const isToday = key === todayStr;
 
           return (
             <div
               key={key}
-              className={`hb-card min-h-28 p-3 ${inMonth ? "" : "opacity-50"}`}
+              className={`hb-calendar-cell relative min-h-28 rounded-xl border bg-white p-2.5 shadow-sm transition ${
+                !inMonth ? "opacity-40" : ""
+              } ${isToday ? "hb-calendar-cell--today" : "border-slate-200"} ${
+                items.length > 0 ? "hb-calendar-cell--has-items" : ""
+              }`}
             >
-              <div className="hb-text-subtle mb-2 text-xs font-semibold">
-                {format(day, "d")}
+              <div className={`mb-1 flex items-center justify-between ${
+                isToday ? "text-blue-700" : "text-slate-500"
+              }`}>
+                <span className="text-xs font-bold">
+                  {format(day, "d")}
+                </span>
+                {isToday && (
+                  <span className="rounded bg-blue-100 px-1.5 py-0.5 text-[8px] font-semibold text-blue-700">
+                    Today
+                  </span>
+                )}
               </div>
               {items.length > 0 && (
                 <ul className="space-y-1">
@@ -120,14 +152,18 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
                     <li key={post.id}>
                       <Link
                         href={`/posts/${post.id}`}
-                        className="hb-link line-clamp-2 text-xs font-medium"
+                        className={`line-clamp-2 block rounded-md px-1.5 py-1 text-[10px] font-medium transition ${
+                          post.pinned
+                            ? "bg-amber-50 text-amber-800 hover:bg-amber-100"
+                            : "text-slate-600 hover:bg-slate-50"
+                        }`}
                       >
                         {post.title}
                       </Link>
                     </li>
                   ))}
                   {items.length > 3 && (
-                    <li className="hb-text-subtle text-xs">
+                    <li className="px-1.5 text-[10px] font-medium text-slate-400">
                       +{items.length - 3} more
                     </li>
                   )}

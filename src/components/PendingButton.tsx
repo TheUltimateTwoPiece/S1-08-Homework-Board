@@ -23,11 +23,14 @@ export function PendingButton({
     <button
       {...props}
       disabled={disabled || pending}
-      className={`${className ?? ""} ${pending ? "hb-btn--pending" : ""}`}
+      className={`${className ?? ""} ${
+        pending ? "hb-btn--pending" : ""
+      } transition-opacity duration-150`}
     >
-      {pending && showSpinner ? <span className="hb-spinner" aria-hidden="true" /> : null}
+      {pending && showSpinner ? (
+        <span className="hb-spinner" aria-hidden="true" />
+      ) : null}
       {content}
     </button>
   );
 }
-

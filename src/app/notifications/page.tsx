@@ -25,15 +25,22 @@ export default async function NotificationsPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex items-start justify-between gap-4">
         <div>
-          <h1 className="hb-text text-2xl font-bold">Reminders</h1>
-          <p className="hb-text-muted mt-1 text-sm">
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Reminders</h1>
+            {unreadCount > 0 && (
+              <span className="rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-semibold text-red-600">
+                {unreadCount} new
+              </span>
+            )}
+          </div>
+          <p className="mt-1.5 text-sm text-slate-500">
             {profile.role === "admin"
               ? "Homework reminders you receive appear here. Send reminders to students from the admin panel."
               : unreadCount > 0
                 ? `${unreadCount} unread reminder${unreadCount === 1 ? "" : "s"} from your admin`
-                : "You're all caught up — no new reminders"}
+                : "You&apos;re all caught up — no new reminders"}
           </p>
         </div>
 
@@ -41,9 +48,12 @@ export default async function NotificationsPage() {
           <form action={markAllNotificationsRead}>
             <PendingButton
               type="submit"
-              pendingContent="Saving..."
-              className="hb-action-link flex items-center gap-2 text-sm font-medium"
+              pendingContent="Marking..."
+              className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
             >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
               Mark all as read
             </PendingButton>
           </form>
@@ -55,37 +65,40 @@ export default async function NotificationsPage() {
           {(notifications as Notification[]).map((notification) => (
             <li
               key={notification.id}
-              className={`hb-card p-5 ${
-                notification.read_at ? "" : "hb-card--unread"
+              className={`hb-notification-item rounded-xl border bg-white p-5 shadow-sm ${
+                notification.read_at ? "border-slate-200" : "hb-card--unread"
               }`}
             >
               <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="mb-1 flex items-center gap-2">
+                <div className="min-w-0 flex-1">
+                  <div className="mb-2 flex items-center gap-2">
                     {!notification.read_at && (
-                      <span className="hb-badge-new rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
+                      <span className="hb-badge-new inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
                         New
                       </span>
                     )}
-                    <h2 className="hb-text font-semibold">
+                    <h2 className={`text-sm font-semibold ${notification.read_at ? "text-slate-600" : "text-slate-900"}`}>
                       {notification.title}
                     </h2>
                   </div>
-                  <p className="hb-text-muted text-sm leading-relaxed">
+                  <p className="text-sm leading-relaxed text-slate-600">
                     {notification.message}
                   </p>
-                  <time
-                    className="hb-text-subtle mt-2 block text-xs"
-                    dateTime={notification.created_at}
-                  >
-                    {formatDistanceToNow(new Date(notification.created_at), {
-                      addSuffix: true,
-                    })}
-                  </time>
+                  <div className="mt-3 flex items-center gap-2 text-xs text-slate-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    <time dateTime={notification.created_at}>
+                      {formatDistanceToNow(new Date(notification.created_at), {
+                        addSuffix: true,
+                      })}
+                    </time>
+                  </div>
                 </div>
 
                 {!notification.read_at && (
-                  <form action={markNotificationRead}>
+                  <form action={markNotificationRead} className="shrink-0">
                     <input
                       type="hidden"
                       name="notificationId"
@@ -93,8 +106,8 @@ export default async function NotificationsPage() {
                     />
                     <PendingButton
                       type="submit"
-                      pendingContent="Saving..."
-                      className="hb-action-link flex shrink-0 items-center gap-2 text-xs font-medium"
+                      pendingContent="Marking..."
+                      className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-blue-600 transition hover:bg-blue-50"
                     >
                       Mark read
                     </PendingButton>
@@ -105,12 +118,17 @@ export default async function NotificationsPage() {
           ))}
         </ul>
       ) : (
-        <div className="hb-card border-dashed p-12 text-center">
-          <p className="hb-text-muted">No reminders yet.</p>
+        <div className="hb-empty-state flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 py-16 text-center">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 text-slate-400" aria-hidden="true">
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+          </div>
+          <p className="text-sm font-medium text-slate-600">No reminders yet</p>
           {profile.role === "student" && (
-            <p className="hb-text-subtle mt-2 text-sm">
-              When an admin sends a homework reminder, it will show up here
-              and on the bell icon in the header.
+            <p className="mt-1 max-w-xs text-xs text-slate-400">
+              When an admin sends a homework reminder, it will show up here and on the bell icon in the header.
             </p>
           )}
         </div>

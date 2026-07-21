@@ -14,8 +14,10 @@ export function NotificationBell({ unreadCount }: NotificationBellProps) {
           : "Reminders"
       }
       title="Reminders"
-      className={`hb-icon-btn relative flex h-9 w-9 items-center justify-center rounded-lg ${
-        unreadCount > 0 ? "hb-bell--shake" : ""
+      className={`relative flex h-9 w-9 items-center justify-center rounded-lg transition ${
+        unreadCount > 0
+          ? "hb-bell--shake text-slate-600 hover:bg-slate-100"
+          : "text-slate-400 hover:bg-slate-100 hover:text-slate-600"
       }`}
     >
       <svg
@@ -33,7 +35,7 @@ export function NotificationBell({ unreadCount }: NotificationBellProps) {
         <path d="M13.73 21a2 2 0 0 1-3.46 0" />
       </svg>
       {unreadCount > 0 && (
-        <span className="hb-notif-badge absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-semibold ring-2 ring-white">
+        <span className="hb-notif-badge absolute -right-0.5 -top-0.5 flex h-5 min-w-5 animate-[hb-scale-in_300ms_ease-out] items-center justify-center rounded-full px-1 text-[10px] font-bold ring-2 ring-white">
           {unreadCount > 9 ? "9+" : unreadCount}
         </span>
       )}

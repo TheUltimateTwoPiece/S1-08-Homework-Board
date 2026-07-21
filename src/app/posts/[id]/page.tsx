@@ -176,14 +176,19 @@ export default async function PostPage({ params }: PageProps) {
     <div className="mx-auto max-w-4xl px-4 py-8">
       <Link
         href="/"
-        className="hb-link mb-6 inline-block text-sm"
+        className="mb-6 inline-flex items-center gap-1 text-sm font-medium text-blue-600 transition hover:text-blue-700"
       >
-        ← Back to all posts
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+        Back to all posts
       </Link>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <article
-          className={`hb-card p-6 ${isCompleted ? "hb-card--completed" : ""}`}
+          className={`rounded-xl border bg-white p-6 shadow-sm ${
+            isCompleted ? "hb-card--completed" : "border-slate-200"
+          }`}
         >
           <div className="mb-4 flex items-start justify-between gap-4">
             <div className="flex min-w-0 flex-1 items-start gap-4">
@@ -192,43 +197,35 @@ export default async function PostPage({ params }: PageProps) {
                 completed={isCompleted}
               />
               <h1
-                className={`text-2xl font-bold ${
-                  isCompleted ? "hb-text-subtle line-through" : "hb-text"
+                className={`text-2xl font-bold tracking-tight ${
+                  isCompleted ? "text-slate-400 line-through" : "text-slate-900"
                 }`}
               >
                 {typedPost.title}
               </h1>
             </div>
             {isAdmin && (
-              <div className="flex items-center gap-3">
+              <div className="flex shrink-0 items-center gap-2">
                 <form action={setPostPinned}>
                   <input type="hidden" name="postId" value={typedPost.id} />
-                  <input
-                    type="hidden"
-                    name="pinned"
-                    value={typedPost.pinned ? "false" : "true"}
-                  />
+                  <input type="hidden" name="pinned" value={typedPost.pinned ? "false" : "true"} />
                   <PendingButton
                     type="submit"
                     pendingContent="Saving..."
-                    className="hb-action-link flex items-center gap-2 text-sm font-medium"
+                    className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
                   >
                     {typedPost.pinned ? "Unpin" : "Pin"}
                   </PendingButton>
                 </form>
                 <form action={setPostCommentsLocked}>
                   <input type="hidden" name="postId" value={typedPost.id} />
-                  <input
-                    type="hidden"
-                    name="locked"
-                    value={commentsLocked ? "false" : "true"}
-                  />
+                  <input type="hidden" name="locked" value={commentsLocked ? "false" : "true"} />
                   <PendingButton
                     type="submit"
                     pendingContent="Saving..."
-                    className="hb-action-link flex items-center gap-2 text-sm font-medium"
+                    className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
                   >
-                    {commentsLocked ? "Unlock comments" : "Lock comments"}
+                    {commentsLocked ? "Unlock" : "Lock"} comments
                   </PendingButton>
                 </form>
                 <form action={deletePost}>
@@ -236,43 +233,49 @@ export default async function PostPage({ params }: PageProps) {
                   <PendingButton
                     type="submit"
                     pendingContent="Deleting..."
-                    className="hb-text-error flex items-center gap-2 text-sm hover:underline"
+                    className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-red-500 transition hover:bg-red-50"
                   >
-                    Delete post
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
+                      <polyline points="3 6 5 6 21 6" />
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                    </svg>
+                    Delete
                   </PendingButton>
                 </form>
               </div>
             )}
           </div>
 
-          <div className="hb-text-subtle mb-6 flex flex-wrap items-center gap-2 text-xs">
+          <div className="mb-6 flex flex-wrap items-center gap-2">
             {typedPost.pinned && (
-              <span className="hb-badge-new rounded px-2 py-0.5 text-[10px] font-semibold">
-                Pinned
-              </span>
+              <span className="hb-badge-new inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold">📌 Pinned</span>
             )}
-            <span className="text-[10px] font-semibold uppercase tracking-wide">
+            <span className="hb-badge-subject inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider">
               {typedPost.subject}
             </span>
             {dueBadge && (
-              <span className={`${dueBadge.className} text-[10px] font-semibold`}>
+              <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold ${dueBadge.className}`}>
                 {dueBadge.label}
               </span>
             )}
             {wasEdited && (
-              <span className="hb-text-subtle text-[10px] font-semibold">
-                Edited
-              </span>
+              <span className="inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold text-slate-400">Edited</span>
             )}
-            <span className="mx-1 text-slate-300">·</span>
-            <span>{typedPost.profiles?.full_name ?? "Admin"}</span>
+            <span className="mx-0.5 text-slate-300">·</span>
+            <div className="flex items-center gap-1.5 text-xs text-slate-500">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              {typedPost.profiles?.full_name ?? "Admin"}
+            </div>
             <span className="text-slate-300">·</span>
-            <time dateTime={typedPost.created_at}>
+            <time className="text-xs text-slate-500" dateTime={typedPost.created_at}>
               {format(new Date(typedPost.created_at), "MMMM d, yyyy 'at' h:mm a")}
             </time>
           </div>
 
-          <div className="hb-text-muted whitespace-pre-line text-sm leading-relaxed">
+          <div className="whitespace-pre-line text-sm leading-relaxed text-slate-600">
             {typedPost.content}
           </div>
 
@@ -280,33 +283,56 @@ export default async function PostPage({ params }: PageProps) {
         </article>
 
         {isAdmin && students.length > 0 ? (
-          <aside className="hb-card p-5">
-            <details>
-              <summary className="hb-link cursor-pointer text-sm font-semibold">
+          <aside className="h-fit rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <details className="group">
+              <summary className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700 transition hover:text-slate-900">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-slate-400 transition group-open:rotate-90" aria-hidden="true">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
                 Completion ({completedCount}/{students.length})
               </summary>
-              <div className="hb-text-muted mt-3 text-sm">
-                {completedCount} completed · {remainingCount} remaining
+              <div className="mt-3 space-y-1">
+                <div className="flex items-center gap-3">
+                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
+                    <div
+                      className="h-full rounded-full bg-green-500 transition-all duration-500"
+                      style={{ width: `${(completedCount / students.length) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-xs font-medium text-slate-500">
+                    {Math.round((completedCount / students.length) * 100)}%
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400">
+                  {completedCount} completed · {remainingCount} remaining
+                </p>
               </div>
-              <ul className="mt-4 space-y-2">
+              <ul className="mt-4 space-y-1.5">
                 {students.map((student) => {
                   const done = completedUserIds.has(student.id);
                   return (
                     <li
                       key={student.id}
-                      className="hb-card hb-card-muted flex items-center justify-between gap-3 p-4"
+                      className="flex items-center justify-between gap-2 rounded-lg px-3 py-2 transition hover:bg-slate-50"
                     >
                       <div className="min-w-0">
-                        <div className="hb-text font-medium">{student.full_name}</div>
-                        <div className="hb-text-subtle truncate text-xs">{student.email}</div>
+                        <div className={`text-sm font-medium ${done ? "text-green-700" : "text-slate-700"}`}>
+                          {student.full_name}
+                        </div>
+                        <div className="truncate text-xs text-slate-400">{student.email}</div>
                       </div>
-                      <div
-                        className={`text-xs font-semibold ${
-                          done ? "hb-text-success" : "hb-text-subtle"
-                        }`}
-                      >
-                        {done ? "Completed" : "Not yet"}
-                      </div>
+                      <span className={`flex items-center gap-1 text-xs font-semibold ${done ? "text-green-600" : "text-slate-400"}`}>
+                        {done ? (
+                          <>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                            Done
+                          </>
+                        ) : (
+                          <span className="h-3.5 w-3.5 rounded-full border-2 border-slate-300" />
+                        )}
+                      </span>
                     </li>
                   );
                 })}
@@ -317,8 +343,11 @@ export default async function PostPage({ params }: PageProps) {
       </div>
 
       {isAdmin && (
-        <details className="mt-6">
-          <summary className="hb-link cursor-pointer text-sm font-semibold">
+        <details className="group mt-6">
+          <summary className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700 transition hover:text-slate-900">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-slate-400 transition group-open:rotate-90" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
             Edit post
           </summary>
           <div className="mt-4">
@@ -338,16 +367,19 @@ export default async function PostPage({ params }: PageProps) {
 
       {typedEdits.length > 0 && (
         <section className="mt-8">
-          <h2 className="hb-text mb-4 text-lg font-semibold">Edit history</h2>
+          <h2 className="mb-4 text-base font-semibold text-slate-700">Edit history</h2>
           <ul className="space-y-3">
             {typedEdits.map((edit) => {
               const keys = Object.keys(edit.changes ?? {});
               return (
-                <li key={edit.id} className="hb-card hb-card-muted p-4">
-                  <div className="hb-text-subtle mb-2 text-xs">
+                <li key={edit.id} className="rounded-lg border border-slate-100 bg-slate-50/50 p-4">
+                  <div className="mb-1.5 flex items-center gap-2 text-xs text-slate-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden="true">
+                      <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                    </svg>
                     {format(new Date(edit.created_at), "MMM d, yyyy 'at' h:mm a")}
                   </div>
-                  <div className="hb-text-muted text-sm">
+                  <div className="text-sm text-slate-500">
                     {keys.length > 0 ? keys.join(", ") : "Updated"}
                   </div>
                 </li>
@@ -358,17 +390,23 @@ export default async function PostPage({ params }: PageProps) {
       )}
 
       <section className="mt-8">
-        <h2 className="hb-text mb-4 text-lg font-semibold">
-          Comments ({comments?.length ?? 0})
-        </h2>
+        <div className="mb-6 flex items-center gap-3">
+          <h2 className="text-base font-semibold text-slate-900">
+            Comments ({comments?.length ?? 0})
+          </h2>
+        </div>
 
         <div className="mb-6">
           {canComment ? (
             <CommentForm postId={id} />
           ) : (
-            <p className="hb-text-subtle text-sm">
+            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-500">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
               Comments are locked for this post.
-            </p>
+            </div>
           )}
         </div>
 

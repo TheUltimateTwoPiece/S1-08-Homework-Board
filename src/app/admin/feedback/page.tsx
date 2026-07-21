@@ -28,30 +28,35 @@ export default async function AdminFeedbackPage() {
   function renderItems(items: Feedback[]) {
     if (items.length === 0) {
       return (
-        <div className="hb-card border-dashed p-8 text-center">
-          <p className="hb-text-muted">No feedback yet.</p>
+        <div className="hb-empty-state flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 py-12 text-center">
+          <p className="text-sm font-medium text-slate-500">No feedback yet.</p>
         </div>
       );
     }
 
     return (
-      <ul className="space-y-4">
+      <ul className="space-y-3">
         {items.map((item) => (
-          <li key={item.id} className="hb-card p-5">
-            <div className="mb-2 flex items-start justify-between gap-4">
+          <li key={item.id} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md">
+            <div className="mb-3 flex items-start justify-between gap-4">
               <div className="min-w-0">
-                <div className="hb-text font-semibold">
-                  {item.profiles?.full_name ?? "Student"}
+                <div className="flex items-center gap-2">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-blue-50 text-[10px] font-bold text-blue-700">
+                    {(item.profiles?.full_name ?? "S").charAt(0).toUpperCase()}
+                  </div>
+                  <div className="text-sm font-semibold text-slate-800">
+                    {item.profiles?.full_name ?? "Student"}
+                  </div>
                 </div>
                 {item.profiles?.email && (
-                  <div className="hb-text-subtle text-xs">{item.profiles.email}</div>
+                  <div className="mt-0.5 pl-9 text-xs text-slate-400">{item.profiles.email}</div>
                 )}
               </div>
-              <time className="hb-text-subtle shrink-0 text-xs" dateTime={item.created_at}>
+              <time className="shrink-0 text-xs text-slate-400" dateTime={item.created_at}>
                 {new Date(item.created_at).toLocaleString()}
               </time>
             </div>
-            <p className="hb-text-muted whitespace-pre-line text-sm leading-relaxed">
+            <p className="whitespace-pre-line text-sm leading-relaxed text-slate-600">
               {item.message}
             </p>
           </li>
@@ -63,20 +68,35 @@ export default async function AdminFeedbackPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
       <div className="mb-8">
-        <h1 className="hb-text text-2xl font-bold">Feedback</h1>
-        <p className="hb-text-muted mt-1 text-sm">
-          Messages submitted from the homepage feedback button.
-        </p>
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 text-amber-600" aria-hidden="true">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Feedback</h1>
+            <p className="mt-0.5 text-sm text-slate-500">
+              Messages submitted from the homepage feedback button.
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="space-y-10">
         <section>
-          <h2 className="hb-text mb-3 text-lg font-semibold">Posts</h2>
+          <div className="mb-4 flex items-center gap-2">
+            <h2 className="text-base font-semibold text-slate-700">Posts</h2>
+            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500">{postFeedback.length}</span>
+          </div>
           {renderItems(postFeedback)}
         </section>
 
         <section>
-          <h2 className="hb-text mb-3 text-lg font-semibold">Website</h2>
+          <div className="mb-4 flex items-center gap-2">
+            <h2 className="text-base font-semibold text-slate-700">Website</h2>
+            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500">{websiteFeedback.length}</span>
+          </div>
           {renderItems(websiteFeedback)}
         </section>
       </div>
