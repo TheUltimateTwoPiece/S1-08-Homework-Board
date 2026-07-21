@@ -50,6 +50,13 @@ export async function sendReminder(formData: FormData) {
       .eq("role", "student");
 
     userIds = students?.map((s) => s.id) ?? [];
+  } else if (target === "all-admins") {
+    const { data: admins } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("role", "admin");
+
+    userIds = admins?.map((a) => a.id).filter((id) => id !== user.id) ?? [];
   } else if (target === "incomplete") {
     // Send only to students who haven't completed the specified post
     if (!postId) {
@@ -79,22 +86,26 @@ export async function sendReminder(formData: FormData) {
       .filter((s) => !completedUserIds.has(s.id))
       .map((s) => s.id);
   } else {
-    const { data: student } = await supabase
+    // Can target a student or an admin by ID — no role filter, just validate it exists
+    const { data: profile } = await supabase
       .from("profiles")
       .select("id")
       .eq("id", target)
-      .eq("role", "student")
       .single();
 
-    if (!student) {
-      return { error: "Please select a valid student." };
+    if (!profile) {
+      return { error: "Please select a valid recipient." };
     }
 
-    userIds = [student.id];
+    userIds = [profile.id];
   }
 
   if (userIds.length === 0) {
-    return { error: "No students found to remind." };
+    const label =
+      target === "all-admins"
+        ? "No other admins found to remind."
+        : "No recipients found to remind.";
+    return { error: label };
   }
 
   const notifications = userIds.map((userId) => ({

@@ -1,4 +1,4 @@
-import { Header } from "@/components/Header";
+import { SideRail } from "@/components/SideRail";
 import { PageTransition } from "@/components/PageTransition";
 import { getCurrentProfile, getUnreadNotificationCount } from "@/lib/auth";
 
@@ -9,16 +9,14 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
-  const [unreadCount] = await Promise.all([
-    getUnreadNotificationCount(profile.id),
-  ]);
+  const unreadCount = await getUnreadNotificationCount(profile.id);
 
   return (
-    <>
-      <Header profile={profile} unreadCount={unreadCount} />
-      <main className="hb-main flex-1">
+    <div className="hb-app-shell">
+      <SideRail profile={profile} unreadCount={unreadCount} />
+      <main className="hb-app-main hb-main flex-1">
         <PageTransition>{children}</PageTransition>
       </main>
-    </>
+    </div>
   );
 }

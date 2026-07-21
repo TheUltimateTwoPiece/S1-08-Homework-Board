@@ -17,11 +17,16 @@ export default async function AdminPage() {
 
   const supabase = await createClient();
 
-  const [{ data: students }, { data: posts }] = await Promise.all([
+  const [{ data: students }, { data: admins }, { data: posts }] = await Promise.all([
     supabase
       .from("profiles")
       .select("id, full_name, email")
       .eq("role", "student")
+      .order("full_name"),
+    supabase
+      .from("profiles")
+      .select("id, full_name, email")
+      .eq("role", "admin")
       .order("full_name"),
     supabase
       .from("posts")
@@ -65,6 +70,7 @@ export default async function AdminPage() {
         <CreatePostForm />
         <SendReminderForm
           students={(students as Profile[]) ?? []}
+          admins={(admins as Profile[]) ?? []}
           posts={(posts as Pick<Post, "id" | "title">[]) ?? []}
         />
       </div>

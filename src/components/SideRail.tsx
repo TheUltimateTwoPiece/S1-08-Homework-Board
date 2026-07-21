@@ -1,0 +1,230 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { signOut } from "@/actions/auth";
+import { PendingButton } from "@/components/PendingButton";
+import type { Profile } from "@/lib/types";
+
+type SideRailProps = {
+  profile: Profile;
+  unreadCount: number;
+};
+
+type RailItem = {
+  href: string;
+  label: string;
+  icon: React.ReactNode;
+  exactMatch?: boolean;
+  badge?: number;
+  adminOnly?: boolean;
+};
+
+function Icon({ children }: { children: React.ReactNode }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-[18px] w-[18px]"
+      aria-hidden="true"
+    >
+      {children}
+    </svg>
+  );
+}
+
+const NAV_ITEMS: RailItem[] = [
+  {
+    href: "/",
+    label: "Home",
+    icon: (
+      <Icon>
+        <path d="M3 9 12 2l9 7v11a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2z" />
+      </Icon>
+    ),
+    exactMatch: true,
+  },
+  {
+    href: "/calendar",
+    label: "Calendar",
+    icon: (
+      <Icon>
+        <rect x="3" y="4" width="18" height="18" rx="2" />
+        <line x1="16" y1="2" x2="16" y2="6" />
+        <line x1="8" y1="2" x2="8" y2="6" />
+        <line x1="3" y1="10" x2="21" y2="10" />
+      </Icon>
+    ),
+  },
+  {
+    href: "/notifications",
+    label: "Notifications",
+    icon: (
+      <Icon>
+        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+      </Icon>
+    ),
+  },
+  {
+    href: "/posts",
+    label: "All posts",
+    icon: (
+      <Icon>
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <line x1="8" y1="13" x2="16" y2="13" />
+        <line x1="8" y1="17" x2="16" y2="17" />
+      </Icon>
+    ),
+  },
+  {
+    href: "/feedback",
+    label: "Feedback",
+    icon: (
+      <Icon>
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+      </Icon>
+    ),
+  },
+];
+
+const ADMIN_NAV_ITEMS: RailItem[] = [
+  {
+    href: "/admin",
+    label: "Admin",
+    exactMatch: true,
+    icon: (
+      <Icon>
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      </Icon>
+    ),
+    adminOnly: true,
+  },
+  {
+    href: "/admin/schedule",
+    label: "Schedule",
+    icon: (
+      <Icon>
+        <rect x="3" y="4" width="18" height="18" rx="2" />
+        <line x1="16" y1="2" x2="16" y2="6" />
+        <line x1="8" y1="2" x2="8" y2="6" />
+        <line x1="3" y1="10" x2="21" y2="10" />
+        <path d="m9 16 2 2 4-4" strokeWidth="1.5" />
+      </Icon>
+    ),
+    adminOnly: true,
+  },
+  {
+    href: "/admin/feedback",
+    label: "Inbox",
+    icon: (
+      <Icon>
+        <path d="M22 12h-6l-2 3h-4l-2-3H2" />
+        <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+      </Icon>
+    ),
+    adminOnly: true,
+  },
+];
+
+export function SideRail({ profile, unreadCount }: SideRailProps) {
+  const pathname = usePathname();
+
+  function activeFor(path: string, exact?: boolean) {
+    if (exact) return pathname === path;
+    return pathname === path || pathname.startsWith(`${path}/`);
+  }
+
+  const itemsWithBadge = NAV_ITEMS.map((item) =>
+    item.href === "/notifications" && unreadCount > 0
+      ? { ...item, badge: unreadCount }
+      : item,
+  );
+
+  const allItems =
+    profile.role === "admin"
+      ? [...itemsWithBadge, ...ADMIN_NAV_ITEMS]
+      : itemsWithBadge;
+
+  return (
+    <aside className="hb-siderail" aria-label="Primary navigation">
+      <Link
+        href="/"
+        className="hb-siderail-brand"
+        aria-label="Homework Board home"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-5 w-5"
+          aria-hidden="true"
+        >
+          <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 19.5" />
+          <path d="M9 10h6" />
+          <path d="M9 14h6" />
+          <path d="M9 6h6" />
+        </svg>
+      </Link>
+
+      <div className="hb-siderail-divider" />
+
+      <nav className="hb-siderail-nav">
+        {allItems.map((item) => {
+          const isActive = activeFor(item.href, item.exactMatch);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`hb-siderail-btn ${isActive ? "hb-siderail-btn--active" : ""}`}
+              aria-current={isActive ? "page" : undefined}
+              aria-label={item.label}
+            >
+              {item.icon}
+              {item.badge !== undefined && (
+                <span className="hb-siderail-btn-badge" aria-label={`${item.badge} unread`}>
+                  {item.badge > 99 ? "99+" : item.badge}
+                </span>
+              )}
+              <span className="hb-siderail-tooltip">{item.label}</span>
+            </Link>
+          );
+        })}
+      </nav>
+
+      <div className="hb-siderail-footer">
+        <div
+          className="hb-siderail-avatar"
+          aria-hidden="true"
+          title={profile.full_name}
+        >
+          {profile.full_name.charAt(0).toUpperCase()}
+        </div>
+        <form action={signOut}>
+          <PendingButton
+            type="submit"
+            pendingContent="..."
+            aria-label="Sign out"
+            className="hb-siderail-btn hb-siderail-logout"
+          >
+            <Icon>
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </Icon>
+          </PendingButton>
+        </form>
+      </div>
+    </aside>
+  );
+}

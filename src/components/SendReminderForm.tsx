@@ -6,6 +6,7 @@ import type { Post, Profile } from "@/lib/types";
 
 type SendReminderFormProps = {
   students: Pick<Profile, "id" | "full_name" | "email">[];
+  admins: Pick<Profile, "id" | "full_name" | "email">[];
   posts: Pick<Post, "id" | "title">[];
 };
 
@@ -30,7 +31,7 @@ const QUICK_REMINDERS = [
   },
 ];
 
-export function SendReminderForm({ students, posts }: SendReminderFormProps) {
+export function SendReminderForm({ students, admins, posts }: SendReminderFormProps) {
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [target, setTarget] = useState("all");
@@ -96,13 +97,23 @@ export function SendReminderForm({ students, posts }: SendReminderFormProps) {
             onChange={(e) => setTarget(e.target.value)}
             className="hb-input w-full rounded-lg px-3 py-2.5 text-sm"
           >
-            <option value="all">All students</option>
-            <option value="incomplete">Only students who haven&apos;t completed this task</option>
-            {students.map((student) => (
-              <option key={student.id} value={student.id}>
-                {student.full_name} ({student.email})
-              </option>
-            ))}
+            <optgroup label="Students">
+              <option value="all">All students</option>
+              <option value="incomplete">Only students who haven&apos;t completed this task</option>
+              {students.map((student) => (
+                <option key={student.id} value={student.id}>
+                  {student.full_name} ({student.email})
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Admins">
+              <option value="all-admins">All other admins</option>
+              {admins.map((admin) => (
+                <option key={admin.id} value={admin.id}>
+                  {admin.full_name} ({admin.email})
+                </option>
+              ))}
+            </optgroup>
           </select>
         </div>
 
