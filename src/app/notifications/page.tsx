@@ -28,7 +28,7 @@ export default async function NotificationsPage() {
       <div className="mb-8 flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Reminders</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-zinc-950">Reminders</h1>
             {unreadCount > 0 && (
               <span className="rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-semibold text-red-600">
                 {unreadCount} new
@@ -77,7 +77,7 @@ export default async function NotificationsPage() {
                         New
                       </span>
                     )}
-                    <h2 className={`text-sm font-semibold ${notification.read_at ? "text-slate-600" : "text-slate-900"}`}>
+                    <h2 className={`text-sm font-semibold ${notification.read_at ? "text-slate-600" : "text-zinc-950"}`}>
                       {notification.title}
                     </h2>
                   </div>

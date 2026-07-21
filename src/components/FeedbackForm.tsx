@@ -26,7 +26,7 @@ export function FeedbackForm() {
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
         </div>
-        <h1 className="text-2xl font-bold text-slate-900">Feedback</h1>
+        <h1 className="text-2xl font-bold text-zinc-950">Feedback</h1>
         <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">
           Share ideas, report issues, or suggest improvements.
         </p>
@@ -42,7 +42,7 @@ export function FeedbackForm() {
                 onClick={() => setCategory("post")}
                 className={`flex-1 rounded-md px-3 py-2 text-xs font-semibold transition ${
                   category === "post"
-                    ? "bg-white text-slate-900 shadow-sm"
+                    ? "bg-white text-zinc-950 shadow-sm"
                     : "text-slate-700 dark:text-slate-300 hover:text-slate-700"
                 }`}
               >
@@ -53,7 +53,7 @@ export function FeedbackForm() {
                 onClick={() => setCategory("website")}
                 className={`flex-1 rounded-md px-3 py-2 text-xs font-semibold transition ${
                   category === "website"
-                    ? "bg-white text-slate-900 shadow-sm"
+                    ? "bg-white text-zinc-950 shadow-sm"
                     : "text-slate-700 dark:text-slate-300 hover:text-slate-700"
                 }`}
               >

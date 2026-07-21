@@ -110,7 +110,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
             <path d="M9 14h6" />
           </svg>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+        <h1 className="text-2xl font-bold tracking-tight text-zinc-950 dark:text-slate-100">
           Daily Homework
         </h1>
         <div className="ml-auto flex items-center gap-2">

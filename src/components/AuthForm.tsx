@@ -44,7 +44,7 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
               <path d="M9 6h6" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">S1-08 Homework Board</h1>
+          <h1 className="text-2xl font-bold text-zinc-950">S1-08 Homework Board</h1>
           <p className="mt-1.5 text-sm text-slate-700 dark:text-slate-300">
             {mode === "signin"
               ? "Sign in to view homework and notifications"
@@ -58,7 +58,7 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
             onClick={() => setMode("signin")}
             className={`flex-1 rounded-md py-2 text-sm font-medium transition ${
               mode === "signin"
-                ? "bg-white text-slate-900 shadow-sm"
+                ? "bg-white text-zinc-950 shadow-sm"
                 : "text-slate-700 dark:text-slate-300 hover:text-slate-700"
             }`}
           >
@@ -69,7 +69,7 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
             onClick={() => setMode("signup")}
             className={`flex-1 rounded-md py-2 text-sm font-medium transition ${
               mode === "signup"
-                ? "bg-white text-slate-900 shadow-sm"
+                ? "bg-white text-zinc-950 shadow-sm"
                 : "text-slate-700 dark:text-slate-300 hover:text-slate-700"
             }`}
           >

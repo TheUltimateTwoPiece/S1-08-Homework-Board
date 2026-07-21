@@ -45,7 +45,7 @@ export default async function AdminPage() {
             </svg>
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Admin panel</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-zinc-950">Admin panel</h1>
             <p className="mt-0.5 text-sm text-slate-700 dark:text-slate-300">
               Post daily homework and send reminders so students complete their work.
             </p>

@@ -50,7 +50,7 @@ export function PostCard({ post, completed }: PostCardProps) {
             </div>
             <h2
               className={`text-base font-semibold leading-snug transition-colors duration-150 group-hover:text-blue-600 ${
-                completed ? "text-slate-600 dark:text-slate-200 line-through" : "text-slate-900"
+                completed ? "text-slate-600 dark:text-slate-200 line-through" : "text-zinc-950"
               }`}
             >
               {post.title}

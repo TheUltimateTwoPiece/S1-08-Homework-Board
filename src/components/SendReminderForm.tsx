@@ -78,7 +78,7 @@ export function SendReminderForm({ students, admins, posts }: SendReminderFormPr
           </svg>
         </div>
         <div>
-          <h2 className="text-base font-semibold text-slate-900">Send reminder</h2>
+          <h2 className="text-base font-semibold text-zinc-950">Send reminder</h2>
           <p className="text-xs text-slate-700 dark:text-slate-300">
             Students will see this in their reminders bell icon.
           </p>

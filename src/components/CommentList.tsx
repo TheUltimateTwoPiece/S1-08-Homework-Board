@@ -104,7 +104,7 @@ export function CommentList({
               <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-blue-50 text-[10px] font-bold text-blue-700">
                 {(node.profiles?.full_name ?? "S").charAt(0).toUpperCase()}
               </div>
-              <span className="text-sm font-medium text-slate-900">
+              <span className="text-sm font-medium text-zinc-950">
                 {node.profiles?.full_name ?? "Student"}
               </span>
               {isReply && (

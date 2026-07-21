@@ -1211,6 +1211,109 @@
     border-color: rgba(37, 99, 235, 0.35);
   }
 
+  /* ── Captivating Clickable Cards ──────────────── */
+
+  .hb-bento-card--clickable {
+    cursor: pointer;
+  }
+
+  @keyframes hb-card-shimmer {
+    0% { transform: translateX(-150%) skewX(-15deg); opacity: 0; }
+    20% { opacity: 1; }
+    100% { transform: translateX(180%) skewX(-15deg); opacity: 0; }
+  }
+
+  .hb-bento-card--clickable::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background: linear-gradient(
+      100deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.45) 50%,
+      transparent 70%
+    );
+    transform: translateX(-150%) skewX(-15deg);
+    opacity: 0;
+    z-index: 0;
+  }
+
+  .dark .hb-bento-card--clickable::after {
+    background: linear-gradient(
+      100deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.18) 50%,
+      transparent 70%
+    );
+  }
+
+  .hb-bento-card--clickable:hover {
+    transform: translateY(-6px) scale(1.012);
+    box-shadow:
+      0 20px 36px -8px rgba(37, 99, 235, 0.28),
+      0 10px 18px -4px rgba(220, 38, 38, 0.14),
+      0 4px 8px rgba(15, 23, 42, 0.08);
+    border-color: rgba(37, 99, 235, 0.5);
+  }
+
+  .hb-bento-card--clickable:hover::after {
+    animation: hb-card-shimmer 900ms ease-out;
+  }
+
+  .hb-bento-card--clickable:active {
+    transform: translateY(-2px) scale(0.997);
+    transition-duration: 80ms;
+  }
+
+  /* ── SVG Progress Ring ───────────────────────── */
+
+  .hb-progress-ring {
+    animation: hb-bubble-pop 700ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform: rotate(-90deg);
+    transform-origin: center;
+  }
+
+  .hb-progress-stroke {
+    transition: stroke-dashoffset 1.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    filter: drop-shadow(0 0 4px rgba(34, 197, 94, 0.4));
+  }
+
+  @keyframes hb-progress-draw {
+    from { stroke-dashoffset: var(--hb-circ, 276); }
+    to { stroke-dashoffset: var(--hb-target-offset, 0); }
+  }
+
+  .dark .hb-progress-stroke {
+    filter: drop-shadow(0 0 6px rgba(74, 222, 128, 0.55));
+  }
+
+  /* ── Pulsing Notification Dot ────────────────── */
+
+  .hb-pulse-dot {
+    animation: hb-pulse-dot 1.4s ease-in-out infinite;
+  }
+
+  @keyframes hb-pulse-dot {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.55); }
+    50% { transform: scale(1.25); box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
+  }
+
+  /* ── Mini Calendar Cell Link Hover ───────────── */
+
+  .hb-mini-cal-cell--link {
+    position: relative;
+    z-index: 1;
+    transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+  }
+
+  .hb-mini-cal-cell--link:hover {
+    transform: scale(1.18) translateY(-1px);
+    z-index: 4;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  }
+
   /* ── Bento Card Headers ──────────────────────── */
 
   .hb-bento-head {
@@ -1370,6 +1473,24 @@
   .dark .hb-stat-ring-fill {
     mask: radial-gradient(circle, transparent 28px, rgba(0,0,0,1) 29px);
     -webkit-mask: radial-gradient(circle, transparent 28px, rgba(0,0,0,1) 29px);
+  }
+
+  /* ── Count-up / Number Flip In ───────────────── */
+
+  @keyframes hb-count-up {
+    from { opacity: 0; transform: translateY(6px); filter: blur(2px); }
+    to { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+
+  .hb-count-up {
+    animation: hb-count-up 600ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  }
+
+  /* ── Glow Pulse for Active Widgets ───────────── */
+
+  @keyframes hb-active-glow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.0); }
+    50% { box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.18); }
   }
 
   .hb-stat-ring-label {

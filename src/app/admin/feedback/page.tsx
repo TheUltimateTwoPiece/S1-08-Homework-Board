@@ -44,7 +44,7 @@ export default async function AdminFeedbackPage() {
                   <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-blue-50 text-[10px] font-bold text-blue-700">
                     {(item.profiles?.full_name ?? "S").charAt(0).toUpperCase()}
                   </div>
-                  <div className="text-sm font-semibold text-slate-800">
+                  <div className="text-sm font-semibold text-zinc-900">
                     {item.profiles?.full_name ?? "Student"}
                   </div>
                 </div>
@@ -75,7 +75,7 @@ export default async function AdminFeedbackPage() {
             </svg>
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Feedback</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-zinc-950">Feedback</h1>
             <p className="mt-0.5 text-sm text-slate-700 dark:text-slate-300">
               Messages submitted from the homepage feedback button.
             </p>

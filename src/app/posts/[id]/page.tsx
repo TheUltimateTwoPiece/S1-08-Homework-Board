@@ -196,7 +196,7 @@ export default async function PostPage({ params }: PageProps) {
               />
               <h1
                 className={`text-2xl font-bold tracking-tight ${
-                  isCompleted ? "text-slate-600 dark:text-slate-200 line-through" : "text-slate-900"
+                  isCompleted ? "text-slate-600 dark:text-slate-200 line-through" : "text-zinc-950"
                 }`}
               >
                 {typedPost.title}
@@ -283,7 +283,7 @@ export default async function PostPage({ params }: PageProps) {
         {isAdmin && allProfiles.length > 0 ? (
           <aside className="h-fit rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800/80">
             <details className="group">
-              <summary className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700 transition hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-900 dark:text-slate-100">
+              <summary className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700 transition hover:text-zinc-950 dark:text-slate-300 dark:hover:text-zinc-950 dark:text-slate-100">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-slate-600 dark:text-slate-200 transition group-open:rotate-90" aria-hidden="true">
                   <polyline points="9 18 15 12 9 6" />
                 </svg>
@@ -348,7 +348,7 @@ export default async function PostPage({ params }: PageProps) {
 
       {isAdmin && (
         <details className="group mt-6">
-          <summary className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700 transition hover:text-slate-900">
+          <summary className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700 transition hover:text-zinc-950">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-slate-600 dark:text-slate-200 transition group-open:rotate-90" aria-hidden="true">
               <polyline points="9 18 15 12 9 6" />
             </svg>
@@ -395,7 +395,7 @@ export default async function PostPage({ params }: PageProps) {
 
       <section className="mt-8">
         <div className="mb-6 flex items-center gap-3">
-          <h2 className="text-base font-semibold text-slate-900">
+          <h2 className="text-base font-semibold text-zinc-950">
             Comments ({comments?.length ?? 0})
           </h2>
         </div>

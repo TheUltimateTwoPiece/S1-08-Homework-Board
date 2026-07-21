@@ -159,7 +159,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
             disabled={isPending}
             className={`flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition ${
               initial.status === option.value
-                ? "bg-white text-slate-900 shadow-sm"
+                ? "bg-white text-zinc-950 shadow-sm"
                 : "text-slate-700 dark:text-slate-300 hover:bg-white/60 hover:text-slate-700"
             }`}
           >

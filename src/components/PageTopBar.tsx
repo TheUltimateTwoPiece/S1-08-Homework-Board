@@ -18,7 +18,7 @@ export function PageTopBar({
   return (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div className="min-w-0 flex-1">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-[28px]">
+        <h1 className="text-2xl font-bold tracking-tight text-zinc-950 dark:text-slate-100 sm:text-[28px]">
           Hi, <span className="text-blue-600 dark:text-blue-400">{greetingName}</span>!
           <span className="ml-2 inline-block origin-[70%_70%] animate-[hb-wave_1800ms_ease-in-out_infinite]">
             👋
