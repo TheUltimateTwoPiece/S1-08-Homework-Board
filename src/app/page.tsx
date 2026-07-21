@@ -70,12 +70,32 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   );
 
   const typedPosts = (posts as Post[]) ?? [];
-  const filteredPosts = typedPosts.filter((post) => {
-    const isCompleted = completedPostIds.has(post.id);
-    if (status === "completed") return isCompleted;
-    if (status === "todo") return !isCompleted;
-    return true;
-  });
+  const filteredPosts = typedPosts
+    .filter((post) => {
+      const isCompleted = completedPostIds.has(post.id);
+      if (status === "completed") return isCompleted;
+      if (status === "todo") return !isCompleted;
+      return true;
+    })
+    .sort((a, b) => {
+      // Uncompleted posts first, completed posts last
+      const aCompleted = completedPostIds.has(a.id) ? 1 : 0;
+      const bCompleted = completedPostIds.has(b.id) ? 1 : 0;
+      if (aCompleted !== bCompleted) return aCompleted - bCompleted;
+
+      // Pinned posts next
+      if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+
+      // Earlier due dates first (null due_at goes last)
+      if (a.due_at !== b.due_at) {
+        if (!a.due_at) return 1;
+        if (!b.due_at) return -1;
+        return a.due_at.localeCompare(b.due_at);
+      }
+
+      // Newest created_at first as final tiebreaker
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
 
   const subjects = ["General", "Math", "Science", "English", "History", "Language"];
 
