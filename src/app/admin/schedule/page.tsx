@@ -56,8 +56,8 @@ export default async function AdminSchedulePage() {
             </svg>
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-zinc-950 dark:text-slate-100">Admin Schedule</h1>
-            <p className="mt-0.5 text-sm text-slate-700 dark:text-slate-700">
+            <h1 className="hb-page-title text-2xl tracking-tight">Admin Schedule</h1>
+            <p className="hb-body-text mt-0.5 text-sm">
               Assign admins to days of the week for creating homework posts.
             </p>
           </div>

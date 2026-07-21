@@ -62,6 +62,15 @@ const NAV_ITEMS: RailItem[] = [
     ),
   },
   {
+    href: "/your-progress",
+    label: "Your progress",
+    icon: (
+      <Icon>
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+      </Icon>
+    ),
+  },
+  {
     href: "/notifications",
     label: "Notifications",
     icon: (

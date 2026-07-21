@@ -14,9 +14,19 @@
     --hb-surface-hover: #f1f5f9;
     --hb-border: #e2e8f0;
     --hb-border-hover: #cbd5e1;
-    --hb-text: #1e293b;
-    --hb-text-muted: #1e293b;
-    --hb-text-subtle: #475569;
+    /* ── 4-Tier Text Hierarchy (WCAG AA safe in both modes) ── */
+    /* Page titles (h1, h2 on dashboards):     slate-900 ~17:1 on white      */
+    /* Section / card titles:                  slate-800 ~14:1 on white      */
+    /* Body / description paragraphs:          slate-700 ~10:1 on white      */
+    /* Muted / metadata / helper / timestamps:  slate-600 ~7.6:1 on white     */
+    /* Faded (intentionally de-emphasized):     slate-500 ~4.7:1 on white     */
+    --hb-text-page: #0f172a;       /* slate-900 */
+    --hb-text-section: #1e293b;    /* slate-800 */
+    --hb-text-body: #334155;       /* slate-700 */
+    --hb-text-muted: #475569;      /* slate-600 */
+    --hb-text-faded: #64748b;      /* slate-500 */
+    --hb-text: var(--hb-text-body);
+    --hb-text-subtle: var(--hb-text-muted);
     --hb-overlay: rgba(0, 0, 0, 0.05);
     --hb-bg-grad-1: rgba(37, 99, 235, 0.08);
     --hb-bg-grad-2: rgba(220, 38, 38, 0.07);
@@ -46,9 +56,19 @@
     --hb-surface-hover: #334155;
     --hb-border: #334155;
     --hb-border-hover: #475569;
-    --hb-text: #e2e8f0;
-    --hb-text-muted: #cbd5e1;
-    --hb-text-subtle: #cbd5e1;
+    /* Dark mode: hierarchy reads as light-grey → near-white     */
+    /* Page titles:      slate-50  ~13:1 on slate-800  */
+    /* Section titles:   slate-100 ~11:1               */
+    /* Body:             slate-200 ~9:1                */
+    /* Muted:            slate-300 ~7:1                */
+    /* Faded:            slate-400 ~5:1                */
+    --hb-text-page: #f8fafc;       /* slate-50  */
+    --hb-text-section: #f1f5f9;    /* slate-100 */
+    --hb-text-body: #e2e8f0;       /* slate-200 */
+    --hb-text-muted: #cbd5e1;      /* slate-300 */
+    --hb-text-faded: #94a3b8;      /* slate-400 */
+    --hb-text: var(--hb-text-body);
+    --hb-text-subtle: var(--hb-text-muted);
     --hb-overlay: rgba(255, 255, 255, 0.05);
     --hb-bg-grad-1: rgba(96, 165, 250, 0.06);
     --hb-bg-grad-2: rgba(248, 113, 113, 0.05);
@@ -309,8 +329,39 @@
   /* ── Typography ─────────────────────────────── */
 
   .hb-text { color: var(--hb-text); }
-  .hb-text-muted { color: var(--hb-text-muted); }
   .hb-text-subtle { color: var(--hb-text-subtle); }
+
+  /* ── 4-Tier Text Hierarchy Utilities ────────── */
+  /* Each tier is WCAG AA safe in BOTH light & dark modes.
+     Use these for content text. Do NOT use generic gray-on-bg
+     classes (text-slate-* / text-zinc-*) on content text. */
+
+  .hb-page-title {
+    color: var(--hb-text-page);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .hb-section-title {
+    color: var(--hb-text-section);
+    font-weight: 600;
+    letter-spacing: -0.005em;
+  }
+
+  .hb-body-text {
+    color: var(--hb-text-body);
+    font-weight: 500;
+  }
+
+  .hb-muted-text {
+    color: var(--hb-text-muted);
+    font-weight: 500;
+  }
+
+  .hb-faded-text {
+    color: var(--hb-text-faded);
+    font-weight: 500;
+  }
 
   .hb-link {
     color: var(--hb-blue);

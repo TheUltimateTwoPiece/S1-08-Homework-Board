@@ -26,8 +26,8 @@ export function FeedbackForm() {
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
         </div>
-        <h1 className="text-2xl font-bold text-zinc-950">Feedback</h1>
-        <p className="mt-1 text-sm text-slate-700 dark:text-slate-700">
+        <h1 className="hb-page-title text-2xl">Feedback</h1>
+        <p className="hb-body-text mt-1 text-sm">
           Share ideas, report issues, or suggest improvements.
         </p>
       </div>
@@ -35,15 +35,15 @@ export function FeedbackForm() {
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="space-y-4">
           <div>
-            <span className="mb-2 block text-sm font-medium text-slate-700">Category</span>
+            <span className="hb-section-title mb-2 block text-sm">Category</span>
             <div className="flex gap-2 rounded-lg bg-slate-100/70 p-1">
               <button
                 type="button"
                 onClick={() => setCategory("post")}
-                className={`flex-1 rounded-md px-3 py-2 text-xs font-semibold transition ${
+                className={`flex-1 rounded-md px-3 py-2 text-xs transition ${
                   category === "post"
-                    ? "bg-white text-zinc-950 shadow-sm"
-                    : "text-slate-700 dark:text-slate-700 hover:text-slate-700"
+                    ? "hb-section-title bg-white shadow-sm"
+                    : "hb-muted-text hover:text-slate-700"
                 }`}
               >
                 Posts
@@ -51,10 +51,10 @@ export function FeedbackForm() {
               <button
                 type="button"
                 onClick={() => setCategory("website")}
-                className={`flex-1 rounded-md px-3 py-2 text-xs font-semibold transition ${
+                className={`flex-1 rounded-md px-3 py-2 text-xs transition ${
                   category === "website"
-                    ? "bg-white text-zinc-950 shadow-sm"
-                    : "text-slate-700 dark:text-slate-700 hover:text-slate-700"
+                    ? "hb-section-title bg-white shadow-sm"
+                    : "hb-muted-text hover:text-slate-700"
                 }`}
               >
                 Website
@@ -64,7 +64,7 @@ export function FeedbackForm() {
           </div>
 
           <div>
-            <label htmlFor="message" className="mb-1.5 block text-sm font-medium text-slate-700">
+            <label htmlFor="message" className="hb-section-title mb-1.5 block text-sm">
               Your feedback
             </label>
             <textarea

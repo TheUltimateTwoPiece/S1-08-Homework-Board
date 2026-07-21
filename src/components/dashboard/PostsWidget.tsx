@@ -18,7 +18,7 @@ function formatDueLabel(due: string | null) {
   }
   const today = format(new Date(), "yyyy-MM-dd");
   if (due === today) return { text: "Due today", className: "text-amber-700 dark:text-amber-300" };
-  return { text: "Due " + format(date, "MMM d"), className: "text-slate-700 dark:text-slate-700" };
+  return { text: "Due " + format(date, "MMM d"), className: "hb-muted-text" };
 }
 
 export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps) {
@@ -40,8 +40,8 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
             </svg>
           </div>
           <div>
-            <h2 className="text-base font-bold tracking-tight text-slate-800 dark:text-slate-200">{firstName}&apos;s homework</h2>
-            <p className="text-xs font-semibold text-slate-700 dark:text-slate-700">{totalDone} of {top.length} done · tap to open</p>
+            <h2 className="hb-section-title text-base tracking-tight">{firstName}&apos;s homework</h2>
+            <p className="hb-body-text text-xs font-semibold">{totalDone} of {top.length} done · tap to open</p>
           </div>
         </div>
         <span className="rounded-md px-2.5 py-1.5 text-xs font-bold text-blue-700 transition group-hover:bg-blue-100 dark:text-blue-400 dark:group-hover:bg-blue-900/40">
@@ -52,13 +52,13 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
       {top.length === 0 ? (
         <div className="flex h-[calc(100%-56px)] flex-col items-center justify-center text-center">
           <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-700">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-slate-700 dark:text-slate-700" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="hb-muted-text h-6 w-6" aria-hidden="true">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
               <polyline points="14 2 14 8 20 8" />
             </svg>
           </div>
-          <p className="text-sm font-bold text-slate-700 dark:text-slate-700">All caught up!</p>
-          <p className="text-xs font-semibold text-slate-700 dark:text-slate-700">No homework waiting for you.</p>
+          <p className="hb-section-title text-sm">All caught up!</p>
+          <p className="hb-muted-text text-xs">No homework waiting for you.</p>
         </div>
       ) : (
         <ul className="-mx-2 max-h-[calc(100%-56px)] space-y-1 overflow-y-auto pb-6">
@@ -75,7 +75,7 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
                 <Link href={"/posts/" + post.id} className="min-w-0 flex-1 relative z-[3]">
                   <div className="flex items-center gap-2">
                     {post.pinned && <span aria-hidden="true" className="text-amber-600">📌</span>}
-                    <span className={"truncate text-sm font-bold " + (done ? "line-through text-slate-600 dark:text-slate-300" : "text-slate-800 dark:text-slate-200")}>{post.title}</span>
+                    <span className={"hb-section-title truncate text-sm " + (done ? "hb-faded-text line-through" : "")}>{post.title}</span>
                     <span className="hb-badge-subject shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold">{post.subject}</span>
                   </div>
                   {due && <div className={"mt-0.5 text-[11px] font-bold " + due.className}>{due.text}</div>}

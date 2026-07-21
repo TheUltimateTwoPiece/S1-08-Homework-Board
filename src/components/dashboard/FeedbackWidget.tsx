@@ -19,7 +19,7 @@ export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
           </div>
-          <h2 className="text-sm font-bold tracking-tight text-slate-800 dark:text-slate-200">Feedback inbox</h2>
+          <h2 className="hb-section-title text-sm tracking-tight">Feedback inbox</h2>
           {feedback.length > 0 && (
             <span className="rounded-full bg-amber-200 px-1.5 py-0.5 text-[10px] font-bold text-amber-900 dark:bg-amber-800/60 dark:text-amber-100">
               {feedback.length}
@@ -33,7 +33,7 @@ export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
 
       {top.length === 0 ? (
         <div className="flex h-[calc(100%-44px)] items-center justify-center text-center">
-          <p className="text-sm font-bold text-slate-700 dark:text-slate-700">No feedback yet</p>
+          <p className="hb-section-title text-sm">No feedback yet</p>
         </div>
       ) : (
         <ul className="space-y-1.5 pb-5">
@@ -44,15 +44,15 @@ export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
-                  <div className="line-clamp-1 text-sm font-bold text-slate-800 dark:text-slate-200">
+                  <div className="hb-section-title line-clamp-1 text-sm">
                     {f.profiles?.full_name ?? "Student"}
                   </div>
-                  <span className="rounded bg-zinc-200 px-1 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-zinc-700 dark:text-slate-200">
+                  <span className="hb-muted-text rounded bg-zinc-200 px-1 py-0.5 text-[10px] font-bold dark:bg-zinc-700">
                     {f.category}
                   </span>
                 </div>
-                <div className="line-clamp-1 text-xs font-semibold text-slate-700 dark:text-slate-700">{f.message}</div>
-                <div className="text-[10px] font-bold text-slate-600 dark:text-slate-300">
+                <div className="hb-body-text line-clamp-1 text-xs">{f.message}</div>
+                <div className="hb-muted-text text-[10px]">
                   {formatDistanceToNow(new Date(f.created_at), { addSuffix: true })}
                 </div>
               </div>

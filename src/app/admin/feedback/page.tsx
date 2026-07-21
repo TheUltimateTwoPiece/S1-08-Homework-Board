@@ -29,7 +29,7 @@ export default async function AdminFeedbackPage() {
     if (items.length === 0) {
       return (
         <div className="hb-empty-state flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 py-12 text-center">
-          <p className="text-sm font-medium text-slate-700 dark:text-slate-700">No feedback yet.</p>
+          <p className="hb-section-title text-sm">No feedback yet.</p>
         </div>
       );
     }
@@ -37,26 +37,26 @@ export default async function AdminFeedbackPage() {
     return (
       <ul className="space-y-3">
         {items.map((item) => (
-          <li key={item.id} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md">
+          <li key={item.id} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md dark:border-slate-700 dark:bg-slate-800/80">
             <div className="mb-3 flex items-start justify-between gap-4">
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-blue-50 text-[10px] font-bold text-blue-700">
                     {(item.profiles?.full_name ?? "S").charAt(0).toUpperCase()}
                   </div>
-                  <div className="text-sm font-semibold text-slate-700">
+                  <div className="hb-section-title text-sm">
                     {item.profiles?.full_name ?? "Student"}
                   </div>
                 </div>
                 {item.profiles?.email && (
-                  <div className="mt-0.5 pl-9 text-xs text-slate-600 dark:text-slate-200">{item.profiles.email}</div>
+                  <div className="hb-muted-text mt-0.5 pl-9 text-xs">{item.profiles.email}</div>
                 )}
               </div>
-              <time className="shrink-0 text-xs text-slate-600 dark:text-slate-200" dateTime={item.created_at}>
+              <time className="hb-muted-text shrink-0 text-xs" dateTime={item.created_at}>
                 {new Date(item.created_at).toLocaleString()}
               </time>
             </div>
-            <p className="whitespace-pre-line text-sm leading-relaxed text-slate-600">
+            <p className="hb-body-text whitespace-pre-line text-sm leading-relaxed">
               {item.message}
             </p>
           </li>
@@ -75,8 +75,8 @@ export default async function AdminFeedbackPage() {
             </svg>
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-zinc-950">Feedback</h1>
-            <p className="mt-0.5 text-sm text-slate-700 dark:text-slate-700">
+            <h1 className="hb-page-title text-2xl tracking-tight">Feedback</h1>
+            <p className="hb-body-text mt-0.5 text-sm">
               Messages submitted from the homepage feedback button.
             </p>
           </div>
@@ -86,16 +86,16 @@ export default async function AdminFeedbackPage() {
       <div className="space-y-10">
         <section>
           <div className="mb-4 flex items-center gap-2">
-            <h2 className="text-base font-semibold text-slate-700">Posts</h2>
-            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700 dark:text-slate-700">{postFeedback.length}</span>
+            <h2 className="hb-section-title text-base">Posts</h2>
+            <span className="hb-muted-text rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold dark:bg-slate-700">{postFeedback.length}</span>
           </div>
           {renderItems(postFeedback)}
         </section>
 
         <section>
           <div className="mb-4 flex items-center gap-2">
-            <h2 className="text-base font-semibold text-slate-700">Website</h2>
-            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700 dark:text-slate-700">{websiteFeedback.length}</span>
+            <h2 className="hb-section-title text-base">Website</h2>
+            <span className="hb-muted-text rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold dark:bg-slate-700">{websiteFeedback.length}</span>
           </div>
           {renderItems(websiteFeedback)}
         </section>

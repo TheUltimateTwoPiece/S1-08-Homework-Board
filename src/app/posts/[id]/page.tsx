@@ -195,8 +195,8 @@ export default async function PostPage({ params }: PageProps) {
                 completed={isCompleted}
               />
               <h1
-                className={`text-2xl font-bold tracking-tight ${
-                  isCompleted ? "text-slate-600 dark:text-slate-200 line-through" : "text-zinc-950"
+                className={`text-2xl tracking-tight ${
+                  isCompleted ? "hb-faded-text line-through" : "hb-page-title"
                 }`}
               >
                 {typedPost.title}
@@ -210,7 +210,7 @@ export default async function PostPage({ params }: PageProps) {
                   <PendingButton
                     type="submit"
                     pendingContent="Saving..."
-                    className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-700 transition hover:bg-slate-100 hover:text-slate-700"
+                    className="hb-section-title flex items-center gap-1 rounded-lg px-2 py-1 text-xs transition hover:bg-slate-100"
                   >
                     {typedPost.pinned ? "Unpin" : "Pin"}
                   </PendingButton>
@@ -221,7 +221,7 @@ export default async function PostPage({ params }: PageProps) {
                   <PendingButton
                     type="submit"
                     pendingContent="Saving..."
-                    className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-700 transition hover:bg-slate-100 hover:text-slate-700"
+                    className="hb-section-title flex items-center gap-1 rounded-lg px-2 py-1 text-xs transition hover:bg-slate-100"
                   >
                     {commentsLocked ? "Unlock" : "Lock"} comments
                   </PendingButton>
@@ -257,23 +257,23 @@ export default async function PostPage({ params }: PageProps) {
               </span>
             )}
             {wasEdited && (
-              <span className="inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:text-slate-200">Edited</span>
+              <span className="hb-muted-text inline-flex items-center rounded-md px-2 py-0.5 text-[10px]">Edited</span>
             )}
-            <span className="mx-0.5 text-slate-700 dark:text-slate-700">·</span>
-            <div className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-700">
+            <span className="hb-muted-text mx-0.5">·</span>
+            <div className="hb-muted-text flex items-center gap-1.5 text-xs">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
                 <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
               {typedPost.profiles?.full_name ?? "Admin"}
             </div>
-            <span className="text-slate-700 dark:text-slate-700">·</span>
-            <time className="text-xs text-slate-700 dark:text-slate-700" dateTime={typedPost.created_at}>
+            <span className="hb-muted-text">·</span>
+            <time className="hb-muted-text text-xs" dateTime={typedPost.created_at}>
               {format(new Date(typedPost.created_at), "MMMM d, yyyy 'at' h:mm a")}
             </time>
           </div>
 
-          <div className="whitespace-pre-line text-sm leading-relaxed text-slate-600">
+          <div className="hb-body-text whitespace-pre-line text-sm leading-relaxed">
             {typedPost.content}
           </div>
 
@@ -283,8 +283,8 @@ export default async function PostPage({ params }: PageProps) {
         {isAdmin && allProfiles.length > 0 ? (
           <aside className="h-fit rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800/80">
             <details className="group">
-              <summary className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700 transition hover:text-zinc-950 dark:text-slate-300 dark:hover:text-zinc-950 dark:text-slate-100">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-slate-600 dark:text-slate-200 transition group-open:rotate-90" aria-hidden="true">
+              <summary className="hb-section-title flex cursor-pointer items-center gap-2 text-sm transition hover:text-blue-600">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="hb-muted-text h-4 w-4 transition group-open:rotate-90" aria-hidden="true">
                   <polyline points="9 18 15 12 9 6" />
                 </svg>
                 Completion ({completedCount}/{allProfiles.length})
@@ -297,11 +297,11 @@ export default async function PostPage({ params }: PageProps) {
                       style={{ width: `${(completedCount / allProfiles.length) * 100}%` }}
                     />
                   </div>
-                  <span className="text-xs font-medium text-slate-700 dark:text-slate-700">
+                  <span className="hb-section-title text-xs tabular-nums">
                     {Math.round((completedCount / allProfiles.length) * 100)}%
                   </span>
                 </div>
-                <p className="text-xs text-slate-600 dark:text-slate-200">
+                <p className="hb-muted-text text-xs">
                   {completedCount} completed · {remainingCount} remaining
                 </p>
               </div>
@@ -320,7 +320,7 @@ export default async function PostPage({ params }: PageProps) {
                             {person.full_name}
                           </span>
                           {isAdminProfile && (
-                            <span className="hb-badge-admin rounded px-1 py-0.5 text-[9px] font-semibold">Admin</span>
+                            <span className="hb-badge-admin rounded px-1.5 py-0.5 text-[10px] font-bold">Admin</span>
                           )}
                         </div>
                         <div className="truncate text-xs text-slate-600 dark:text-slate-200">{person.email}</div>
@@ -344,12 +344,10 @@ export default async function PostPage({ params }: PageProps) {
             </details>
           </aside>
         ) : null}
-      </div>
-
-      {isAdmin && (
+      </div>        {isAdmin && (
         <details className="group mt-6">
-          <summary className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700 transition hover:text-zinc-950">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-slate-600 dark:text-slate-200 transition group-open:rotate-90" aria-hidden="true">
+          <summary className="hb-section-title flex cursor-pointer items-center gap-2 text-sm transition hover:text-blue-600">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="hb-muted-text h-4 w-4 transition group-open:rotate-90" aria-hidden="true">
               <polyline points="9 18 15 12 9 6" />
             </svg>
             Edit post
@@ -371,19 +369,19 @@ export default async function PostPage({ params }: PageProps) {
 
       {typedEdits.length > 0 && (
         <section className="mt-8">
-          <h2 className="mb-4 text-base font-semibold text-slate-700">Edit history</h2>
+          <h2 className="hb-section-title mb-4 text-base">Edit history</h2>
           <ul className="space-y-3">
             {typedEdits.map((edit) => {
               const keys = Object.keys(edit.changes ?? {});
               return (
                 <li key={edit.id} className="rounded-lg border border-slate-100 bg-slate-50/50 p-4">
-                  <div className="mb-1.5 flex items-center gap-2 text-xs text-slate-600 dark:text-slate-200">
+                  <div className="hb-muted-text mb-1.5 flex items-center gap-2 text-xs">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden="true">
                       <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
                     </svg>
                     {format(new Date(edit.created_at), "MMM d, yyyy 'at' h:mm a")}
                   </div>
-                  <div className="text-sm text-slate-700 dark:text-slate-700">
+                  <div className="hb-section-title text-sm">
                     {keys.length > 0 ? keys.join(", ") : "Updated"}
                   </div>
                 </li>
@@ -395,7 +393,7 @@ export default async function PostPage({ params }: PageProps) {
 
       <section className="mt-8">
         <div className="mb-6 flex items-center gap-3">
-          <h2 className="text-base font-semibold text-zinc-950">
+          <h2 className="hb-page-title text-base">
             Comments ({comments?.length ?? 0})
           </h2>
         </div>
@@ -404,7 +402,7 @@ export default async function PostPage({ params }: PageProps) {
           {canComment ? (
             <CommentForm postId={id} />
           ) : (
-            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-700 dark:text-slate-700">
+            <div className="hb-body-text flex items-center gap-2 rounded-lg bg-slate-50 px-4 py-3 text-sm dark:bg-slate-800/40">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />

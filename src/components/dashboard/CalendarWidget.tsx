@@ -43,8 +43,8 @@ export function CalendarWidget({ posts }: CalendarWidgetProps) {
             </svg>
           </div>
           <div>
-            <h2 className="text-base font-bold tracking-tight text-slate-800 dark:text-slate-200">Calendar</h2>
-            <p className="text-xs font-semibold text-slate-700 dark:text-slate-700">{format(today, "MMMM yyyy")} · {totalThisMonth} due</p>
+            <h2 className="hb-section-title text-base tracking-tight">Calendar</h2>
+            <p className="hb-body-text text-xs font-semibold">{format(today, "MMMM yyyy")} · {totalThisMonth} due</p>
           </div>
         </div>
         <span className="rounded-md px-2.5 py-1.5 text-xs font-bold text-blue-700 transition group-hover:bg-blue-100 dark:text-blue-400 dark:group-hover:bg-blue-900/40">

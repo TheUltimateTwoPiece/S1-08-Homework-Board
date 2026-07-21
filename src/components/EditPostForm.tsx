@@ -28,8 +28,8 @@ export function EditPostForm({ post }: EditPostFormProps) {
           </svg>
         </div>
         <div>
-          <h2 className="text-base font-semibold text-zinc-950">Edit post</h2>
-          <p className="text-xs text-slate-700 dark:text-slate-700">Update the assignment details</p>
+          <h2 className="hb-section-title text-base">Edit post</h2>
+          <p className="hb-body-text text-xs">Update the assignment details</p>
         </div>
       </div>
 
@@ -37,7 +37,7 @@ export function EditPostForm({ post }: EditPostFormProps) {
 
       <div className="space-y-4">
         <div>
-          <label htmlFor="edit-title" className="mb-1.5 block text-sm font-medium text-slate-700">
+          <label htmlFor="edit-title" className="hb-section-title mb-1.5 block text-sm">
             Title
           </label>
           <input
@@ -51,7 +51,7 @@ export function EditPostForm({ post }: EditPostFormProps) {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor="edit-subject" className="mb-1.5 block text-sm font-medium text-slate-700">
+            <label htmlFor="edit-subject" className="hb-section-title mb-1.5 block text-sm">
               Subject
             </label>
             <select
@@ -69,7 +69,7 @@ export function EditPostForm({ post }: EditPostFormProps) {
             </select>
           </div>
           <div>
-            <label htmlFor="edit-dueAt" className="mb-1.5 block text-sm font-medium text-slate-700">
+            <label htmlFor="edit-dueAt" className="hb-section-title mb-1.5 block text-sm">
               Due date
             </label>
             <input
@@ -90,13 +90,13 @@ export function EditPostForm({ post }: EditPostFormProps) {
             defaultChecked={post.pinned}
             className="h-4 w-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500"
           />
-          <label htmlFor="edit-pinned" className="text-sm font-medium text-slate-600">
+          <label htmlFor="edit-pinned" className="hb-section-title text-sm">
             Pin this post to the top
           </label>
         </div>
 
         <div>
-          <label htmlFor="edit-content" className="mb-1.5 block text-sm font-medium text-slate-700">
+          <label htmlFor="edit-content" className="hb-section-title mb-1.5 block text-sm">
             Homework details
           </label>
           <textarea

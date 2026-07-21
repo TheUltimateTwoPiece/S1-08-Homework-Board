@@ -36,10 +36,10 @@ export function DutyWidget({ todaySchedules, completedToday, todayStr, currentAd
             </svg>
           </div>
           <div>
-            <h2 className="text-sm font-bold tracking-tight text-slate-800 dark:text-slate-200">
+            <h2 className="hb-section-title text-sm tracking-tight">
               Today&apos;s duty · {format(parseISO(todayStr), "EEE")}
             </h2>
-            <p className="text-xs font-semibold text-slate-700 dark:text-slate-700">
+            <p className="hb-body-text text-xs font-semibold">
               {completedSet.size}/{todaySchedules.length} completed
             </p>
           </div>
@@ -52,8 +52,8 @@ export function DutyWidget({ todaySchedules, completedToday, todayStr, currentAd
       {todaySchedules.length === 0 ? (
         <div className="flex h-[calc(100%-44px)] items-center justify-center text-center">
           <div>
-            <p className="text-sm font-bold text-slate-700 dark:text-slate-700">No admins assigned today</p>
-            <p className="mt-1 text-xs font-semibold text-slate-700 dark:text-slate-700">Assign someone on the schedule page</p>
+            <p className="hb-section-title text-sm">No admins assigned today</p>
+            <p className="hb-muted-text mt-1 text-xs">Assign someone on the schedule page</p>
           </div>
         </div>
       ) : (
@@ -67,11 +67,11 @@ export function DutyWidget({ todaySchedules, completedToday, todayStr, currentAd
                   {(s.profiles?.full_name ?? "A").charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="line-clamp-1 text-sm font-bold text-slate-800 dark:text-slate-200">
+                  <div className="hb-section-title line-clamp-1 text-sm">
                     {s.profiles?.full_name ?? "Admin"}
                     {isMe && <span className="ml-1.5 text-[10px] font-bold text-blue-700 dark:text-blue-400">you</span>}
                   </div>
-                  <div className={"text-[11px] font-bold " + (done ? "text-emerald-700 dark:text-emerald-300" : "text-slate-700 dark:text-slate-700")}>
+                  <div className={"text-[11px] font-bold " + (done ? "text-emerald-700 dark:text-emerald-300" : "hb-muted-text")}>
                     {done ? "✓ Posted" : "Pending"}
                   </div>
                 </div>

@@ -102,7 +102,7 @@ export function StatsWidget({
         </div>
       </div>
 
-      <Link href="/posts" className="absolute inset-0 z-[2] rounded-[inherit]" tabIndex={-1} aria-hidden="true" aria-label="View all homework" />
+      <Link href="/your-progress" className="absolute inset-0 z-[2] rounded-[inherit]" tabIndex={-1} aria-hidden="true" aria-label="View your progress" />
     </section>
   );
 }

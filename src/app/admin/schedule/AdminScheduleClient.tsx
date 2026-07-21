@@ -59,7 +59,7 @@ export function AdminScheduleClient({
     <div className="space-y-8">
       {/* Weekly Overview Grid */}
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800/80">
-        <h2 className="mb-4 text-base font-semibold text-slate-700 dark:text-slate-700">Weekly overview</h2>
+        <h2 className="hb-section-title mb-4 text-base">Weekly overview</h2>
         <div className="grid grid-cols-7 gap-2">
           {DAY_NAMES.map((name, i) => {
             const assignedAdmins = scheduleByDay.get(i);
@@ -74,11 +74,11 @@ export function AdminScheduleClient({
                 }`}
               >
                 <div className={`text-[10px] font-bold uppercase tracking-wider ${
-                  isToday ? "text-blue-600 dark:text-blue-400" : "text-slate-600 dark:text-slate-200"
+                  isToday ? "text-blue-600 dark:text-blue-400" : "hb-muted-text"
                 }`}>
                   {DAYS_SHORT[i]}
                 </div>
-                <div className="mt-1.5 text-xs font-medium text-slate-600 dark:text-slate-700">
+                <div className="hb-section-title mt-1.5 text-xs">
                   {assignedAdmins ? assignedAdmins.size : 0}
                 </div>
                 {assignedAdmins && assignedAdmins.size > 0 && (
@@ -86,7 +86,7 @@ export function AdminScheduleClient({
                     {admins
                       .filter((a) => assignedAdmins.has(a.id))
                       .map((a) => (
-                        <div key={a.id} className="truncate text-[9px] text-slate-700 dark:text-slate-700">
+                        <div key={a.id} className="hb-muted-text truncate text-[10px] font-semibold">
                           {a.full_name.split(" ")[0]}
                         </div>
                       ))}
@@ -100,7 +100,7 @@ export function AdminScheduleClient({
 
       {/* Today's Duty */}
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800/80">
-        <h2 className="mb-3 text-base font-semibold text-slate-700 dark:text-slate-700">Today&apos;s duty</h2>
+        <h2 className="hb-section-title mb-3 text-base">Today&apos;s duty</h2>
         <div className="space-y-3">
           {admins.map((admin) => {
             const assignedToday = scheduleByDay.get(dayOfWeek)?.has(admin.id);
@@ -114,8 +114,8 @@ export function AdminScheduleClient({
                 className="flex items-center justify-between gap-3 rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 dark:border-slate-600 dark:bg-slate-700/50"
               >
                 <div>
-                  <div className="text-sm font-medium text-slate-700 dark:text-slate-700">{admin.full_name}</div>
-                  <div className="text-xs text-slate-600 dark:text-slate-200">{admin.email}</div>
+                  <div className="hb-section-title text-sm">{admin.full_name}</div>
+                  <div className="hb-muted-text text-xs">{admin.email}</div>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className={`text-xs font-semibold ${done ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}`}>
@@ -141,18 +141,18 @@ export function AdminScheduleClient({
           })}
 
           {admins.filter((a) => scheduleByDay.get(dayOfWeek)?.has(a.id)).length === 0 && (
-            <p className="text-sm text-slate-600 dark:text-slate-200">No admins scheduled for today.</p>
+            <p className="hb-muted-text text-sm">No admins scheduled for today.</p>
           )}
         </div>
       </div>
 
       {/* Assign Admins to Days */}
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800/80">
-        <h2 className="mb-4 text-base font-semibold text-slate-700 dark:text-slate-700">Manage assignments</h2>
+        <h2 className="hb-section-title mb-4 text-base">Manage assignments</h2>
         <form action={scheduleAction} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label htmlFor="adminId" className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-200">Admin</label>
+              <label htmlFor="adminId" className="hb-section-title mb-1.5 block text-xs">Admin</label>
               <select
                 id="adminId"
                 name="adminId"
@@ -168,7 +168,7 @@ export function AdminScheduleClient({
               </select>
             </div>
             <div>
-              <label htmlFor="dayOfWeek" className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-200">Day of week</label>
+              <label htmlFor="dayOfWeek" className="hb-section-title mb-1.5 block text-xs">Day of week</label>
               <select
                 id="dayOfWeek"
                 name="dayOfWeek"
@@ -186,7 +186,7 @@ export function AdminScheduleClient({
           </div>
 
           <div className="flex items-center gap-3">
-            <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200">
+            <label className="hb-section-title flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
                 name="isActive"
@@ -222,8 +222,8 @@ export function AdminScheduleClient({
 
       {/* Send Reminders */}
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800/80">
-        <h2 className="mb-3 text-base font-semibold text-slate-700 dark:text-slate-700">Send duty reminders</h2>
-        <p className="mb-4 text-sm text-slate-700 dark:text-slate-700">
+        <h2 className="hb-section-title mb-3 text-base">Send duty reminders</h2>
+        <p className="hb-body-text mb-4 text-sm">
           Send a reminder to all admins scheduled for today who haven&apos;t marked their post as complete.
         </p>
 

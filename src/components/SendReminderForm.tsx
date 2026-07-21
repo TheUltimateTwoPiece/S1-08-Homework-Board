@@ -78,8 +78,8 @@ export function SendReminderForm({ students, admins, posts }: SendReminderFormPr
           </svg>
         </div>
         <div>
-          <h2 className="text-base font-semibold text-zinc-950">Send reminder</h2>
-          <p className="text-xs text-slate-700 dark:text-slate-700">
+          <h2 className="hb-section-title text-base">Send reminder</h2>
+          <p className="hb-body-text text-xs">
             Students will see this in their reminders bell icon.
           </p>
         </div>
@@ -87,7 +87,7 @@ export function SendReminderForm({ students, admins, posts }: SendReminderFormPr
 
       <div className="space-y-4">
         <div>
-          <label htmlFor="target" className="mb-1.5 block text-sm font-medium text-slate-700">
+          <label htmlFor="target" className="hb-section-title mb-1.5 block text-sm">
             Send to
           </label>
           <select
@@ -119,8 +119,8 @@ export function SendReminderForm({ students, admins, posts }: SendReminderFormPr
 
         {posts.length > 0 && (
           <div>
-            <label htmlFor="postId" className="mb-1.5 block text-sm font-medium text-slate-700">
-              Remind about assignment {target === "incomplete" && <span className="text-amber-600">(required)</span>}
+            <label htmlFor="postId" className="hb-section-title mb-1.5 block text-sm">
+              Remind about assignment {target === "incomplete" && <span className="text-amber-700 dark:text-amber-300">(required)</span>}
             </label>
             <select
               id="postId"
@@ -154,7 +154,7 @@ export function SendReminderForm({ students, admins, posts }: SendReminderFormPr
         )}
 
         <div>
-          <span className="mb-2 block text-sm font-medium text-slate-700">Quick reminders</span>
+          <span className="hb-section-title mb-2 block text-sm">Quick reminders</span>
           <div className="flex flex-wrap gap-2">
             {QUICK_REMINDERS.map((reminder) => (
               <button
@@ -170,7 +170,7 @@ export function SendReminderForm({ students, admins, posts }: SendReminderFormPr
         </div>
 
         <div>
-          <label htmlFor="reminder-title" className="mb-1.5 block text-sm font-medium text-slate-700">
+          <label htmlFor="reminder-title" className="hb-section-title mb-1.5 block text-sm">
             Reminder title
           </label>
           <input
@@ -185,7 +185,7 @@ export function SendReminderForm({ students, admins, posts }: SendReminderFormPr
         </div>
 
         <div>
-          <label htmlFor="message" className="mb-1.5 block text-sm font-medium text-slate-700">
+          <label htmlFor="message" className="hb-section-title mb-1.5 block text-sm">
             Reminder message
           </label>
           <textarea
