@@ -78,3 +78,24 @@ export type PostCompletion = {
   user_id: string;
   completed_at: string;
 };
+
+export type AdminSchedule = {
+  id: string;
+  admin_id: string;
+  day_of_week: number;
+  is_active: boolean;
+  created_at: string;
+  profiles?: Pick<Profile, "full_name">;
+};
+
+export type AdminDutyLog = {
+  id: string;
+  admin_id: string;
+  scheduled_date: string;
+  completed_post: boolean;
+  completed_at: string | null;
+  notified: boolean;
+  notified_at: string | null;
+  created_at: string;
+  profiles?: Pick<Profile, "full_name">;
+};

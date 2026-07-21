@@ -1,4 +1,5 @@
 import { Header } from "@/components/Header";
+import { PageTransition } from "@/components/PageTransition";
 import { getCurrentProfile, getUnreadNotificationCount } from "@/lib/auth";
 
 export async function AppShell({ children }: { children: React.ReactNode }) {
@@ -15,7 +16,9 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Header profile={profile} unreadCount={unreadCount} />
-      <main className="hb-main flex-1">{children}</main>
+      <main className="hb-main flex-1">
+        <PageTransition>{children}</PageTransition>
+      </main>
     </>
   );
 }

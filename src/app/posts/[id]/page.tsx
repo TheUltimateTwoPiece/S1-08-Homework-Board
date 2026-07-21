@@ -150,12 +150,11 @@ export default async function PostPage({ params }: PageProps) {
     .limit(10);
   const typedEdits = (postEdits as PostEdit[]) ?? [];
 
-  const [studentsResult, postCompletionsResult] = isAdmin
+  const [allProfilesResult, postCompletionsResult] = isAdmin
     ? await Promise.all([
         supabase
           .from("profiles")
-          .select("id, full_name, email")
-          .eq("role", "student")
+          .select("id, full_name, email, role")
           .order("full_name"),
         supabase
           .from("post_completions")
@@ -164,13 +163,12 @@ export default async function PostPage({ params }: PageProps) {
       ])
     : [null, null];
 
-  const students = ((studentsResult?.data as Pick<Profile, "id" | "full_name" | "email">[]) ??
-    []) as Pick<Profile, "id" | "full_name" | "email">[];
+  const allProfiles = (allProfilesResult?.data ?? []) as (Pick<Profile, "id" | "full_name" | "email"> & { role: string })[];
   const completedUserIds = new Set(
     (postCompletionsResult?.data ?? []).map((row) => row.user_id as string),
   );
   const completedCount = Array.from(completedUserIds).length;
-  const remainingCount = Math.max(0, students.length - completedCount);
+  const remainingCount = Math.max(0, allProfiles.length - completedCount);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
@@ -282,46 +280,52 @@ export default async function PostPage({ params }: PageProps) {
           <AttachmentList attachments={signedPostAttachments} />
         </article>
 
-        {isAdmin && students.length > 0 ? (
-          <aside className="h-fit rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        {isAdmin && allProfiles.length > 0 ? (
+          <aside className="h-fit rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800/80">
             <details className="group">
-              <summary className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700 transition hover:text-slate-900">
+              <summary className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700 transition hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-slate-400 transition group-open:rotate-90" aria-hidden="true">
                   <polyline points="9 18 15 12 9 6" />
                 </svg>
-                Completion ({completedCount}/{students.length})
+                Completion ({completedCount}/{allProfiles.length})
               </summary>
               <div className="mt-3 space-y-1">
                 <div className="flex items-center gap-3">
-                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
+                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700">
                     <div
                       className="h-full rounded-full bg-green-500 transition-all duration-500"
-                      style={{ width: `${(completedCount / students.length) * 100}%` }}
+                      style={{ width: `${(completedCount / allProfiles.length) * 100}%` }}
                     />
                   </div>
-                  <span className="text-xs font-medium text-slate-500">
-                    {Math.round((completedCount / students.length) * 100)}%
+                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    {Math.round((completedCount / allProfiles.length) * 100)}%
                   </span>
                 </div>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-400 dark:text-slate-500">
                   {completedCount} completed · {remainingCount} remaining
                 </p>
               </div>
               <ul className="mt-4 space-y-1.5">
-                {students.map((student) => {
-                  const done = completedUserIds.has(student.id);
+                {allProfiles.map((person) => {
+                  const done = completedUserIds.has(person.id);
+                  const isAdminProfile = person.role === "admin";
                   return (
                     <li
-                      key={student.id}
-                      className="flex items-center justify-between gap-2 rounded-lg px-3 py-2 transition hover:bg-slate-50"
+                      key={person.id}
+                      className="flex items-center justify-between gap-2 rounded-lg px-3 py-2 transition hover:bg-slate-50 dark:hover:bg-slate-700/50"
                     >
                       <div className="min-w-0">
-                        <div className={`text-sm font-medium ${done ? "text-green-700" : "text-slate-700"}`}>
-                          {student.full_name}
+                        <div className="flex items-center gap-1.5">
+                          <span className={`text-sm font-medium ${done ? "text-green-700 dark:text-green-400" : "text-slate-700 dark:text-slate-300"}`}>
+                            {person.full_name}
+                          </span>
+                          {isAdminProfile && (
+                            <span className="hb-badge-admin rounded px-1 py-0.5 text-[9px] font-semibold">Admin</span>
+                          )}
                         </div>
-                        <div className="truncate text-xs text-slate-400">{student.email}</div>
+                        <div className="truncate text-xs text-slate-400 dark:text-slate-500">{person.email}</div>
                       </div>
-                      <span className={`flex items-center gap-1 text-xs font-semibold ${done ? "text-green-600" : "text-slate-400"}`}>
+                      <span className={`flex items-center gap-1 text-xs font-semibold ${done ? "text-green-600 dark:text-green-400" : "text-slate-400 dark:text-slate-500"}`}>
                         {done ? (
                           <>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
@@ -330,7 +334,7 @@ export default async function PostPage({ params }: PageProps) {
                             Done
                           </>
                         ) : (
-                          <span className="h-3.5 w-3.5 rounded-full border-2 border-slate-300" />
+                          <span className="h-3.5 w-3.5 rounded-full border-2 border-slate-300 dark:border-slate-600" />
                         )}
                       </span>
                     </li>
