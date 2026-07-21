@@ -21,7 +21,7 @@ export function NotificationsWidget({ notifications }: NotificationsWidgetProps)
               <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
             </svg>
           </div>
-          <h2 className="text-sm font-extrabold tracking-tight text-zinc-950 dark:text-zinc-50">Reminders</h2>
+          <h2 className="text-sm font-bold tracking-tight text-slate-800 dark:text-slate-200">Reminders</h2>
           {unread > 0 && (
             <span className="rounded-full bg-rose-200 px-1.5 py-0.5 text-[10px] font-bold text-rose-800 dark:bg-rose-900/60 dark:text-rose-100">
               {unread} new
@@ -35,8 +35,8 @@ export function NotificationsWidget({ notifications }: NotificationsWidgetProps)
 
       {recent.length === 0 ? (
         <div className="flex h-[calc(100%-44px)] flex-col items-center justify-center text-center">
-          <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">You&apos;re all caught up</p>
-          <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">No new reminders</p>
+          <p className="text-sm font-bold text-slate-700 dark:text-slate-700">You&apos;re all caught up</p>
+          <p className="text-xs font-semibold text-slate-700 dark:text-slate-700">No new reminders</p>
         </div>
       ) : (
         <ul className="-mx-1 space-y-1 pb-5">
@@ -44,8 +44,8 @@ export function NotificationsWidget({ notifications }: NotificationsWidgetProps)
             <li key={n.id} className={"hb-snippet " + (!n.read_at ? "hb-snippet--unread" : "")} style={{ animationDelay: (320 + i * 50) + "ms" }}>
               <div className={"mt-0.5 h-2 w-2 shrink-0 rounded-full " + (n.read_at ? "bg-zinc-400 dark:bg-zinc-600" : "bg-amber-500 hb-pulse-dot")} />
               <div className="min-w-0 flex-1">
-                <div className="line-clamp-1 text-sm font-bold text-zinc-950 dark:text-zinc-50">{n.title}</div>
-                <div className="line-clamp-1 text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                <div className="line-clamp-1 text-sm font-bold text-slate-800 dark:text-slate-200">{n.title}</div>
+                <div className="line-clamp-1 text-xs font-semibold text-slate-700 dark:text-slate-700">
                   {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
                 </div>
               </div>

@@ -35,7 +35,7 @@ export default async function NotificationsPage() {
               </span>
             )}
           </div>
-          <p className="mt-1.5 text-sm text-slate-700 dark:text-slate-300">
+          <p className="mt-1.5 text-sm text-slate-700 dark:text-slate-700">
             {profile.role === "admin"
               ? "Homework reminders you receive appear here. Send reminders to students from the admin panel."
               : unreadCount > 0
@@ -49,7 +49,7 @@ export default async function NotificationsPage() {
             <PendingButton
               type="submit"
               pendingContent="Marking..."
-              className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 transition hover:bg-slate-100 hover:text-slate-700"
+              className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-700 transition hover:bg-slate-100 hover:text-slate-700"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
                 <polyline points="20 6 9 17 4 12" />

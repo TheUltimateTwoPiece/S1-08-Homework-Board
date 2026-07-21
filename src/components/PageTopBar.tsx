@@ -24,7 +24,7 @@ export function PageTopBar({
             👋
           </span>
         </h1>
-        <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">
+        <p className="mt-1 text-sm text-slate-700 dark:text-slate-700">
           {subtitle}
         </p>
       </div>

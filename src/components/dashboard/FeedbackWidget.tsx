@@ -19,7 +19,7 @@ export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
           </div>
-          <h2 className="text-sm font-extrabold tracking-tight text-zinc-950 dark:text-zinc-50">Feedback inbox</h2>
+          <h2 className="text-sm font-bold tracking-tight text-slate-800 dark:text-slate-200">Feedback inbox</h2>
           {feedback.length > 0 && (
             <span className="rounded-full bg-amber-200 px-1.5 py-0.5 text-[10px] font-bold text-amber-900 dark:bg-amber-800/60 dark:text-amber-100">
               {feedback.length}
@@ -33,26 +33,26 @@ export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
 
       {top.length === 0 ? (
         <div className="flex h-[calc(100%-44px)] items-center justify-center text-center">
-          <p className="text-sm font-bold text-zinc-700 dark:text-zinc-300">No feedback yet</p>
+          <p className="text-sm font-bold text-slate-700 dark:text-slate-700">No feedback yet</p>
         </div>
       ) : (
         <ul className="space-y-1.5 pb-5">
           {top.map((f, i) => (
             <li key={f.id} className="hb-snippet relative z-[3]" style={{ animationDelay: (140 + i * 50) + "ms" }}>
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-200 to-blue-100 text-xs font-extrabold text-blue-900 dark:from-blue-800/50 dark:to-blue-700/30 dark:text-blue-50">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-200 to-blue-100 text-xs font-bold text-blue-900 dark:from-blue-800/50 dark:to-blue-700/30 dark:text-blue-50">
                 {(f.profiles?.full_name ?? "S").charAt(0).toUpperCase()}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
-                  <div className="line-clamp-1 text-sm font-bold text-zinc-950 dark:text-zinc-50">
+                  <div className="line-clamp-1 text-sm font-bold text-slate-800 dark:text-slate-200">
                     {f.profiles?.full_name ?? "Student"}
                   </div>
-                  <span className="rounded bg-zinc-200 px-1 py-0.5 text-[10px] font-bold text-zinc-700 dark:bg-zinc-700 dark:text-zinc-200">
+                  <span className="rounded bg-zinc-200 px-1 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-zinc-700 dark:text-slate-200">
                     {f.category}
                   </span>
                 </div>
-                <div className="line-clamp-1 text-xs font-semibold text-zinc-700 dark:text-zinc-300">{f.message}</div>
-                <div className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400">
+                <div className="line-clamp-1 text-xs font-semibold text-slate-700 dark:text-slate-700">{f.message}</div>
+                <div className="text-[10px] font-bold text-slate-600 dark:text-slate-300">
                   {formatDistanceToNow(new Date(f.created_at), { addSuffix: true })}
                 </div>
               </div>

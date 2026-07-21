@@ -210,7 +210,7 @@ export default async function PostPage({ params }: PageProps) {
                   <PendingButton
                     type="submit"
                     pendingContent="Saving..."
-                    className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 transition hover:bg-slate-100 hover:text-slate-700"
+                    className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-700 transition hover:bg-slate-100 hover:text-slate-700"
                   >
                     {typedPost.pinned ? "Unpin" : "Pin"}
                   </PendingButton>
@@ -221,7 +221,7 @@ export default async function PostPage({ params }: PageProps) {
                   <PendingButton
                     type="submit"
                     pendingContent="Saving..."
-                    className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 transition hover:bg-slate-100 hover:text-slate-700"
+                    className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-700 transition hover:bg-slate-100 hover:text-slate-700"
                   >
                     {commentsLocked ? "Unlock" : "Lock"} comments
                   </PendingButton>
@@ -259,16 +259,16 @@ export default async function PostPage({ params }: PageProps) {
             {wasEdited && (
               <span className="inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:text-slate-200">Edited</span>
             )}
-            <span className="mx-0.5 text-slate-700 dark:text-slate-300">·</span>
-            <div className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300">
+            <span className="mx-0.5 text-slate-700 dark:text-slate-700">·</span>
+            <div className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-700">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
                 <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
               {typedPost.profiles?.full_name ?? "Admin"}
             </div>
-            <span className="text-slate-700 dark:text-slate-300">·</span>
-            <time className="text-xs text-slate-700 dark:text-slate-300" dateTime={typedPost.created_at}>
+            <span className="text-slate-700 dark:text-slate-700">·</span>
+            <time className="text-xs text-slate-700 dark:text-slate-700" dateTime={typedPost.created_at}>
               {format(new Date(typedPost.created_at), "MMMM d, yyyy 'at' h:mm a")}
             </time>
           </div>
@@ -297,7 +297,7 @@ export default async function PostPage({ params }: PageProps) {
                       style={{ width: `${(completedCount / allProfiles.length) * 100}%` }}
                     />
                   </div>
-                  <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                  <span className="text-xs font-medium text-slate-700 dark:text-slate-700">
                     {Math.round((completedCount / allProfiles.length) * 100)}%
                   </span>
                 </div>
@@ -316,7 +316,7 @@ export default async function PostPage({ params }: PageProps) {
                     >
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <span className={`text-sm font-medium ${done ? "text-green-700 dark:text-green-400" : "text-slate-700 dark:text-slate-300"}`}>
+                          <span className={`text-sm font-medium ${done ? "text-green-700 dark:text-green-400" : "text-slate-700 dark:text-slate-700"}`}>
                             {person.full_name}
                           </span>
                           {isAdminProfile && (
@@ -383,7 +383,7 @@ export default async function PostPage({ params }: PageProps) {
                     </svg>
                     {format(new Date(edit.created_at), "MMM d, yyyy 'at' h:mm a")}
                   </div>
-                  <div className="text-sm text-slate-700 dark:text-slate-300">
+                  <div className="text-sm text-slate-700 dark:text-slate-700">
                     {keys.length > 0 ? keys.join(", ") : "Updated"}
                   </div>
                 </li>
@@ -404,7 +404,7 @@ export default async function PostPage({ params }: PageProps) {
           {canComment ? (
             <CommentForm postId={id} />
           ) : (
-            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-700 dark:text-slate-300">
+            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-700 dark:text-slate-700">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />

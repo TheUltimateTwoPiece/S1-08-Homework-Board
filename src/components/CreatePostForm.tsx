@@ -47,7 +47,7 @@ export function CreatePostForm() {
         </div>
         <div>
           <h2 className="text-base font-semibold text-zinc-950">New homework post</h2>
-          <p className="text-xs text-slate-700 dark:text-slate-300">Create a new assignment for your class</p>
+          <p className="text-xs text-slate-700 dark:text-slate-700">Create a new assignment for your class</p>
         </div>
       </div>
 

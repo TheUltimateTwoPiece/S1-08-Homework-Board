@@ -45,7 +45,7 @@ export function StatsWidget({
               <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
             </svg>
           </div>
-          <h2 className="text-sm font-extrabold tracking-tight text-zinc-950 dark:text-zinc-50">
+          <h2 className="text-sm font-bold tracking-tight text-slate-800 dark:text-slate-200">
             Your progress
           </h2>
         </div>
@@ -57,7 +57,7 @@ export function StatsWidget({
       <div className="grid grid-cols-[96px_1fr] items-center gap-4">
         <div className="relative flex items-center justify-center">
           <svg viewBox="0 0 100 100" className="hb-progress-ring h-24 w-24" aria-hidden="true">
-            <circle cx="50" cy="50" r={radius} fill="none" strokeWidth="9" className="text-zinc-200 dark:text-zinc-700" stroke="currentColor" />
+            <circle cx="50" cy="50" r={radius} fill="none" strokeWidth="9" className="text-zinc-200 dark:text-slate-600" stroke="currentColor" />
             <circle
               cx="50"
               cy="50"
@@ -78,25 +78,25 @@ export function StatsWidget({
             </defs>
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-2xl font-extrabold tabular-nums text-zinc-950 dark:text-zinc-50">
+            <span className="text-2xl font-bold tabular-nums text-slate-800 dark:text-slate-200">
               {safePct}
-              <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">%</span>
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-700">%</span>
             </span>
           </div>
         </div>
         <div className="space-y-1.5 text-xs">
           <div className="flex items-center justify-between rounded-md bg-emerald-50 px-2 py-1.5 dark:bg-emerald-900/30">
             <span className="font-bold text-emerald-800 dark:text-emerald-200">Done</span>
-            <span className="text-base font-extrabold tabular-nums text-emerald-800 dark:text-emerald-100">{completedCount}</span>
+            <span className="text-base font-bold tabular-nums text-emerald-800 dark:text-emerald-100">{completedCount}</span>
           </div>
           <div className="flex items-center justify-between rounded-md bg-amber-50 px-2 py-1.5 dark:bg-amber-900/30">
             <span className="font-bold text-amber-800 dark:text-amber-200">Upcoming</span>
-            <span className="text-base font-extrabold tabular-nums text-amber-800 dark:text-amber-100">{upcomingCount}</span>
+            <span className="text-base font-bold tabular-nums text-amber-800 dark:text-amber-100">{upcomingCount}</span>
           </div>
           {overdueCount > 0 && (
             <div className="flex items-center justify-between rounded-md bg-rose-50 px-2 py-1.5 dark:bg-rose-900/30">
               <span className="font-bold text-rose-800 dark:text-rose-200">Overdue</span>
-              <span className="text-base font-extrabold tabular-nums text-rose-800 dark:text-rose-100">{overdueCount}</span>
+              <span className="text-base font-bold tabular-nums text-rose-800 dark:text-rose-100">{overdueCount}</span>
             </div>
           )}
         </div>

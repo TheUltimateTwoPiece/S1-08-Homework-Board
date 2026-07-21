@@ -46,7 +46,7 @@ export default async function AdminPage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-zinc-950">Admin panel</h1>
-            <p className="mt-0.5 text-sm text-slate-700 dark:text-slate-300">
+            <p className="mt-0.5 text-sm text-slate-700 dark:text-slate-700">
               Post daily homework and send reminders so students complete their work.
             </p>
           </div>
@@ -56,7 +56,7 @@ export default async function AdminPage() {
         <div className="mt-6 flex flex-wrap gap-2">
           <Link
             href="/admin/feedback"
-            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-amber-600 dark:hover:bg-amber-900/20 dark:hover:text-amber-400"
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-700 dark:hover:border-amber-600 dark:hover:bg-amber-900/20 dark:hover:text-amber-400"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />

@@ -22,7 +22,7 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
               <polyline points="12 6 12 12 16 14" />
             </svg>
           </div>
-          <h2 className="text-sm font-extrabold tracking-tight text-zinc-950 dark:text-zinc-50">Upcoming deadlines</h2>
+          <h2 className="text-sm font-bold tracking-tight text-slate-800 dark:text-slate-200">Upcoming deadlines</h2>
         </div>
         <span className="rounded-md px-2 py-1 text-[11px] font-bold text-blue-700 transition group-hover:bg-blue-100 dark:text-blue-400 dark:group-hover:bg-blue-900/40">
           Calendar →
@@ -32,8 +32,8 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
       {upcoming.length === 0 ? (
         <div className="flex h-[calc(100%-44px)] items-center justify-center text-center">
           <div>
-            <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Nothing on the horizon</p>
-            <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Enjoy the breathing room ✨</p>
+            <p className="text-sm font-bold text-slate-700 dark:text-slate-700">Nothing on the horizon</p>
+            <p className="text-xs font-semibold text-slate-700 dark:text-slate-700">Enjoy the breathing room ✨</p>
           </div>
         </div>
       ) : (
@@ -43,13 +43,13 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
             const today = isToday(due);
             return (
               <li key={post.id} className="hb-snippet relative z-[3]" style={{ animationDelay: (260 + i * 40) + "ms" }}>
-                <div className={"flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-lg text-[10px] font-extrabold " + (today ? "bg-amber-200 text-amber-900 dark:bg-amber-800/60 dark:text-amber-50" : "bg-zinc-100 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-100")}>
+                <div className={"flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-lg text-[10px] font-bold " + (today ? "bg-amber-200 text-amber-900 dark:bg-amber-800/60 dark:text-amber-50" : "bg-zinc-100 text-slate-700 dark:bg-zinc-700 dark:text-slate-200")}>
                   <span className="leading-none">{format(due, "MMM")}</span>
-                  <span className="text-sm font-extrabold leading-tight">{format(due, "d")}</span>
+                  <span className="text-sm font-bold leading-tight">{format(due, "d")}</span>
                 </div>
                 <Link href={"/posts/" + post.id} className="min-w-0 flex-1 relative z-[3]">
-                  <div className="line-clamp-1 text-sm font-bold text-zinc-950 dark:text-zinc-50">{post.title}</div>
-                  <div className={"text-[11px] font-bold " + (today ? "text-amber-800 dark:text-amber-300" : "text-zinc-700 dark:text-zinc-300")}>
+                  <div className="line-clamp-1 text-sm font-bold text-slate-800 dark:text-slate-200">{post.title}</div>
+                  <div className={"text-[11px] font-bold " + (today ? "text-amber-800 dark:text-amber-300" : "text-slate-700 dark:text-slate-700")}>
                     {today ? "Today" : formatDistanceToNow(due, { addSuffix: true })}
                   </div>
                 </Link>

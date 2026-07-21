@@ -14,8 +14,8 @@
     --hb-surface-hover: #f1f5f9;
     --hb-border: #e2e8f0;
     --hb-border-hover: #cbd5e1;
-    --hb-text: #0f172a;
-    --hb-text-muted: #334155;
+    --hb-text: #1e293b;
+    --hb-text-muted: #1e293b;
     --hb-text-subtle: #475569;
     --hb-overlay: rgba(0, 0, 0, 0.05);
     --hb-bg-grad-1: rgba(37, 99, 235, 0.08);
@@ -46,7 +46,7 @@
     --hb-surface-hover: #334155;
     --hb-border: #334155;
     --hb-border-hover: #475569;
-    --hb-text: #f1f5f9;
+    --hb-text: #e2e8f0;
     --hb-text-muted: #cbd5e1;
     --hb-text-subtle: #cbd5e1;
     --hb-overlay: rgba(255, 255, 255, 0.05);

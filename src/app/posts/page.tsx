@@ -128,7 +128,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
 
       <PostFiltersBar subjects={subjects} />
 
-      <div className="mt-4 flex items-center justify-between text-xs text-slate-700 dark:text-slate-300">
+      <div className="mt-4 flex items-center justify-between text-xs text-slate-700 dark:text-slate-700">
         <span>
           {filteredPosts.length} match
           {filteredPosts.length === 1 ? "" : "es"}
@@ -149,7 +149,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
                 <line x1="16" y1="17" x2="8" y2="17" />
               </svg>
             </div>
-            <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
+            <p className="text-sm font-medium text-slate-600 dark:text-slate-700">
               No homework matches these filters
             </p>
             <p className="mt-1 text-xs text-slate-600 dark:text-slate-200">

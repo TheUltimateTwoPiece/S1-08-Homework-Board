@@ -27,7 +27,7 @@ export function FeedbackForm() {
           </svg>
         </div>
         <h1 className="text-2xl font-bold text-zinc-950">Feedback</h1>
-        <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">
+        <p className="mt-1 text-sm text-slate-700 dark:text-slate-700">
           Share ideas, report issues, or suggest improvements.
         </p>
       </div>
@@ -43,7 +43,7 @@ export function FeedbackForm() {
                 className={`flex-1 rounded-md px-3 py-2 text-xs font-semibold transition ${
                   category === "post"
                     ? "bg-white text-zinc-950 shadow-sm"
-                    : "text-slate-700 dark:text-slate-300 hover:text-slate-700"
+                    : "text-slate-700 dark:text-slate-700 hover:text-slate-700"
                 }`}
               >
                 Posts
@@ -54,7 +54,7 @@ export function FeedbackForm() {
                 className={`flex-1 rounded-md px-3 py-2 text-xs font-semibold transition ${
                   category === "website"
                     ? "bg-white text-zinc-950 shadow-sm"
-                    : "text-slate-700 dark:text-slate-300 hover:text-slate-700"
+                    : "text-slate-700 dark:text-slate-700 hover:text-slate-700"
                 }`}
               >
                 Website

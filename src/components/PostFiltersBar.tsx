@@ -66,7 +66,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
         }}
       >
         <div className="flex-1">
-          <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-300">
+          <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-700">
             Search
           </label>
           <div className="relative">
@@ -98,7 +98,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
         </div>
 
         <div className="sm:w-44">
-          <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-300">
+          <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-700">
             Subject
           </label>
           <select
@@ -117,7 +117,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
         </div>
 
         <div className="sm:w-40">
-          <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-300">
+          <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-700">
             Due
           </label>
           <select
@@ -160,7 +160,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
             className={`flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition ${
               initial.status === option.value
                 ? "bg-white text-zinc-950 shadow-sm"
-                : "text-slate-700 dark:text-slate-300 hover:bg-white/60 hover:text-slate-700"
+                : "text-slate-700 dark:text-slate-700 hover:bg-white/60 hover:text-slate-700"
             }`}
           >
             {option.label}
