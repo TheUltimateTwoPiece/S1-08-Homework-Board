@@ -87,7 +87,7 @@ export default async function AdminFeedbackPage() {
         <section>
           <div className="mb-4 flex items-center gap-2">
             <h2 className="hb-section-title text-base">Posts</h2>
-            <span className="hb-muted-text rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold dark:bg-slate-700">{postFeedback.length}</span>
+            <span className="hb-card-meta rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold">{postFeedback.length}</span>
           </div>
           {renderItems(postFeedback)}
         </section>
@@ -95,7 +95,7 @@ export default async function AdminFeedbackPage() {
         <section>
           <div className="mb-4 flex items-center gap-2">
             <h2 className="hb-section-title text-base">Website</h2>
-            <span className="hb-muted-text rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold dark:bg-slate-700">{websiteFeedback.length}</span>
+            <span className="hb-card-meta rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold">{websiteFeedback.length}</span>
           </div>
           {renderItems(websiteFeedback)}
         </section>

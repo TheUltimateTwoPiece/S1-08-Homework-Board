@@ -58,7 +58,7 @@ export function AdminScheduleClient({
   return (
     <div className="space-y-8">
       {/* Weekly Overview Grid */}
-      <div className="rounded-xl border hb-card-surface p-6 dark:border-slate-700 dark:bg-slate-800/80">
+      <div className="hb-card-surface-strong rounded-xl border p-6">
         <h2 className="hb-card-section mb-4 text-base">Weekly overview</h2>
         <div className="grid grid-cols-7 gap-2">
           {DAY_NAMES.map((name, i) => {
@@ -99,7 +99,7 @@ export function AdminScheduleClient({
       </div>
 
       {/* Today's Duty */}
-      <div className="rounded-xl border hb-card-surface p-6 dark:border-slate-700 dark:bg-slate-800/80">
+      <div className="hb-card-surface-strong rounded-xl border p-6">
         <h2 className="hb-card-section mb-3 text-base">Today&apos;s duty</h2>
         <div className="space-y-3">
           {admins.map((admin) => {
@@ -147,7 +147,7 @@ export function AdminScheduleClient({
       </div>
 
       {/* Assign Admins to Days */}
-      <div className="rounded-xl border hb-card-surface p-6 dark:border-slate-700 dark:bg-slate-800/80">
+      <div className="hb-card-surface-strong rounded-xl border p-6">
         <h2 className="hb-card-section mb-4 text-base">Manage assignments</h2>
         <form action={scheduleAction} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
@@ -221,7 +221,7 @@ export function AdminScheduleClient({
       </div>
 
       {/* Send Reminders */}
-      <div className="rounded-xl border hb-card-surface p-6 dark:border-slate-700 dark:bg-slate-800/80">
+      <div className="hb-card-surface-strong rounded-xl border p-6">
         <h2 className="hb-card-section mb-3 text-base">Send duty reminders</h2>
         <p className="hb-card-body mb-4 text-sm">
           Send a reminder to all admins scheduled for today who haven&apos;t marked their post as complete.
