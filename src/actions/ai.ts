@@ -11,9 +11,9 @@ export async function enhanceContentWithAI(content: string) {
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
 
-    const prompt = `You are a helpful assistant for teachers. Format and improve the following homework assignment content. 
+    const prompt = `You are a helpful assistant for teachers. Format and improve the following homework assignment content.
 Make it clearer, more organized, and student-friendly. Keep the core information intact but improve:
 - Clarity and readability
 - Organization (use bullet points, numbered lists where appropriate)

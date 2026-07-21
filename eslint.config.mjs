@@ -5,6 +5,16 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  {
+    // Supabase Storage signed URLs are dynamic and can't use next/image.
+    files: [
+      "src/components/AttachmentList.tsx",
+      "src/components/CommentList.tsx",
+    ],
+    rules: {
+      "@next/next/no-img-element": "off",
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
