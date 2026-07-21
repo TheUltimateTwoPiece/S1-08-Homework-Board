@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
+import { Avatar } from "@/components/Avatar";
 import type { Feedback } from "@/lib/types";
 
 type FeedbackWidgetProps = { feedback: Feedback[]; };
@@ -39,9 +40,12 @@ export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
         <ul className="space-y-1.5 pb-5">
           {top.map((f, i) => (
             <li key={f.id} className="hb-snippet relative z-[3]" style={{ animationDelay: (120 + i * 28) + "ms" }}>
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-200 to-blue-100 text-xs font-bold text-blue-900 dark:from-blue-800/50 dark:to-blue-700/30 dark:text-blue-50">
-                {(f.profiles?.full_name ?? "S").charAt(0).toUpperCase()}
-              </div>
+              <Avatar
+                id={f.author_id}
+                name={f.profiles?.full_name ?? "Student"}
+                src={f.profiles?.avatar_url ?? null}
+                size="md"
+              />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
                   <div className="hb-card-section line-clamp-1 text-sm">

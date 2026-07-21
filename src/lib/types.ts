@@ -5,6 +5,7 @@ export type Profile = {
   email: string;
   full_name: string;
   role: UserRole;
+  avatar_url: string | null;
   created_at: string;
 };
 
@@ -19,7 +20,7 @@ export type Post = {
   author_id: string;
   created_at: string;
   updated_at: string;
-  profiles?: Pick<Profile, "full_name">;
+  profiles?: Pick<Profile, "full_name" | "avatar_url">;
 };
 
 export type Comment = {
@@ -29,7 +30,7 @@ export type Comment = {
   author_id: string;
   content: string;
   created_at: string;
-  profiles?: Pick<Profile, "full_name">;
+  profiles?: Pick<Profile, "full_name" | "avatar_url">;
 };
 
 export type Attachment = {
@@ -59,7 +60,7 @@ export type Feedback = {
   category: "post" | "website";
   message: string;
   created_at: string;
-  profiles?: Pick<Profile, "full_name" | "email">;
+  profiles?: Pick<Profile, "full_name" | "email" | "avatar_url">;
 };
 
 export type Notification = {
@@ -85,7 +86,7 @@ export type AdminSchedule = {
   day_of_week: number;
   is_active: boolean;
   created_at: string;
-  profiles?: Pick<Profile, "full_name">;
+  profiles?: Pick<Profile, "full_name" | "avatar_url">;
 };
 
 export type AdminDutyLog = {
@@ -97,5 +98,5 @@ export type AdminDutyLog = {
   notified: boolean;
   notified_at: string | null;
   created_at: string;
-  profiles?: Pick<Profile, "full_name">;
+  profiles?: Pick<Profile, "full_name" | "avatar_url">;
 };

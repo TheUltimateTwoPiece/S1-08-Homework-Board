@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
+import { Avatar } from "@/components/Avatar";
 import { PostCompleteCheckbox } from "@/components/PostCompleteCheckbox";
 import { getDueBadge } from "@/lib/due";
 import type { Post } from "@/lib/types";
@@ -71,12 +72,14 @@ export function PostCard({ post, completed }: PostCardProps) {
           {post.content}
         </p>
         {post.profiles?.full_name && (
-          <div className="hb-card-meta mt-3 flex items-center gap-1.5 text-[11px]">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden="true">
-              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-            {post.profiles.full_name}
+          <div className="mt-3 flex items-center gap-2 text-[11px]">
+            <Avatar
+              id={post.author_id}
+              name={post.profiles.full_name}
+              src={post.profiles.avatar_url ?? null}
+              size="xs"
+            />
+            <span className="hb-card-meta">{post.profiles.full_name}</span>
           </div>
         )}
       </Link>

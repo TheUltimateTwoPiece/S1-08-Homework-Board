@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
+import { Avatar } from "@/components/Avatar";
 import type { Feedback } from "@/lib/types";
 
 export const revalidate = 30;
@@ -15,7 +16,7 @@ export default async function AdminFeedbackPage() {
   const supabase = await createClient();
   const { data: feedback } = await supabase
     .from("feedback")
-    .select("*, profiles(full_name, email)")
+    .select("*, profiles(full_name, email, avatar_url)")
     .order("created_at", { ascending: false })
     .limit(200);
 
@@ -41,9 +42,12 @@ export default async function AdminFeedbackPage() {
             <div className="mb-3 flex items-start justify-between gap-4">
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-blue-50 text-[10px] font-bold text-blue-700">
-                    {(item.profiles?.full_name ?? "S").charAt(0).toUpperCase()}
-                  </div>
+                  <Avatar
+                    id={item.author_id}
+                    name={item.profiles?.full_name ?? "Student"}
+                    src={item.profiles?.avatar_url ?? null}
+                    size="sm"
+                  />
                   <div className="hb-card-section text-sm">
                     {item.profiles?.full_name ?? "Student"}
                   </div>

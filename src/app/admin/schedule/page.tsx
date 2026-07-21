@@ -18,7 +18,7 @@ export default async function AdminSchedulePage() {
   // Fetch all admin schedules with admin profile info
   const { data: schedules } = await supabase
     .from("admin_schedules")
-    .select("*, profiles(full_name)")
+    .select("*, profiles(full_name, avatar_url)")
     .order("admin_id")
     .order("day_of_week");
 

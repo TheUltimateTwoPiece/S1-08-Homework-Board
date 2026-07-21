@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { markDutyCompleted } from "@/actions/schedule";
+import { Avatar } from "@/components/Avatar";
 import { PendingButton } from "@/components/PendingButton";
 import type { AdminSchedule } from "@/lib/types";
 
@@ -63,9 +64,12 @@ export function DutyWidget({ todaySchedules, completedToday, todayStr, currentAd
             const isMe = s.admin_id === currentAdminId;
             return (
               <li key={s.admin_id + "-" + i} className="hb-snippet relative z-[3]" style={{ animationDelay: (240 + i * 28) + "ms" }}>
-                <div className={"flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold " + (done ? "bg-emerald-200 text-emerald-900 dark:bg-emerald-800/60 dark:text-emerald-50" : "bg-amber-200 text-amber-900 dark:bg-amber-800/60 dark:text-amber-50")}>
-                  {(s.profiles?.full_name ?? "A").charAt(0).toUpperCase()}
-                </div>
+                <Avatar
+                  id={s.admin_id}
+                  name={s.profiles?.full_name ?? "Admin"}
+                  src={s.profiles?.avatar_url ?? null}
+                  size="md"
+                />
                 <div className="min-w-0 flex-1">
                   <div className="hb-card-section line-clamp-1 text-sm">
                     {s.profiles?.full_name ?? "Admin"}

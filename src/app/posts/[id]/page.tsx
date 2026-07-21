@@ -27,12 +27,12 @@ export default async function PostPage({ params }: PageProps) {
   const [{ data: post }, { data: comments }, { data: completion }] = await Promise.all([
     supabase
       .from("posts")
-      .select("*, profiles(full_name)")
+      .select("*, profiles(full_name, avatar_url)")
       .eq("id", id)
       .single(),
     supabase
       .from("comments")
-      .select("*, profiles(full_name)")
+      .select("*, profiles(full_name, avatar_url)")
       .eq("post_id", id)
       .order("created_at", { ascending: true }),
     supabase

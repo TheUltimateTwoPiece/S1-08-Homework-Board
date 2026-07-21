@@ -33,7 +33,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
 
   let postsQuery = supabase
     .from("posts")
-    .select("*, profiles(full_name)")
+    .select("*, profiles(full_name, avatar_url)")
     .order("pinned", { ascending: false })
     .order("due_at", { ascending: true, nullsFirst: false })
     .order("created_at", { ascending: false });

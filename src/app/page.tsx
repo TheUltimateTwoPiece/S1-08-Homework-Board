@@ -33,7 +33,7 @@ export default async function DashboardPage() {
   ] = await Promise.all([
     supabase
       .from("posts")
-      .select("*, profiles(full_name)")
+      .select("*, profiles(full_name, avatar_url)")
       .order("pinned", { ascending: false })
       .order("due_at", { ascending: true, nullsFirst: false })
       .order("created_at", { ascending: false }),
@@ -50,7 +50,7 @@ export default async function DashboardPage() {
     isAdmin
       ? supabase
           .from("admin_schedules")
-          .select("*, profiles(full_name)")
+          .select("*, profiles(full_name, avatar_url)")
           .order("admin_id")
           .order("day_of_week")
       : Promise.resolve({ data: [] as unknown as ScheduleRow[] }),
@@ -63,7 +63,7 @@ export default async function DashboardPage() {
     isAdmin
       ? supabase
           .from("feedback")
-          .select("*, profiles(full_name, email)")
+          .select("*, profiles(full_name, email, avatar_url)")
           .order("created_at", { ascending: false })
           .limit(200)
       : Promise.resolve({ data: [] as unknown as Feedback[] }),

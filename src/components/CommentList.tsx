@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { deleteComment } from "@/actions/comments";
+import { Avatar } from "@/components/Avatar";
 import { CommentForm } from "@/components/CommentForm";
 import { PendingButton } from "@/components/PendingButton";
 import type { Comment } from "@/lib/types";
@@ -101,9 +102,12 @@ export function CommentList({
           {/* Author & timestamp */}
           <div className="mb-2 flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-blue-50 text-[10px] font-bold text-blue-700">
-                {(node.profiles?.full_name ?? "S").charAt(0).toUpperCase()}
-              </div>
+              <Avatar
+                id={node.author_id}
+                name={node.profiles?.full_name ?? "Student"}
+                src={node.profiles?.avatar_url ?? null}
+                size="sm"
+              />
               <span className="hb-card-section text-sm">
                 {node.profiles?.full_name ?? "Student"}
               </span>

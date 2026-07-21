@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode, MouseEvent as ReactMouseEvent } from "react";
 import { signOut } from "@/actions/auth";
+import { Avatar } from "@/components/Avatar";
 import { PendingButton } from "@/components/PendingButton";
 import type { Profile } from "@/lib/types";
 
@@ -99,6 +100,16 @@ const NAV_ITEMS: RailItem[] = [
     icon: (
       <Icon>
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+      </Icon>
+    ),
+  },
+  {
+    href: "/settings",
+    label: "Settings",
+    icon: (
+      <Icon>
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
       </Icon>
     ),
   },
@@ -250,13 +261,19 @@ export function SideRail({ profile, unreadBadgeSlot }: SideRailProps) {
       </nav>
 
       <div className="hb-siderail-footer">
-        <div
-          className="hb-siderail-avatar"
-          aria-hidden="true"
-          title={profile.full_name}
+        <Link
+          href="/settings"
+          aria-label={`${profile.full_name} — open settings`}
+          className="hb-siderail-avatar-link group"
         >
-          {profile.full_name.charAt(0).toUpperCase()}
-        </div>
+          <Avatar
+            id={profile.id}
+            name={profile.full_name}
+            src={profile.avatar_url}
+            size="md"
+            className="ring-2 ring-white transition group-hover:ring-blue-200"
+          />
+        </Link>
         <form action={signOut}>
           <PendingButton
             type="submit"

@@ -106,7 +106,7 @@ export async function sendDutyReminders() {
   // Find all admins scheduled for today
   const { data: schedules } = await supabase
     .from("admin_schedules")
-    .select("admin_id, profiles(full_name)")
+    .select("admin_id, profiles(full_name, avatar_url)")
     .eq("day_of_week", dayOfWeek)
     .eq("is_active", true);
 
