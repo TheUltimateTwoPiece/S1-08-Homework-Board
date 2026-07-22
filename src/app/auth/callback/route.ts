@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
 
 /**
  * Only allow `next` to redirect to paths on THIS origin. Without this guard,
@@ -24,7 +24,7 @@ function safeNext(next: string | null): string {
   }
 }
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const type = searchParams.get("type");
@@ -34,10 +34,32 @@ export async function GET(request: Request) {
   const next = safeNext(searchParams.get("next") ?? defaultNext);
 
   if (code) {
-    const supabase = await createClient();
+    // Create the redirect response FIRST so we can set cookies on it directly.
+    // This is the same pattern used by the middleware — cookies MUST be set on
+    // the actual response object that gets returned, otherwise the session
+    // won't survive the redirect.
+    const response = NextResponse.redirect(`${origin}${next}`);
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll();
+          },
+          setAll(cookiesToSet) {
+            for (const { name, value, options } of cookiesToSet) {
+              response.cookies.set(name, value, options);
+            }
+          },
+        },
+      },
+    );
+
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
+      return response;
     }
   }
 
