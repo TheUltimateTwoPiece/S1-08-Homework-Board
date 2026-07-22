@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Freebuff desktop scratch directory — never commit. SQLite WAL files here can
+# capture plaintext content from any tool calls if secrets ever flow through
+# the project's writes. The repo's own changes never live there.
+.freebuff/

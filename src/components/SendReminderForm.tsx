@@ -39,17 +39,37 @@ export function SendReminderForm({ students, admins, posts }: SendReminderFormPr
 
   const [state, formAction, pending] = useActionState(
     async (
-      _prev: { error?: string; success?: boolean; count?: number } | null,
+      _prev:
+        | {
+            success: boolean;
+            error?: string;
+            inAppCount?: number;
+            emailedCount?: number;
+            failedCount?: number;
+            testMode?: boolean;
+            errors?: string[];
+          }
+        | null,
       formData: FormData,
     ) => {
-      const result = await sendReminder(formData);
+      const result = (await sendReminder(formData)) as
+        | {
+            success: boolean;
+            error?: string;
+            inAppCount?: number;
+            emailedCount?: number;
+            failedCount?: number;
+            testMode?: boolean;
+            errors?: string[];
+          }
+        | undefined;
       if (result?.success) {
         setTitle("");
         setMessage("");
         setSelectedPostId("");
         setTarget("all");
       }
-      return result;
+      return result ?? null;
     },
     null,
   );
@@ -204,13 +224,51 @@ export function SendReminderForm({ students, admins, posts }: SendReminderFormPr
           <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">{state.error}</div>
         )}
         {state?.success && (
-          <div className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-600">
-            <div className="flex items-center gap-2">
+          <div className="space-y-2 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700">
+            <div className="flex items-center gap-2 font-medium">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
-              Reminder sent to {state.count} student{state.count === 1 ? "" : "s"}!
+              Reminder posted in-app to {state.inAppCount} recipient{state.inAppCount === 1 ? "" : "s"}.
             </div>
+            {state.testMode && (
+              <div className="flex items-center gap-1.5 text-xs text-amber-700">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
+                  <path d="M12 9v4" />
+                  <path d="M12 17h.01" />
+                  <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                </svg>
+                Test mode active — emails redirected to BREVO_TEST_TO_EMAIL.
+              </div>
+            )}
+            {!state.testMode && state.emailedCount !== undefined && state.emailedCount > 0 && state.failedCount === 0 && (
+              <div className="flex items-center gap-1.5 text-xs text-green-700">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                  <polyline points="22,6 12,13 2,6" />
+                </svg>
+                Emailed {state.emailedCount} recipient{state.emailedCount === 1 ? "" : "s"}.
+              </div>
+            )}
+            {!state.testMode && state.emailedCount !== undefined && state.failedCount !== undefined && state.failedCount > 0 && (
+              <div className="space-y-1 text-xs text-amber-700">
+                <div className="flex items-center gap-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
+                    <path d="M12 9v4" />
+                    <path d="M12 17h.01" />
+                    <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                  </svg>
+                  Emailed {state.emailedCount ?? 0} · failed {state.failedCount}.
+                </div>
+                {state.errors && state.errors.length > 0 && (
+                  <ul className="list-disc space-y-0.5 pl-7 text-[11px]">
+                    {state.errors.map((err, idx) => (
+                      <li key={idx}>{err}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
           </div>
         )}
 

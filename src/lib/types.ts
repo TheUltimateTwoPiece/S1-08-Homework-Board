@@ -71,6 +71,24 @@ export type Notification = {
   created_by: string;
   read_at: string | null;
   created_at: string;
+  /**
+   * When Brevo acknowledged the transactional email send. NULL when:
+   * (a) the recipient had no email on file,
+   * (b) Brevo was not configured on the server,
+   * (c) the email send failed,
+   * (d) the feature is disabled.
+   */
+  email_sent_at: string | null;
+  /**
+   * Brevo message id. Search Brevo dashboard (Transactional → Logs) by this
+   * id to debug delivery complaints.
+   */
+  email_message_id: string | null;
+  /**
+   * Last Brevo error message if the email send failed. Cleared automatically
+   * if a later retry succeeds.
+   */
+  email_error: string | null;
 };
 
 export type PostCompletion = {

@@ -6,6 +6,7 @@ import {
   markNotificationRead,
 } from "@/actions/notifications";
 import { PendingButton } from "@/components/PendingButton";
+import { escapeHtml as escapeAttr } from "@/lib/brevo";
 import type { Notification } from "@/lib/types";
 
 export const revalidate = 15;
@@ -16,7 +17,9 @@ export default async function NotificationsPage() {
 
   const { data: notifications } = await supabase
     .from("notifications")
-    .select("id, user_id, title, message, created_by, read_at, created_at")
+    .select(
+      "id, user_id, title, message, created_by, read_at, created_at, email_sent_at, email_message_id, email_error",
+    )
     .eq("user_id", profile.id)
     .order("created_at", { ascending: false });
 
@@ -84,16 +87,43 @@ export default async function NotificationsPage() {
                   <p className="hb-card-body text-sm leading-relaxed">
                     {notification.message}
                   </p>
-                  <div className="hb-card-meta mt-3 flex items-center gap-2 text-xs">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden="true">
-                      <circle cx="12" cy="12" r="10" />
-                      <polyline points="12 6 12 12 16 14" />
-                    </svg>
-                    <time dateTime={notification.created_at}>
-                      {formatDistanceToNow(new Date(notification.created_at), {
-                        addSuffix: true,
-                      })}
-                    </time>
+                  <div className="hb-card-meta mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+                    {profile.role === "admin" && notification.email_sent_at && (
+                      <span
+                        className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-1.5 py-0.5 text-blue-700"
+                        title={escapeAttr(`Brevo message id: ${notification.email_message_id ?? "unknown"}`)}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden="true">
+                          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                          <polyline points="22,6 12,13 2,6" />
+                        </svg>
+                        Emailed
+                      </span>
+                    )}
+                    {profile.role === "admin" && notification.email_error && (
+                      <span
+                        className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-1.5 py-0.5 text-amber-700"
+                        title={notification.email_error ? escapeAttr(notification.email_error) : ""}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden="true">
+                          <path d="M12 9v4" />
+                          <path d="M12 17h.01" />
+                          <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                        </svg>
+                        Email failed
+                      </span>
+                    )}
+                    <span className="inline-flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                      </svg>
+                      <time dateTime={notification.created_at}>
+                        {formatDistanceToNow(new Date(notification.created_at), {
+                          addSuffix: true,
+                        })}
+                      </time>
+                    </span>
                   </div>
                 </div>
 
