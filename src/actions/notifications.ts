@@ -15,24 +15,17 @@ type Recipient = {
   id: string;
   email: string;
   full_name: string;
-  /**
-   * When `false`, the recipient has opted out of reminder emails at /settings.
-   * `undefined` happens if the email-preferences migration hasn't been run
-   * yet — treated as opt-in (default) so unconfigured fresh installs keep
-   * working.
-   */
-  email_reminder_notifications?: boolean;
 };
+
+// Opt-out flags are looked up in a separate tolerant query after
+// notifications are inserted — see optedOutUserIds Sets below. Keeping
+// the flag off this type prevents accidental reads from a stale query
+// result that doesn't include the opt-out column.
 
 type PostRecipient = {
   id: string;
   email: string;
   full_name: string;
-  /**
-   * When `false`, the recipient has opted out of new-post emails at /settings.
-   * `undefined` is treated as opt-in.
-   */
-  email_post_notifications?: boolean;
 };
 
 type NotificationRow = {
@@ -65,12 +58,15 @@ export async function notifyNewPost(params: {
   const supabase = await createClient();
 
   // Pull candidates: students + admins (everyone who could plausibly want to
-  // know about a new homework post) who have opted in. Excludes the author.
-  // We also fetch `email_post_notifications` so we can drop email opt-outs
-  // BEFORE bulk-inserting — fewer DB writes, no need to backfill later.
+  // know about a new homework post). Excludes the author. We deliberately
+  // omit `email_post_notifications` from this SELECT so the query still
+  // succeeds on installs where migration-profile-email-prefs.sql hasn't run
+  // (the column doesn't exist yet → PostgREST errors the whole SELECT,
+  // data: null, candidates = []). Opt-out flags are looked up later in a
+  // separate tolerant query.
   const { data: profiles } = await supabase
     .from("profiles")
-    .select("id, email, full_name, email_post_notifications")
+    .select("id, email, full_name")
     .neq("id", params.authorId);
 
   const candidates = (profiles as PostRecipient[] | null) ?? [];
@@ -103,6 +99,33 @@ export async function notifyNewPost(params: {
   const notifications = (inserted as NotificationRow[] | null) ?? [];
   const profileById = new Map(candidates.map((c) => [c.id, c]));
 
+  // Tolerant opt-out lookup. If migration-profile-email-prefs.sql hasn't
+  // run, this query errors with the schema-cache message and we fall
+  // through treating every recipient as opted-in — matches the column
+  // default of `true` and lets un-migrated installs still send happy-path
+  // emails without the opt-out feature.
+  const optedOutUserIds = new Set<string>();
+  if (notifications.length > 0) {
+    const { data: optOuts, error: optOutsError } = await supabase
+      .from("profiles")
+      .select("id, email_post_notifications")
+      .in(
+        "id",
+        notifications.map((n) => n.user_id),
+      );
+    if (!optOutsError && optOuts) {
+      for (const row of optOuts as Array<{
+        id: string;
+        email_post_notifications: boolean | null;
+      }>) {
+        if (row.email_post_notifications === false) {
+          optedOutUserIds.add(row.id);
+        }
+      }
+    }
+    // optOutsError → optedOutUserIds stays empty; everyone opt-in.
+  }
+
   // Email recipients are a strict subset: post-notification opt-ins only.
   // Opted-out recipients still get the in-app notification (inserted above);
   // they get a skip-marker on `email_error` here so admins see a consistent
@@ -113,7 +136,7 @@ export async function notifyNewPost(params: {
     .map((n) => {
       const profile = profileById.get(n.user_id);
       if (!profile) return null;
-      if (profile.email_post_notifications === false) {
+      if (optedOutUserIds.has(n.user_id)) {
         optedOutIds.push(n.id);
         return null;
       }
@@ -330,14 +353,14 @@ export async function sendReminder(formData: FormData) {
   if (target === "all") {
     const { data } = await supabase
       .from("profiles")
-      .select("id, email, full_name, email_reminder_notifications")
+      .select("id, email, full_name")
       .eq("role", "student")
       .order("full_name");
     candidates = (data as Recipient[] | null) ?? [];
   } else if (target === "all-admins") {
     const { data } = await supabase
       .from("profiles")
-      .select("id, email, full_name, email_reminder_notifications")
+      .select("id, email, full_name")
       .eq("role", "admin")
       .order("full_name");
     candidates = (data as Recipient[] | null) ?? [];
@@ -352,7 +375,7 @@ export async function sendReminder(formData: FormData) {
     const [{ data: students }, { data: completions }] = await Promise.all([
       supabase
         .from("profiles")
-        .select("id, email, full_name, email_reminder_notifications")
+        .select("id, email, full_name")
         .eq("role", "student"),
       supabase
         .from("post_completions")
@@ -372,7 +395,7 @@ export async function sendReminder(formData: FormData) {
     // Single recipient by id — admin or student
     const { data } = await supabase
       .from("profiles")
-      .select("id, email, full_name, email_reminder_notifications")
+      .select("id, email, full_name")
       .eq("id", target)
       .single();
     candidates = data ? [data as Recipient] : [];
@@ -452,6 +475,35 @@ export async function sendReminder(formData: FormData) {
     };
   }
 
+  // Tolerant opt-out lookup. The candidate SELECTs above intentionally omit
+  // `email_reminder_notifications` so an un-migrated install (where the
+  // migration-profile-email-prefs.sql columns don't exist) still returns
+  // a valid candidate list. We re-fetch opt-out flags here for the IDs we
+  // actually sent notifications to; if the column doesn't exist, this
+  // errors with the schema-cache message and we fall through treating
+  // every recipient as opted-in — matching the column's default of `true`.
+  const optedOutUserIds = new Set<string>();
+  if (notifications.length > 0) {
+    const { data: optOuts, error: optOutsError } = await supabase
+      .from("profiles")
+      .select("id, email_reminder_notifications")
+      .in(
+        "id",
+        notifications.map((n) => n.user_id),
+      );
+    if (!optOutsError && optOuts) {
+      for (const row of optOuts as Array<{
+        id: string;
+        email_reminder_notifications: boolean | null;
+      }>) {
+        if (row.email_reminder_notifications === false) {
+          optedOutUserIds.add(row.id);
+        }
+      }
+    }
+    // optOutsError → keep optedOutUserIds empty; everyone treated as opt-in.
+  }
+
   // Build the per-recipient send queue: notificationId ↔ profile row.
   // Honor the recipient's email-preference opt-out here — they still get the
   // in-app notification (inserted above) but no email is fetched for them.
@@ -461,7 +513,7 @@ export async function sendReminder(formData: FormData) {
     .map((n) => {
       const profile = profileById.get(n.user_id);
       if (!profile) return null;
-      if (profile.email_reminder_notifications === false) {
+      if (optedOutUserIds.has(n.user_id)) {
         optedOut.push(n.id);
         return null;
       }
