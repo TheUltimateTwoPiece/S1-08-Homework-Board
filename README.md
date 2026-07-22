@@ -147,6 +147,28 @@ Check the inbox (and spam) for a Supabase confirmation email and click the link,
 **Option C — Confirm in Supabase dashboard**  
 **Authentication → Users** → click the user → **Confirm user** / toggle email confirmed.
 
+### Stray HTML entities (`&apos;`, `&nbsp;`) rendering literally
+
+JSX renders text verbatim — it does NOT decode HTML entities like the browser does. So a JSX string containing `You&apos;re` displays as `You&apos;re`, not `You're`. This bites whenever a literal HTML entity gets pasted into a `.tsx` file (a copy-paste from an HTML-encoded source, an LLM emitting HTML, etc.).
+
+The project ships a CI grep test that catches this at the source boundary:
+
+```bash
+npm run test:entities
+```
+
+The script walks `src/` for any `&amp;`, `&lt;`, `&gt;`, `&quot;`, `&nbsp;`, `&copy;`, `&reg;`, `&apos;`, or numeric `&#NNN;` references and exits non-zero if found anywhere outside the allowlist. The only allowlisted file is `src/lib/brevo.ts` — its `escapeHtml` legitimately *writes* entities for email templates. Add additional entries only with a documented reason.
+
+**Fix for any offender**: replace the entity with the actual character (e.g. `'` instead of `&apos;`, a regular space instead of `&nbsp;`).
+
+**Auto-runs on deploy**: the script is also wired into the npm `prebuild` lifecycle hook in `package.json`, so every `npm run build` (including Vercel deploys) runs the check before bundling. A failing check exits non-zero and blocks the deploy — no regression can ship to production. Run `npm run test:entities` locally to debug a failure.
+
+### Caveats
+
+- **Test fixtures containing entities** — the script walks `*.test.*` and `__tests__/` too. If you add Vitest/Jest later and have a fixture like `expect(html).toBe('You&apos;re…')`, it'll fail the gate. Coping options, in order of preference: (1) store the asserting string in a non-`.ts` fixture (e.g. a JSON file under `__fixtures__/`), (2) exclude that directory in the script's `walk` filter, (3) add an allowlist entry with a documented reason.
+- **URL params with `&amp;` will trip the gate** — a JSX string literal like `"https://example.com/?a=1&amp;b=2"` looks like an entity to the regex even though it's a normal URL. Modern URLs use `&` directly, so write `&` in source unless you specifically want the HTML-encoded form.
+- **Expanding the allowlist** — edit `ALLOWLIST` in `scripts/check-html-entities.mjs`. Always pair the entry with a comment in that file explaining why this specific file legitimately produces HTML entities (an email template, a `dangerouslySetInnerHTML` consumer, a markdown renderer, etc.). If a future feature renders markdown — or any stored content — into HTML, gate it through a known sanitizer (e.g. DOMPurify) before passing it to `dangerouslySetInnerHTML` AND add the producing file to the allowlist, so the script can tell those entities apart from accidental ones in normal JSX text.
+
 ### Checklist not working
 
 If students can't tick off homework, run `supabase/migration-post-completions.sql` in the Supabase SQL Editor (only needed if you set up the database before this feature was added).

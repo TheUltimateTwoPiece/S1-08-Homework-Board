@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/check-html-entities.mjs",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:entities": "node scripts/check-html-entities.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
