@@ -93,11 +93,20 @@ export default async function DashboardPage() {
 
   const totalPosts = typedPosts.length;
   const completedCount = typedPosts.filter((p) => completedSet.has(p.id)).length;
+  // "Upcoming" / "Overdue" should reflect work the student still owes. If
+  // the post is already completed, it's neither — otherwise the widget
+  // double-counts finished work as pressure.
   const upcomingCount = typedPosts.filter(
-    (p) => p.due_at && p.due_at >= todayStr,
+    (p) =>
+      p.due_at &&
+      p.due_at >= todayStr &&
+      !completedSet.has(p.id),
   ).length;
   const overdueCount = typedPosts.filter(
-    (p) => p.due_at && p.due_at < todayStr,
+    (p) =>
+      p.due_at &&
+      p.due_at < todayStr &&
+      !completedSet.has(p.id),
   ).length;
 
   const allSchedules = (schedulesResult.data as ScheduleRow[]) ?? [];

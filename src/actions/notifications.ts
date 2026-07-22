@@ -296,6 +296,15 @@ type EmailOutcome = {
   error?: string;
 };
 
+// Diagnostic counts captured by the "incomplete" target branch so the
+// empty-candidates error can tell the admin WHY nothing was found — was it
+// because there are no student accounts, or because every student has
+// already completed the post? Without this the error reads as a silent
+// refusal and admins can't tell whether to retry or give up.
+// (Scoping note: these must stay inside sendReminder, not module scope —
+// Vercel re-uses warm server-action instances across requests, and a
+// module-level `let` would leak counter state from request A into B.)
+
 export async function sendReminder(formData: FormData) {
   const { supabase, user, senderName } = await requireAdmin();
 
@@ -313,6 +322,10 @@ export async function sendReminder(formData: FormData) {
 
   let candidates: Recipient[] = [];
   let labelPrefix = "to send the reminder to";
+  // Populated only by the "incomplete" branch; consumed in the empty-
+  // candidates error path below to render a diagnostic message.
+  let incompleteStudentCount = 0;
+  let incompleteCompletedCount = 0;
 
   if (target === "all") {
     const { data } = await supabase
@@ -347,14 +360,14 @@ export async function sendReminder(formData: FormData) {
         .eq("post_id", postId),
     ]);
 
+    const studentRows = (students as Recipient[] | null) ?? [];
     const completedIds = new Set(
       (completions as { user_id: string }[] | null)?.map((c) => c.user_id) ?? [],
     );
-    candidates =
-      (students as Recipient[] | null)?.filter(
-        (s) => !completedIds.has(s.id),
-      ) ?? [];
+    candidates = studentRows.filter((s) => !completedIds.has(s.id));
     labelPrefix = "that still needs to be completed";
+    incompleteStudentCount = studentRows.length;
+    incompleteCompletedCount = completedIds.size;
   } else {
     // Single recipient by id — admin or student
     const { data } = await supabase
@@ -374,10 +387,28 @@ export async function sendReminder(formData: FormData) {
       : candidates;
 
   if (selfFiltered.length === 0) {
-    const label =
-      target === "all-admins"
-        ? "No other admins found to remind."
-        : `No recipients ${labelPrefix}.`;
+    let label: string;
+    if (target === "all-admins") {
+      label = "No other admins found to remind.";
+    } else if (target === "incomplete") {
+      // Tell the admin exactly why the candidates list is empty so they
+      // can tell "no student accounts" apart from "every student already
+      // completed this post". Without this the empty list reads as a
+      // silent refusal.
+      if (incompleteStudentCount === 0) {
+        label =
+          "No student accounts found. Sign students up first, then send your reminder.";
+      } else if (incompleteCompletedCount === incompleteStudentCount) {
+        const n = incompleteStudentCount;
+        label = `All ${n} student${n === 1 ? "" : "s"} already completed this post — nothing left to remind.`;
+      } else {
+        label = `No incomplete students found for this post.`;
+      }
+    } else if (target === "all") {
+      label = "No student accounts found. Sign students up first.";
+    } else {
+      label = `No recipients ${labelPrefix}.`;
+    }
     return { success: false, error: label };
   }
 

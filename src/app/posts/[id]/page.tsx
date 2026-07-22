@@ -191,11 +191,19 @@ export default async function PostPage({ params }: PageProps) {
     : [null, null];
 
   const allProfiles = (allProfilesResult?.data ?? []) as (Pick<Profile, "id" | "full_name" | "email"> & { role: string })[];
+  // Restrict the completion widget to students only — admins appearing as
+  // "Pending" in the roster inflates the remaining-count and confuses the
+  // class-completion metric. Admins can still see the widget but are
+  // filtered out of the numerator/denominator.
+  const studentProfiles = allProfiles.filter((p) => p.role === "student");
+  const studentIds = new Set(studentProfiles.map((p) => p.id));
   const completedUserIds = new Set(
-    (postCompletionsResult?.data ?? []).map((row) => row.user_id as string),
+    (postCompletionsResult?.data ?? [])
+      .map((row) => row.user_id as string)
+      .filter((id) => studentIds.has(id)),
   );
-  const completedCount = Array.from(completedUserIds).length;
-  const remainingCount = Math.max(0, allProfiles.length - completedCount);
+  const completedCount = completedUserIds.size;
+  const remainingCount = Math.max(0, studentProfiles.length - completedCount);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
@@ -307,25 +315,25 @@ export default async function PostPage({ params }: PageProps) {
           <AttachmentList attachments={signedPostAttachments} />
         </article>
 
-        {isAdmin && allProfiles.length > 0 ? (
+        {isAdmin && studentProfiles.length > 0 ? (
           <aside className="hb-card-surface h-fit rounded-xl border p-5">
             <details className="group">
               <summary className="hb-card-section flex cursor-pointer items-center gap-2 text-sm transition hover:text-blue-600">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="hb-card-meta h-4 w-4 transition group-open:rotate-90" aria-hidden="true">
                   <polyline points="9 18 15 12 9 6" />
                 </svg>
-                Completion ({completedCount}/{allProfiles.length})
+                Class completion ({completedCount}/{studentProfiles.length})
               </summary>
               <div className="mt-3 space-y-1">
                 <div className="flex items-center gap-3">
                   <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
                     <div
                       className="h-full rounded-full bg-green-500 transition-all duration-500"
-                      style={{ width: `${(completedCount / allProfiles.length) * 100}%` }}
+                      style={{ width: `${(completedCount / studentProfiles.length) * 100}%` }}
                     />
                   </div>
                   <span className="hb-card-section text-xs tabular-nums">
-                    {Math.round((completedCount / allProfiles.length) * 100)}%
+                    {Math.round((completedCount / studentProfiles.length) * 100)}%
                   </span>
                 </div>
                 <p className="hb-card-meta text-xs">
@@ -333,7 +341,7 @@ export default async function PostPage({ params }: PageProps) {
                 </p>
               </div>
               <ul className="mt-4 space-y-1.5">
-                {allProfiles.map((person) => {
+                {studentProfiles.map((person) => {
                   const done = completedUserIds.has(person.id);
                   const isAdminProfile = person.role === "admin";
                   return (

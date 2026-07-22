@@ -46,8 +46,14 @@ export default async function YourProgressPage() {
 
   const totalPosts = typedPosts.length;
   const completedCount = typedPosts.filter((p) => completedSet.has(p.id)).length;
+  // "Upcoming" should only count posts the student hasn't done yet —
+  // otherwise an already-completed assignment due next week still shows
+  // up as upcoming and inflates the count.
   const upcomingCount = typedPosts.filter(
-    (p) => p.due_at && p.due_at >= todayStr,
+    (p) =>
+      p.due_at &&
+      p.due_at >= todayStr &&
+      !completedSet.has(p.id),
   ).length;
   const overdueCount = typedPosts.filter(
     (p) => p.due_at && p.due_at < todayStr && !completedSet.has(p.id),
