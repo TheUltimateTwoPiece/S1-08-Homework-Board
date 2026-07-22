@@ -8,6 +8,10 @@ type SendReminderFormProps = {
   students: Pick<Profile, "id" | "full_name" | "email">[];
   admins: Pick<Profile, "id" | "full_name" | "email">[];
   posts: Pick<Post, "id" | "title">[];
+  /* Server-side check of BREVO_TEST_TO_EMAIL — surfaces a pre-click banner
+     before the user has a chance to send the wrong emails to themselves. */
+  brevoTestMode: boolean;
+  brevoTestModeEmail: string | null;
 };
 
 const QUICK_REMINDERS = [
@@ -31,7 +35,13 @@ const QUICK_REMINDERS = [
   },
 ];
 
-export function SendReminderForm({ students, admins, posts }: SendReminderFormProps) {
+export function SendReminderForm({
+  students,
+  admins,
+  posts,
+  brevoTestMode,
+  brevoTestModeEmail,
+}: SendReminderFormProps) {
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [target, setTarget] = useState("all");
@@ -47,6 +57,7 @@ export function SendReminderForm({ students, admins, posts }: SendReminderFormPr
             emailedCount?: number;
             failedCount?: number;
             testMode?: boolean;
+            testModeEmail?: string | null;
             errors?: string[];
           }
         | null,
@@ -60,6 +71,7 @@ export function SendReminderForm({ students, admins, posts }: SendReminderFormPr
             emailedCount?: number;
             failedCount?: number;
             testMode?: boolean;
+            testModeEmail?: string | null;
             errors?: string[];
           }
         | undefined;
@@ -104,6 +116,41 @@ export function SendReminderForm({ students, admins, posts }: SendReminderFormPr
           </p>
         </div>
       </div>
+
+      {/* Pre-click test-mode warning. Shown whenever BREVO_TEST_TO_EMAIL is
+          set on the server (e.g. production with leftover Vercel var, local
+          dev, preview deploys). The redirect address is included so it's
+          obvious WHERE emails are going — admins have shipped 17-test-email
+          incidents when this banner was missing. */}
+      {brevoTestMode && (
+        <div className="mb-6 rounded-lg border-2 border-amber-300 bg-amber-50 p-4">
+          <div className="flex items-start gap-3">
+            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-amber-200 text-amber-700">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
+                <path d="M12 9v4" />
+                <path d="M12 17h.01" />
+                <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-sm font-bold uppercase tracking-wide text-amber-900">
+                Test mode active
+              </h3>
+              <p className="mt-1 text-sm text-amber-900">
+                Every reminder email you send will be redirected to{" "}
+                <code className="rounded bg-amber-100 px-1.5 py-0.5 font-mono text-amber-900">
+                  {brevoTestModeEmail ?? "(unset)"}
+                </code>{" "}
+                instead of real recipients.
+              </p>
+              <p className="mt-1 text-xs text-amber-700">
+                To disable: <strong>Vercel → Settings → Environment Variables → delete{" "}
+                <code className="font-mono">BREVO_TEST_TO_EMAIL</code> → redeploy.</strong> Locally: remove the variable from <code className="font-mono">.env.local</code>.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-4">
         <div>
@@ -232,13 +279,18 @@ export function SendReminderForm({ students, admins, posts }: SendReminderFormPr
               Reminder posted in-app to {state.inAppCount} recipient{state.inAppCount === 1 ? "" : "s"}.
             </div>
             {state.testMode && (
-              <div className="flex items-center gap-1.5 text-xs text-amber-700">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
-                  <path d="M12 9v4" />
-                  <path d="M12 17h.01" />
-                  <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                </svg>
-                Test mode active — emails redirected to BREVO_TEST_TO_EMAIL.
+              <div className="space-y-0.5 text-xs text-amber-700">
+                <div className="flex items-center gap-1.5 font-semibold">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
+                    <path d="M12 9v4" />
+                    <path d="M12 17h.01" />
+                    <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                  </svg>
+                  Test mode active — emails redirected to {state.testModeEmail ?? "(unset)"}.
+                </div>
+                <div className="pl-5 text-[11px]">
+                  Disable on Vercel → Settings → Environment Variables → delete BREVO_TEST_TO_EMAIL, then redeploy.
+                </div>
               </div>
             )}
             {!state.testMode && state.emailedCount !== undefined && state.emailedCount > 0 && state.failedCount === 0 && (

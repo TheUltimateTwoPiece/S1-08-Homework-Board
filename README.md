@@ -29,7 +29,7 @@ npm install
 ### 3. Set up Supabase
 
 1. Create a new project at [supabase.com](https://supabase.com)
-2. Run the SQL migrations in the `supabase/` directory in the Supabase SQL Editor (`schema.sql` first, then any migrations in order — at minimum `migration-email-status.sql` and `migration-profile-email-prefs.sql` if you use Brevo)
+2. Run the SQL migrations in the `supabase/` directory in the Supabase SQL Editor (`schema.sql` first, then any migrations in order — at minimum `migration-email-status.sql` and `migration-profile-email-prefs.sql` if you use Brevo, plus `migration-notifications-admin-select.sql` for any existing deployment that predates the admin `SELECT` policy on notifications)
 3. Copy your project URL and anon key from Supabase Settings → API
 
 ### 4. Configure environment variables
@@ -150,6 +150,79 @@ Check the inbox (and spam) for a Supabase confirmation email and click the link,
 ### Checklist not working
 
 If students can't tick off homework, run `supabase/migration-post-completions.sql` in the Supabase SQL Editor (only needed if you set up the database before this feature was added).
+
+### "All my emails went to my own inbox" / test mode stuck on
+
+If you hit Send Reminder and the emails land in a single test address instead of every recipient, `BREVO_TEST_TO_EMAIL` is set on Vercel. (The reminder form on `/admin` now shows a persistent amber banner whenever test mode is active, with the redirect address inline and the disable instructions — so this is much harder to miss than it used to be.)
+
+To turn it off:
+
+1. **Vercel** — Project → Settings → Environment Variables → find `BREVO_TEST_TO_EMAIL` → delete → Save.
+2. **Trigger a redeploy** so the new env-var set is picked up (Deployments → redeploy the latest commit).
+3. **Confirm** — open `/admin` and look at the Send reminder card. If the amber "Test mode active" banner is gone, you're back to sending real emails. If it's still there, the redeploy didn't pick up the change.
+
+**Where the redirect lives in code:** `src/lib/brevo.ts`. When `BREVO_TEST_TO_EMAIL` is set, every call to `sendReminderEmail` overrides the To: address with the test recipient and prepends `[TEST]` to the subject. The wrapper also emits a loud `console.warn` on every test-mode send so it's greppable in Vercel → Logs if you need to confirm whether a run was redirected.
+
+**Useful for staging / preview deploys:** you can keep `BREVO_TEST_TO_EMAIL` set as a Production-disabled / Preview-enabled env var on Vercel so only Preview deployments get the redirect, while Production goes to real recipients. The wrapper in `brevo.ts` honors it in every deployment unless you delete it.
+
+### "new row violates row-level security policy for table 'notifications'" on Send Reminder
+
+The error message is misleading — it has the same wording regardless of whether the failure is the WITH CHECK clause (`is_admin()` returning false) or a SELECT policy that hides the freshly inserted row from `.insert(...).select(...)`. Diagnose first, then apply the matching fix.
+
+**Step 1 — Find your actual profile state.** Paste this into the Supabase SQL Editor (it's an editor context, so it runs as `postgres` and `auth.uid()` returns NULL there — the join works around that):
+
+```sql
+select au.id as auth_id,
+       au.email,
+       p.role,
+       case
+         when p.id is null then 'NO PROFILE ROW'
+         when p.role <> 'admin' then 'NON-ADMIN PROFILE'
+         else 'admin ok'
+       end as status
+from auth.users au
+left join public.profiles p on p.id = au.id
+order by au.created_at desc;
+```
+
+| status | why it bites you | fix |
+|---|---|---|
+| `NO PROFILE ROW` | `handle_new_user()` trigger didn't fire on your signup, so `is_admin()` returns false → every admin action fails | Step 2 |
+| `NON-ADMIN PROFILE` | profile was created with default role `'student'` (you signed up without the admin code, or the trigger blocked a role flip) | Step 3 |
+| `admin ok` | profile exists, role is admin — something else is wrong | Step 4 (rare) |
+
+**Step 2 — Insert a missing profile row.**
+
+```sql
+insert into public.profiles (id, email, full_name, role)
+select au.id, au.email,
+       coalesce(au.raw_user_meta_data ->> 'full_name', split_part(au.email, '@', 1)),
+       'admin'
+from auth.users au
+where au.email ilike 'you@example.com'
+on conflict (id) do nothing;
+```
+
+If the INSERT hits `duplicate key value`, your profile already exists — jump to Step 3 instead.
+
+**Step 3 — Flip an existing 'student' role to 'admin'.** The `prevent_profile_role_change` trigger blocks role-flip UPDATEs by design; disable it for the duration of the UPDATE, then re-enable. Trigger name is `prevent_profile_role_change` (function is `prevent_role_change`) per `supabase/schema.sql`.
+
+```sql
+alter table public.profiles disable trigger prevent_profile_role_change;
+
+update public.profiles
+set role = 'admin'
+where email ilike 'you@example.com'
+returning id, email, role;     -- should print role='admin'
+
+alter table public.profiles enable trigger prevent_profile_role_change;
+```
+
+Don't use `disable trigger all` — that turns off every trigger on the table, including the auto-touch triggers on `updated_at`.
+
+**Step 4 — Profile is admin but you still see the error.** Run `supabase/migration-notifications-admin-select.sql`. It adds an `Admins can view all notifications` SELECT policy that PostgREST versions need to read back freshly inserted rows in `insert(...).select(...)` chains (used by reminder fan-out and new-post fan-out to write per-recipient status). Even if this isn't the actual cause of your specific error, the policy is desirable — admins should SELECT notifications they sent. New installs already include the policy; this migration is for existing deployments.
+
+**Step 5 — None of the above matched.** Open Supabase → Logs → Postgres Logs, retry the Send Reminder click, and grep for `policy` or your user id. The exact Postgres error names which policy fired.
 
 ### AI enhancement not working
 

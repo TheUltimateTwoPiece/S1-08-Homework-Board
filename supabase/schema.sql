@@ -273,6 +273,17 @@ create policy "Users can view own notifications"
   to authenticated
   using (auth.uid() = user_id);
 
+-- Admins must be able to SELECT notifications they just inserted on behalf of
+-- other users; PostgREST's `.insert(...).select(...)` flow requires the
+-- caller's session to read back the freshly inserted row, which fails without
+-- this policy. The failure surfaces to the client as
+-- "new row violates row-level security policy for table 'notifications'".
+-- (Existing deployments: see supabase/migration-notifications-admin-select.sql.)
+create policy "Admins can view all notifications"
+  on public.notifications for select
+  to authenticated
+  using (public.is_admin());
+
 create policy "Admins can send notifications"
   on public.notifications for insert
   to authenticated

@@ -72,6 +72,10 @@ export default async function AdminPage() {
           students={(students as Profile[]) ?? []}
           admins={(admins as Profile[]) ?? []}
           posts={(posts as Pick<Post, "id" | "title">[]) ?? []}
+          // Pass env-driven test-mode state down so the form can surface a
+          // persistent pre-click banner (rather than after the action fires).
+          brevoTestMode={Boolean(process.env.BREVO_TEST_TO_EMAIL)}
+          brevoTestModeEmail={process.env.BREVO_TEST_TO_EMAIL ?? null}
         />
       </div>
     </div>

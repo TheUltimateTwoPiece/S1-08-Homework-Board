@@ -73,7 +73,14 @@ export async function notifyNewPost(params: {
 
   // In-app notifications go to EVERYONE (admins and students alike — the
   // bell icon is the consistent UX regardless of email opt-in).
-  if (candidates.length === 0) return { inAppCount: 0, emailedCount: 0, failedCount: 0 };
+  if (candidates.length === 0)
+    return {
+      inAppCount: 0,
+      emailedCount: 0,
+      failedCount: 0,
+      testMode: Boolean(process.env.BREVO_TEST_TO_EMAIL),
+      testModeEmail: process.env.BREVO_TEST_TO_EMAIL ?? null,
+    };
 
   const rowsToInsert = candidates.map((c) => ({
     user_id: c.id,
@@ -93,7 +100,14 @@ export async function notifyNewPost(params: {
     // Don't throw — createPost already persisted the post. The user just
     // won't get in-app notifications for this one. Return shape stays
     // consistent so callers can swallow the error cleanly.
-    return { inAppCount: 0, emailedCount: 0, failedCount: 0, error: insertError.message };
+    return {
+      inAppCount: 0,
+      emailedCount: 0,
+      failedCount: 0,
+      error: insertError.message,
+      testMode: Boolean(process.env.BREVO_TEST_TO_EMAIL),
+      testModeEmail: process.env.BREVO_TEST_TO_EMAIL ?? null,
+    };
   }
 
   const notifications = (inserted as NotificationRow[] | null) ?? [];
@@ -195,7 +209,19 @@ export async function notifyNewPost(params: {
       inAppCount: notifications.length,
       emailedCount: 0,
       failedCount: emailQueue.length,
+      testMode: Boolean(process.env.BREVO_TEST_TO_EMAIL),
+      testModeEmail: process.env.BREVO_TEST_TO_EMAIL ?? null,
     };
+  }
+
+  // One-time test-mode warning per fan-out, logged at the action layer with
+  // full context (recipient count + source post title). The Brevo wrapper
+  // no longer warns per-email, so 24-line spam in Vercel → Logs is gone.
+  if (process.env.BREVO_TEST_TO_EMAIL) {
+    console.warn(
+      `[brevo] TEST MODE REDIRECT to ${process.env.BREVO_TEST_TO_EMAIL} — new-post fan-out for "${params.postTitle}" is rerouting all ${emailQueue.length} emails. ` +
+      `Disable by removing BREVO_TEST_TO_EMAIL from env vars (Vercel → Settings → Environment Variables, or .env.local).`,
+    );
   }
 
   // Phase 1 — fan out emails in chunks of 5 to stay under Brevo's per-second
@@ -273,6 +299,8 @@ export async function notifyNewPost(params: {
     inAppCount: notifications.length,
     emailedCount,
     failedCount,
+    testMode: Boolean(process.env.BREVO_TEST_TO_EMAIL),
+    testModeEmail: process.env.BREVO_TEST_TO_EMAIL ?? null,
   };
 }
 
@@ -560,17 +588,26 @@ export async function sendReminder(formData: FormData) {
       inAppCount: notifications.length,
       emailedCount: 0,
       failedCount: notifications.length,
-      testMode: false,
+      testMode: Boolean(process.env.BREVO_TEST_TO_EMAIL),
+      testModeEmail: process.env.BREVO_TEST_TO_EMAIL ?? null,
       errors: [
         "Email service not configured (set BREVO_API_KEY, BREVO_FROM_EMAIL, BREVO_FROM_NAME on Vercel).",
       ],
     };
+  }  // One-time test-mode warning per fan-out, logged at the action layer with
+  // full context (recipient count + reminder title). The Brevo wrapper no
+  // longer warns per-email, so 24-line spam in Vercel → Logs is gone.
+  if (process.env.BREVO_TEST_TO_EMAIL) {
+    console.warn(
+      `[brevo] TEST MODE REDIRECT to ${process.env.BREVO_TEST_TO_EMAIL} — reminder fan-out "${title}" is rerouting all ${sendQueue.length} emails. ` +
+      `Disable by removing BREVO_TEST_TO_EMAIL from env vars (Vercel → Settings → Environment Variables, or .env.local).`,
+    );
   }
 
   // Phase 1 — fan out emails in chunks of 5 to stay under Brevo's per-second
-  // rate limit. The worker does NO database writes here — only the Brevo call
-  // and a small outcome object. Collecting outcomes before any DB write means
-  // DB updates can run in parallel next.
+  //           rate limit. The worker does NO database writes here — only the Brevo call
+  //           and a small outcome object. Collecting outcomes before any DB write means
+  //           DB updates can run in parallel next.
   const outcomes = await processInBatches(
     sendQueue,
     5,
@@ -655,6 +692,7 @@ export async function sendReminder(formData: FormData) {
     emailedCount,
     failedCount,
     testMode: Boolean(process.env.BREVO_TEST_TO_EMAIL),
+    testModeEmail: process.env.BREVO_TEST_TO_EMAIL ?? null,
     errors: uniqueErrors.size > 0 ? Array.from(uniqueErrors).slice(0, 3) : undefined,
   };
 }

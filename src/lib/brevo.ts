@@ -20,8 +20,20 @@
 const BREVO_ENDPOINT = "https://api.brevo.com/v3/smtp/email";
 
 export type SendEmailResult =
-  | { ok: true; messageId: string; testMode: boolean }
-  | { ok: false; error: string; testMode: boolean };
+  | {
+      ok: true;
+      messageId: string;
+      /* True iff BREVO_TEST_TO_EMAIL is set; when true, testModeEmail is
+         the address every send is being redirected to. */
+      testMode: boolean;
+      testModeEmail: string | null;
+    }
+  | {
+      ok: false;
+      error: string;
+      testMode: boolean;
+      testModeEmail: string | null;
+    };
 
 /**
  * Runs `worker` over `items` with at most `concurrency` in flight at once.
@@ -73,12 +85,19 @@ export async function sendReminderEmail(params: {
 
   const testToEmail = process.env.BREVO_TEST_TO_EMAIL;
   const testMode = Boolean(testToEmail);
+  const testModeEmail = testToEmail ?? null;
+
+  // The per-fan-out warning is emitted by the action layer (sendReminder and
+  // notifyNewPost) ONCE per call with full context, instead of by this wrapper
+  // — which would otherwise log 24× per send to a 24-student class. The
+  // wrapper stays quiet; the actions decide when to surface to logs.
 
   if (!apiKey || !fromEmail || !fromName) {
     return {
       ok: false,
       error: "Brevo not configured (missing BREVO_API_KEY / from address)",
       testMode,
+      testModeEmail,
     };
   }
 
@@ -117,7 +136,7 @@ export async function sendReminderEmail(params: {
       } catch {
         // body wasn't JSON — leave the status-only detail
       }
-      return { ok: false, error: detail, testMode };
+      return { ok: false, error: detail, testMode, testModeEmail };
     }
 
     const body = (await res.json()) as { messageId?: string };
@@ -125,10 +144,11 @@ export async function sendReminderEmail(params: {
       ok: true,
       messageId: body.messageId ?? "unknown",
       testMode,
+      testModeEmail,
     };
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Network error contacting Brevo";
-    return { ok: false, error: msg, testMode };
+    return { ok: false, error: msg, testMode, testModeEmail };
   }
 }
 
