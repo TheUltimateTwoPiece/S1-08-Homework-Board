@@ -27,7 +27,11 @@ function safeNext(next: string | null): string {
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = safeNext(searchParams.get("next"));
+  const type = searchParams.get("type");
+
+  // Default to /update-password for recovery flows if no explicit next is given
+  const defaultNext = type === "recovery" ? "/update-password" : "/";
+  const next = safeNext(searchParams.get("next") ?? defaultNext);
 
   if (code) {
     const supabase = await createClient();

@@ -102,6 +102,51 @@ export async function signIn(formData: FormData) {
   redirect("/");
 }
 
+export async function resetPassword(formData: FormData): Promise<{ error?: string; success?: string } | undefined> {
+  const supabase = await createClient();
+
+  const email = formData.get("email") as string;
+  if (!email) {
+    return { error: "Please enter your email address." };
+  }
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/auth/callback?next=/update-password`,
+  });
+
+  if (error) {
+    return { error: formatAuthError(error.message) };
+  }
+
+  return {
+    success:
+      "If that email is registered, you'll receive a password reset link shortly. Check your spam folder if you don't see it.",
+  };
+}
+
+export async function updatePassword(formData: FormData): Promise<{ error?: string; success?: string } | undefined> {
+  const supabase = await createClient();
+
+  const password = formData.get("password") as string;
+  const confirmPassword = formData.get("confirmPassword") as string;
+
+  if (!password || password.length < 6) {
+    return { error: "Password must be at least 6 characters." };
+  }
+
+  if (password !== confirmPassword) {
+    return { error: "Passwords do not match." };
+  }
+
+  const { error } = await supabase.auth.updateUser({ password });
+
+  if (error) {
+    return { error: formatAuthError(error.message) };
+  }
+
+  redirect("/");
+}
+
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
