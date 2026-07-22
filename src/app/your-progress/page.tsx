@@ -268,7 +268,7 @@ export default async function YourProgressPage() {
         </div>
         {upNext.length === 0 ? (
           <p className="hb-card-meta py-8 text-center text-sm">
-            You&apos;re completely caught up. 🎉
+            You're completely caught up. 🎉
           </p>
         ) : (
           <ul className="divide-y divide-slate-100 dark:divide-slate-700">

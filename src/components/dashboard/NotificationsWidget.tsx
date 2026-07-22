@@ -35,7 +35,7 @@ export function NotificationsWidget({ notifications }: NotificationsWidgetProps)
 
       {recent.length === 0 ? (
         <div className="flex h-[calc(100%-44px)] flex-col items-center justify-center text-center">
-          <p className="hb-card-section text-sm">You&apos;re all caught up</p>
+          <p className="hb-card-section text-sm">You're all caught up</p>
           <p className="hb-card-meta text-xs">No new reminders</p>
         </div>
       ) : (

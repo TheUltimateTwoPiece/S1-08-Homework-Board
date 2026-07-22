@@ -40,7 +40,7 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
             </svg>
           </div>
           <div>
-            <h2 className="hb-card-section text-base tracking-tight">{firstName}&apos;s homework</h2>
+            <h2 className="hb-card-section text-base tracking-tight">{firstName}'s homework</h2>
             <p className="hb-card-body text-xs font-semibold">{totalDone} of {top.length} done · tap to open</p>
           </div>
         </div>

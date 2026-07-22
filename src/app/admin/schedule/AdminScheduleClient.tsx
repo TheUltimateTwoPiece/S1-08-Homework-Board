@@ -100,7 +100,7 @@ export function AdminScheduleClient({
 
       {/* Today's Duty */}
       <div className="hb-card-surface-strong rounded-xl border p-6">
-        <h2 className="hb-card-section mb-3 text-base">Today&apos;s duty</h2>
+        <h2 className="hb-card-section mb-3 text-base">Today's duty</h2>
         <div className="space-y-3">
           {admins.map((admin) => {
             const assignedToday = scheduleByDay.get(dayOfWeek)?.has(admin.id);
@@ -224,7 +224,7 @@ export function AdminScheduleClient({
       <div className="hb-card-surface-strong rounded-xl border p-6">
         <h2 className="hb-card-section mb-3 text-base">Send duty reminders</h2>
         <p className="hb-card-body mb-4 text-sm">
-          Send a reminder to all admins scheduled for today who haven&apos;t marked their post as complete.
+          Send a reminder to all admins scheduled for today who haven't marked their post as complete.
         </p>
 
         <form action={reminderAction}>

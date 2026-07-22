@@ -166,7 +166,7 @@ export function SendReminderForm({
           >
             <optgroup label="Students">
               <option value="all">All students</option>
-              <option value="incomplete">Only students who haven&apos;t completed this task</option>
+              <option value="incomplete">Only students who haven't completed this task</option>
               {students.map((student) => (
                 <option key={student.id} value={student.id}>
                   {student.full_name} ({student.email})

@@ -38,7 +38,7 @@ export function DutyWidget({ todaySchedules, completedToday, todayStr, currentAd
           </div>
           <div>
             <h2 className="hb-card-section text-sm tracking-tight">
-              Today&apos;s duty · {format(parseISO(todayStr), "EEE")}
+              Today's duty · {format(parseISO(todayStr), "EEE")}
             </h2>
             <p className="hb-card-body text-xs font-semibold">
               {completedSet.size}/{todaySchedules.length} completed

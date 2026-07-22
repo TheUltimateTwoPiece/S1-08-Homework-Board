@@ -43,7 +43,7 @@ export default async function NotificationsPage() {
               ? "Homework reminders you receive appear here. Send reminders to students from the admin panel."
               : unreadCount > 0
                 ? `${unreadCount} unread reminder${unreadCount === 1 ? "" : "s"} from your admin`
-                : "You&apos;re all caught up — no new reminders"}
+                : "You're all caught up — no new reminders"}
           </p>
         </div>
 
