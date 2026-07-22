@@ -40,6 +40,11 @@ export async function updateProfile(
     return { success: false, error: "Display name is too long (max 80 characters)." };
   }
 
+  const emailPostNotifications =
+    formData.get("emailPostNotifications") === "on";
+  const emailReminderNotifications =
+    formData.get("emailReminderNotifications") === "on";
+
   const removeAvatar = formData.get("removeAvatar") === "true";
   const avatarFile = formData.get("avatar");
 
@@ -105,6 +110,10 @@ export async function updateProfile(
     nextAvatarUrl = publicUrl;
   }
 
+  // Save name + avatar first. These columns have existed since schema.sql so
+  // they're guaranteed to exist on every install regardless of migration
+  // state. Splitting the writes lets us degrade gracefully if the email-
+  // preferences migration hasn't run yet.
   const { error: updateError } = await supabase
     .from("profiles")
     .update({ full_name: fullName, avatar_url: nextAvatarUrl })
@@ -114,6 +123,28 @@ export async function updateProfile(
     return {
       success: false,
       error: `Couldn't save profile: ${updateError.message}`,
+    };
+  }
+
+  // Email preference columns were added in migration-profile-email-prefs.sql.
+  // If the migration hasn't run yet, the column is missing — PostgREST
+  // returns "Could not find the '...' column". Tolerate that case so the
+  // avatar + name still save on partial installs; surface any other error.
+  const { error: prefError } = await supabase
+    .from("profiles")
+    .update({
+      email_post_notifications: emailPostNotifications,
+      email_reminder_notifications: emailReminderNotifications,
+    })
+    .eq("id", user.id);
+
+  if (
+    prefError &&
+    !/column.*does not exist|could not find the.*column of.*in the schema cache/i.test(prefError.message)
+  ) {
+    return {
+      success: false,
+      error: `Couldn't save email preferences: ${prefError.message}`,
     };
   }
 

@@ -29,7 +29,7 @@ npm install
 ### 3. Set up Supabase
 
 1. Create a new project at [supabase.com](https://supabase.com)
-2. Run the SQL migrations in the `supabase/` directory in the Supabase SQL Editor (`schema.sql` first, then any migrations in order — including `migration-email-status.sql` if you use Brevo)
+2. Run the SQL migrations in the `supabase/` directory in the Supabase SQL Editor (`schema.sql` first, then any migrations in order — at minimum `migration-email-status.sql` and `migration-profile-email-prefs.sql` if you use Brevo)
 3. Copy your project URL and anon key from Supabase Settings → API
 
 ### 4. Configure environment variables
@@ -48,8 +48,6 @@ GOOGLE_GEMINI_API_KEY=your-gemini-api-key
 BREVO_API_KEY=
 BREVO_FROM_EMAIL=
 BREVO_FROM_NAME=
-# Optional: divert ALL reminder emails to this address during early testing.
-BREVO_TEST_TO_EMAIL=
 # Required for the "View assignment" CTA links inside emails to resolve.
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
@@ -110,9 +108,16 @@ When you send a reminder from `/admin`, it goes to the in-app bell icon of every
 5. **Run the migration.** In Supabase SQL Editor, run `supabase/migration-email-status.sql`. It adds `email_sent_at`, `email_message_id`, and `email_error` columns to the `notifications` table. Without this, the action will fail when it tries to record email status.
 6. **Deploy / restart.** Push to your main branch (or trigger a Vercel redeploy). Server actions need to pick up the new env vars.
 
-### Test mode (optional)
+### New-post emails
 
-If you want to verify the pipeline before sending real emails to parents, set `BREVO_TEST_TO_EMAIL=your-email@example.com` on Vercel. Every reminder email will be redirected to that address with `[TEST]` prepended to the subject, and the in-app recipient list will still go out normally. **Remove this env var once verified.**
+Every new homework post triggers a Brevo email to every opted-in user — same `BREVO_API_KEY`, different template (cyan header, "X just posted a new {subject} assignment" copy). Each recipient also gets an in-app bell notification regardless of their email preference.
+
+Per-user email preferences live in the `profiles` table — see `supabase/migration-profile-email-prefs.sql`. Defaults are **on** for both:
+
+- `email_post_notifications` — receives an email when a new post is published
+- `email_reminder_notifications` — receives an email when an admin sends a reminder
+
+Users toggle these at **Settings** (`/settings`). In-app bell notifications are unaffected by either flag — they always fire.
 
 ### How delivery is tracked
 

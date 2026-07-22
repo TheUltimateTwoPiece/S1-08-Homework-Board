@@ -7,6 +7,19 @@ export type Profile = {
   role: UserRole;
   avatar_url: string | null;
   created_at: string;
+  /**
+   * When true, the user receives a transactional email for every new
+   * homework post. In-app (bell icon) notifications are unaffected — they
+   * always fire regardless of this flag. Defaults to `true`; toggled by the
+   * user at /settings.
+   */
+  email_post_notifications: boolean;
+  /**
+   * When true, the user receives a transactional email when an admin sends
+   * an ad-hoc reminder from /admin. In-app notifications are unaffected.
+   * Defaults to `true`; toggled by the user at /settings.
+   */
+  email_reminder_notifications: boolean;
 };
 
 export type Post = {

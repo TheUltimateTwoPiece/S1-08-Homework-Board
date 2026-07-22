@@ -213,6 +213,86 @@ export function SettingsForm({ profile }: SettingsFormProps) {
         />
       </section>
 
+      {/* ── Email notifications ─────────────────── */}
+      <section>
+        <div className="mb-4 flex items-center gap-2">
+          <div className="hb-bento-icon-box" aria-hidden="true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-4 w-4"
+              aria-hidden="true"
+            >
+              <rect x="2" y="4" width="20" height="16" rx="2" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>
+          </div>
+          <h2 className="hb-card-section text-base">Email notifications</h2>
+        </div>
+        <p className="hb-card-meta mb-4 text-sm">
+          Pick which class emails you want to receive. In-app bell notifications are unaffected — you&apos;ll still see new homework and reminders in the app regardless of these settings.
+        </p>
+
+        <div className="space-y-3">
+          <label
+            htmlFor="emailPostNotifications"
+            className={`flex items-start gap-3 rounded-lg border border-slate-200 bg-white p-3 transition ${
+              pending
+                ? "cursor-not-allowed opacity-60"
+                : "cursor-pointer hover:bg-slate-50"
+            }`}
+          >
+            <input
+              id="emailPostNotifications"
+              name="emailPostNotifications"
+              type="checkbox"
+              defaultChecked={profile.email_post_notifications ?? true}
+              disabled={pending}
+              className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+            />
+            <div className="flex-1">
+              <div className="hb-card-section text-sm font-semibold">
+                Email me when new homework is posted
+              </div>
+              <div className="hb-card-meta mt-0.5 text-xs">
+                Get a transactional email each time your teacher publishes a new assignment.
+              </div>
+            </div>
+          </label>
+
+          <label
+            htmlFor="emailReminderNotifications"
+            className={`flex items-start gap-3 rounded-lg border border-slate-200 bg-white p-3 transition ${
+              pending
+                ? "cursor-not-allowed opacity-60"
+                : "cursor-pointer hover:bg-slate-50"
+            }`}
+          >
+            <input
+              id="emailReminderNotifications"
+              name="emailReminderNotifications"
+              type="checkbox"
+              defaultChecked={profile.email_reminder_notifications ?? true}
+              disabled={pending}
+              className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+            />
+            <div className="flex-1">
+              <div className="hb-card-section text-sm font-semibold">
+                Email me when reminders are sent
+              </div>
+              <div className="hb-card-meta mt-0.5 text-xs">
+                Get a transactional email when your teacher sends an ad-hoc reminder to you, your class, or anyone still missing a specific assignment.
+              </div>
+            </div>
+          </label>
+        </div>
+      </section>
+
       {/* ── Account (read-only) ────────────────── */}
       <section>
         <div className="mb-4 flex items-center gap-2">

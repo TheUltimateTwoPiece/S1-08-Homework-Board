@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { notifyNewPost } from "@/actions/notifications";
 
 function normalizeMultilineText(value: string): string {
   return value.replace(/\r\n/g, "\n").replace(/\r/g, "\n").trim();
@@ -144,10 +145,55 @@ export async function createPost(formData: FormData) {
     }
   }
 
+  // Fan out new-post notifications beyond this point. Errors are deliberately
+  // swallowed — the post, attachments, and any admin failures of the
+  // notification insert are local to the in-app notification table; Brevo
+  // failures record into `email_error` on each row, already handled in
+  // `notifyNewPost`. Returning `{ success: true }` means: the post is live.
+  try {
+    await fanOutPostNotifications(supabase, post!.id, user.id);
+  } catch (err) {
+    console.error("[createPost] notify fan-out failed", err);
+  }
+
+  // Always revalidate /notifications — notifyNewPost's internal revalidation
+  // runs on the happy path, but if the fan-out threw, the cache is still
+  // stale. Forcing a revalidate here means the bell icon picks up whatever
+  // notification rows DID land before the throw, plus any successful sends.
   revalidatePath("/");
   revalidatePath("/admin");
+  revalidatePath("/notifications");
   revalidatePath(`/posts/${post.id}`);
   return { success: true };
+}
+
+/**
+ * Sends a Brevo email + in-app bell notification for the post just created.
+ * Soft-fail by design — if Brevo is unreachable, the post is still live and
+ * the per-row `email_error` on each notification row tells admins why no
+ * email went out. Runs AFTER storage uploads so a failed email pipeline
+ * never blocks a user-visible post.
+ */
+async function fanOutPostNotifications(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  postId: string,
+  authorId: string,
+) {
+  const { data: post } = await supabase
+    .from("posts")
+    .select("title, subject, due_at")
+    .eq("id", postId)
+    .single();
+
+  if (!post) return;
+
+  await notifyNewPost({
+    postId,
+    postTitle: (post as { title?: string }).title ?? "New homework",
+    postSubject: (post as { subject?: string }).subject ?? "General",
+    postDueAt: (post as { due_at?: string | null }).due_at ?? null,
+    authorId,
+  });
 }
 
 export async function updatePost(formData: FormData) {

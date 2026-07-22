@@ -170,6 +170,86 @@ function siteUrl(): string {
 }
 
 /**
+ * Builds the inline-styled HTML body for a "new homework posted" notification.
+ * Distinct preheader + footer copy from reminder emails so the inbox clearly
+ * conveys "new assignment" vs "you have a pending reminder". Inline styles
+ * only (no <style> blocks / external CSS) so Gmail, Outlook, and iOS Mail all
+ * render reliably. Centre-column layout, max-width 600px.
+ */
+export function renderPostEmail(params: {
+  recipientName: string;
+  postTitle: string;
+  authorName: string;
+  subject: string;
+  dueAt: string | null;
+  postId: string;
+}): string {
+  const safeName = escapeHtml(params.recipientName);
+  const safePostTitle = escapeHtml(params.postTitle);
+  const safeAuthor = escapeHtml(params.authorName);
+  const safeSubject = escapeHtml(params.subject);
+  const linkPostId = safePostSlug(params.postId);
+  const cta = linkPostId
+    ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:24px;">
+        <tr>
+          <td style="background-color:#4f46e5; border-radius:8px;">
+            <a href="${escapeAttr(`${siteUrl()}/posts/${linkPostId}`)}"
+               style="display:inline-block; padding:12px 22px; color:#ffffff; text-decoration:none; font-size:14px; font-weight:600; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+              View assignment →
+            </a>
+          </td>
+        </tr>
+      </table>`
+    : "";
+
+  const dueLine = params.dueAt
+    ? `<p style="margin:0; color:#475569; font-size:14px;">Due: <strong style="color:#0f172a;">${escapeHtml(params.dueAt)}</strong></p>`
+    : `<p style="margin:0; color:#64748b; font-size:13px; font-style:italic;">No due date set.</p>`;
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${safePostTitle}</title>
+</head>
+<body style="margin:0; padding:0; background-color:#f8fafc; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; color:#0f172a;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f8fafc; padding:24px 0;">
+    <tr>
+      <td align="center">
+        <table role="presentation" cellpadding="0" cellspacing="0" width="600" style="max-width:600px; width:100%; background-color:#ffffff; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden;">
+          <tr>
+            <td style="background-color:#0ea5e9; padding:24px 32px;">
+              <p style="margin:0; color:#bae6fd; font-size:12px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase;">New Homework Posted</p>
+              <h1 style="margin:6px 0 0; color:#ffffff; font-size:20px; font-weight:600; line-height:1.3;">${safePostTitle}</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:28px 32px;">
+              <p style="margin:0 0 16px; color:#475569; font-size:14px;">Hi ${safeName},</p>
+              <p style="margin:0 0 16px; color:#0f172a; font-size:15px; line-height:1.6;">
+                ${safeAuthor} just posted a new <strong>${safeSubject}</strong> assignment.
+              </p>
+              ${dueLine}
+              ${cta}
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color:#f1f5f9; padding:16px 32px; border-top:1px solid #e2e8f0;">
+              <p style="margin:0; font-size:12px; color:#64748b; line-height:1.5;">
+                Sent by Homework Board. You can change which notifications you receive by email from <a href="${escapeAttr(`${siteUrl()}/settings`)}" style="color:#4f46e5; text-decoration:underline;">Settings</a>.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+/**
  * Builds the inline-styled HTML body for a reminder email.
  * Inline styles only (no <style> blocks / external CSS) so Gmail, Outlook, and
  * iOS Mail all render these reliably. Centre-column layout, max-width 600px.
