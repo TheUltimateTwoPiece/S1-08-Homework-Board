@@ -11,7 +11,9 @@ type Filters = {
 };
 
 type PostFiltersBarProps = {
-  subjects: string[];
+  // Readonly tuple so we can pass `SUBJECTS` (from src/lib/subjects.ts)
+  // directly without spreading — and the component never mutates it.
+  subjects: readonly string[];
 };
 
 function normalizeValue(value: string | null | undefined): string {

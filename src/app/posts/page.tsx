@@ -5,6 +5,7 @@ import { PostCard } from "@/components/PostCard";
 import { PostFiltersBar } from "@/components/PostFiltersBar";
 import { PageTopBar } from "@/components/PageTopBar";
 import { requireProfile } from "@/lib/auth";
+import { SUBJECTS } from "@/lib/subjects";
 import type { Post } from "@/lib/types";
 
 export const revalidate = 30;
@@ -98,7 +99,8 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
     return true;
   });
 
-  const subjects = ["General", "Math", "Science", "English", "History", "Language"];
+  // Subjects come from the shared SRC/lib/subjects constant; no inline copy.
+  // The filter dropdown renders one option per entry in SUBJECTS via PostFiltersBar.
   const firstName = profile.full_name.split(" ")[0] ?? profile.full_name;
 
   return (
@@ -134,7 +136,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
         </div>
       </div>
 
-      <PostFiltersBar subjects={subjects} />
+      <PostFiltersBar subjects={SUBJECTS} />
 
       <div className="hb-muted-text mt-4 flex items-center justify-between text-xs">
         <span>

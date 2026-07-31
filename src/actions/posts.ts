@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { notifyNewPost } from "@/actions/notifications";
+import { DEFAULT_SUBJECT } from "@/lib/subjects";
+import { tripProfanity } from "@/lib/profanity";
 
 function normalizeMultilineText(value: string): string {
   return value.replace(/\r\n/g, "\n").replace(/\r/g, "\n").trim();
@@ -53,7 +55,7 @@ export async function createPost(formData: FormData) {
 
   const title = (formData.get("title") as string).trim();
   const content = normalizeMultilineText(formData.get("content") as string);
-  const subject = ((formData.get("subject") as string | null) ?? "General").trim() || "General";
+  const subject = ((formData.get("subject") as string | null) ?? DEFAULT_SUBJECT).trim() || DEFAULT_SUBJECT;
   const dueAtRaw = ((formData.get("dueAt") as string | null) ?? "").trim();
   const pinned = formData.get("pinned") === "on";
   const files = (formData.getAll("files") as File[]).filter((file) => file.size > 0);
@@ -61,6 +63,12 @@ export async function createPost(formData: FormData) {
   if (!title || !content) {
     return { error: "Title and content are required." };
   }
+
+  // Profanity gate: redirect to PROFANITY_REDIRECT_URL if title or
+  // content contain any blocked word. Runs BEFORE the insert so
+  // nothing is saved when the user trips the filter.
+  const profanity = tripProfanity({ userId: user.id }, title, content);
+  if (profanity.triggered) redirect(profanity.redirectUrl);
 
   const { data: post, error } = await supabase
     .from("posts")
@@ -190,7 +198,7 @@ async function fanOutPostNotifications(
   await notifyNewPost({
     postId,
     postTitle: (post as { title?: string }).title ?? "New homework",
-    postSubject: (post as { subject?: string }).subject ?? "General",
+    postSubject: (post as { subject?: string }).subject ?? DEFAULT_SUBJECT,
     postDueAt: (post as { due_at?: string | null }).due_at ?? null,
     authorId,
   });
@@ -202,13 +210,18 @@ export async function updatePost(formData: FormData) {
   const postId = formData.get("postId") as string;
   const title = (formData.get("title") as string).trim();
   const content = normalizeMultilineText(formData.get("content") as string);
-  const subject = ((formData.get("subject") as string | null) ?? "General").trim() || "General";
+  const subject = ((formData.get("subject") as string | null) ?? DEFAULT_SUBJECT).trim() || DEFAULT_SUBJECT;
   const dueAtRaw = ((formData.get("dueAt") as string | null) ?? "").trim();
   const dueAt = dueAtRaw ? dueAtRaw : null;
   const pinned = formData.get("pinned") === "on";
 
   if (!postId) return { error: "Missing post id." };
   if (!title || !content) return { error: "Title and content are required." };
+
+  // Same profanity gate as createPost — admins shouldn't sneak past the
+  // filter by editing an existing post.
+  const profanity = tripProfanity({ userId: user.id }, title, content);
+  if (profanity.triggered) redirect(profanity.redirectUrl);
 
   const { data: existing, error: existingError } = await supabase
     .from("posts")

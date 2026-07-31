@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { createPost } from "@/actions/posts";
 import { enhanceContentWithAI } from "@/actions/ai";
+import { DEFAULT_SUBJECT, SUBJECTS } from "@/lib/subjects";
 
 export function CreatePostForm() {
   const [content, setContent] = useState("");
@@ -74,14 +75,13 @@ export function CreatePostForm() {
               id="subject"
               name="subject"
               className="hb-input w-full rounded-lg px-3 py-2.5 text-sm"
-              defaultValue="General"
+              defaultValue={DEFAULT_SUBJECT}
             >
-              <option value="General">General</option>
-              <option value="Math">Math</option>
-              <option value="Science">Science</option>
-              <option value="English">English</option>
-              <option value="History">History</option>
-              <option value="Language">Language</option>
+              {SUBJECTS.map((subject) => (
+                <option key={subject} value={subject}>
+                  {subject}
+                </option>
+              ))}
             </select>
           </div>
           <div>

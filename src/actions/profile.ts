@@ -1,7 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { tripProfanity } from "@/lib/profanity";
 
 const MAX_AVATAR_BYTES = 2 * 1024 * 1024; // 2 MB
 const ACCEPTED_TYPES = new Set([
@@ -39,6 +41,13 @@ export async function updateProfile(
   if (fullName.length > 80) {
     return { success: false, error: "Display name is too long (max 80 characters)." };
   }
+
+  // Profanity gate on the display name. Without this the user could
+  // sidestep the filter by stuffing the bad word into their profile
+  // name instead of into a post or comment. Runs BEFORE the avatar /
+  // preferences updates so a partial save never happens.
+  const profanity = tripProfanity({ userId: user.id }, fullName);
+  if (profanity.triggered) redirect(profanity.redirectUrl);
 
   const emailPostNotifications =
     formData.get("emailPostNotifications") === "on";

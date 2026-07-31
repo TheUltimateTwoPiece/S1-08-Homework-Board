@@ -10,6 +10,62 @@ A daily homework posting site for admins and students. Built with Next.js, Supab
 - **Checklist** — students tick off homework when done; progress is saved per student
 - **Reminders** — admins send homework reminders to all students, individuals, or only those who haven't completed specific tasks. Optional email via Brevo (300/day on free tier) — admins see per-recipient delivery status
 - **AI-powered post creation** — use Google Gemini AI to format and enhance homework posts
+- **Anti-swear filter** — every free-form text field (post title + content, comment, feedback, profile display name, admin reminder body) is checked for profanity before being saved. If a blocked word is detected, the user is redirected away from the app. See the [Anti-swear filter](#anti-swear-filter) section below
+
+## Anti-swear filter
+
+Every piece of free-form text in the app is sent through a server-side profanity check before being saved. The check runs on:
+
+- Post titles and content (create + edit)
+- Comment content
+- Feedback messages
+- The user's display name when updating their profile
+- Admin reminder titles and bodies
+
+When the filter triggers, the browser is redirected to the URL configured in `PROFANITY_REDIRECT_URL` **before** any database write happens, so nothing partial is saved.
+
+### Configure
+
+Add to `.env.local` (and to Vercel → Settings → Environment Variables if you deploy):
+
+```bash
+PROFANITY_REDIRECT_URL=https://www.youtube.com/watch?v=3Gwj-QOCxKo
+```
+
+Only `http://` and `https://` URLs are accepted — anything else (`javascript:`, `data:`, …) is rejected by the filter so the redirect can't be turned into an XSS / open-redirect target. If the variable is unset, the filter is a no-op with a one-time warning so it's obvious during development that you forgot to configure it.
+
+### What gets caught
+
+The default denylist covers the common English entries you'd expect (`shit`, `fuck`, `ass`, `damn`, …) and explicit obfuscation variants (`sh*t`, `f*ck`, `b*tch`, `f**k`, …). The matcher defeats these bypasses:
+
+- Punctuation between letters (`s.h.i.t`, `ass-hole`, `f,u,c,k`)
+- Letter-spacing (`f u c k`, `s h i t`, `f\tu\tc\tk`)
+- Asterisk obfuscation (`sh*t`, `f*ck`, `b*tch`)
+- Apostrophe splits (`fu'ck`, `sh'it`)
+- Zero-width / bidi / directional formatting characters
+- Combining diacritical marks (`dámn`)
+- Fullwidth / NFKD variants (`ｓｈｉｔ`)
+- Mixed case (`FUCK`, `FuCk`)
+
+If you need to extend or override the list without redeploying, set:
+
+```bash
+PROFANITY_EXTRA_WORDS="heck,jeez,gosh"
+```
+
+…to append your custom entries to the built-in list. Restart the server (or trigger a Vercel redeploy) to pick up changes.
+
+### What it does NOT do
+
+Letter-drop obfuscation (`F**K` *with missing letters*, `sh.t`) is not caught — that requires edit-distance / phonetic matching, which is out of scope. The default denylist includes several pre-dropped forms explicitly as a mitigation, and you can add more via `PROFANITY_EXTRA_WORDS`.
+
+### Validate after configuration
+
+A 50+-case smoke script ships under `scripts/profanity-smoke.mjs`. Run it after any change to the word list or the matcher:
+
+```bash
+npx tsx scripts/profanity-smoke.mjs
+```
 
 ## Setup
 

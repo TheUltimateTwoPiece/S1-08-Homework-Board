@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { tripProfanity } from "@/lib/profanity";
 
 export async function submitFeedback(formData: FormData) {
   const supabase = await createClient();
@@ -19,6 +20,12 @@ export async function submitFeedback(formData: FormData) {
   if (!message) {
     return { error: "Feedback cannot be empty." };
   }
+
+  // Profanity gate: feedback messages go through the same filter as
+  // posts and comments so admins don't have to moderate what the
+  // filter would have caught.
+  const profanity = tripProfanity({ userId: user.id }, message);
+  if (profanity.triggered) redirect(profanity.redirectUrl);
 
   const { error } = await supabase.from("feedback").insert({
     author_id: user.id,

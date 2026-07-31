@@ -8,6 +8,7 @@ import {
 import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageTopBar } from "@/components/PageTopBar";
+import { DEFAULT_SUBJECT } from "@/lib/subjects";
 import type { Post } from "@/lib/types";
 
 export const revalidate = 30;
@@ -70,7 +71,7 @@ export default async function YourProgressPage() {
     { total: number; done: number }
   >();
   for (const p of typedPosts) {
-    const key = p.subject ?? "General";
+    const key = p.subject ?? DEFAULT_SUBJECT;
     const entry = subjectMap.get(key) ?? { total: 0, done: 0 };
     entry.total += 1;
     if (completedSet.has(p.id)) entry.done += 1;

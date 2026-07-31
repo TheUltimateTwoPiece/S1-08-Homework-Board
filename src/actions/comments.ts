@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { tripProfanity } from "@/lib/profanity";
 
 function normalizeFileName(name: string): string {
   return name.replace(/[^a-zA-Z0-9._-]+/g, "-");
@@ -44,6 +45,11 @@ export async function addComment(formData: FormData) {
   if (!content) {
     return { error: "Comment cannot be empty." };
   }
+
+  // Profanity gate. Redirect happens BEFORE the post-fetch and the
+  // insert, so we never touch the database when the user trips it.
+  const profanity = tripProfanity({ userId: user.id }, content);
+  if (profanity.triggered) redirect(profanity.redirectUrl);
 
   const { data: post, error: postError } = await supabase
     .from("posts")

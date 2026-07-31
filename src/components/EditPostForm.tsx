@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { updatePost } from "@/actions/posts";
+import { SUBJECTS } from "@/lib/subjects";
 import type { Post } from "@/lib/types";
 
 type EditPostFormProps = {
@@ -60,12 +61,11 @@ export function EditPostForm({ post }: EditPostFormProps) {
               className="hb-input w-full rounded-lg px-3 py-2.5 text-sm"
               defaultValue={post.subject}
             >
-              <option value="General">General</option>
-              <option value="Math">Math</option>
-              <option value="Science">Science</option>
-              <option value="English">English</option>
-              <option value="History">History</option>
-              <option value="Language">Language</option>
+              {SUBJECTS.map((subject) => (
+                <option key={subject} value={subject}>
+                  {subject}
+                </option>
+              ))}
             </select>
           </div>
           <div>

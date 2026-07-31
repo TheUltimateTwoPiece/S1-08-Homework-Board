@@ -10,6 +10,7 @@ import {
   renderReminderEmail,
   sendReminderEmail,
 } from "@/lib/brevo";
+import { tripProfanity } from "@/lib/profanity";
 
 type Recipient = {
   id: string;
@@ -367,6 +368,14 @@ export async function sendReminder(formData: FormData) {
   if (!title || !message) {
     return { success: false, error: "Title and message are required." };
   }
+
+  // Profanity gate: reminder titles and bodies go through the same filter
+  // as posts and comments so the system remains consistent — admins
+  // typing swears in a reminder to themselves should see the same
+  // redirect behavior.
+  const profanity = tripProfanity({ userId: user.id }, title, message);
+  if (profanity.triggered) redirect(profanity.redirectUrl);
+
   if (!target) {
     return { success: false, error: "Please pick whom to send this reminder to." };
   }
