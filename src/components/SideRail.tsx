@@ -108,7 +108,8 @@ const NAV_ITEMS: RailItem[] = [
     label: "Pip",
     icon: (
       <Icon>
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+        <circle cx="12" cy="12" r="4" />
       </Icon>
     ),
   },
