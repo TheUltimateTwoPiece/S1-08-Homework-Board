@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
 import { PageTopBar } from "@/components/PageTopBar";
 import { PipWidget } from "@/components/PipWidget";
+import { getChats } from "@/actions/pip-chats";
 
 export const revalidate = 0;
 
@@ -12,13 +13,15 @@ export default async function PipPage() {
 
   const todayStr = format(new Date(), "yyyy-MM-dd");
 
-  // Get today's prompt usage for the counter badge
-  const { data: usage } = await supabase
-    .from("pip_prompts")
-    .select("count")
-    .eq("user_id", profile.id)
-    .eq("prompt_date", todayStr)
-    .maybeSingle();
+  const [{ data: usage }, chats] = await Promise.all([
+    supabase
+      .from("pip_prompts")
+      .select("count")
+      .eq("user_id", profile.id)
+      .eq("prompt_date", todayStr)
+      .maybeSingle(),
+    getChats(),
+  ]);
 
   const used = (usage as { count?: number } | null)?.count ?? 0;
   const remaining = Math.max(0, 60 - used);
@@ -26,7 +29,7 @@ export default async function PipPage() {
   const firstName = profile.full_name.split(" ")[0] ?? profile.full_name;
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 sm:py-8">
+    <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
       <PageTopBar
         profile={profile}
         greetingName={firstName}
@@ -34,7 +37,7 @@ export default async function PipPage() {
         showAdminCta={false}
       />
 
-      <PipWidget remaining={remaining} />
+      <PipWidget remaining={remaining} initialChats={chats} />
     </div>
   );
 }
