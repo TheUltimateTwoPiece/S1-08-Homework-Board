@@ -4,6 +4,7 @@ import { requireProfile } from "@/lib/auth";
 import { PageTopBar } from "@/components/PageTopBar";
 import { PipWidget } from "@/components/PipWidget";
 import { getChats } from "@/actions/pip-chats";
+import { DAILY_LIMIT } from "@/lib/pip-types";
 
 export const revalidate = 0;
 
@@ -24,7 +25,7 @@ export default async function PipPage() {
   ]);
 
   const used = (usage as { count?: number } | null)?.count ?? 0;
-  const remaining = Math.max(0, 60 - used);
+  const remaining = Math.max(0, DAILY_LIMIT - used);
 
   const firstName = profile.full_name.split(" ")[0] ?? profile.full_name;
 

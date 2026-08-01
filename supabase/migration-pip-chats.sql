@@ -5,6 +5,7 @@ create table if not exists public.pip_chats (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.profiles(id) on delete cascade,
   title text not null default 'New chat',
+  system_instructions text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -33,6 +34,19 @@ create policy "Users can delete own chats"
   on public.pip_chats for delete
   to authenticated
   using (auth.uid() = user_id);
+
+-- Drop the old constraint if it exists so we can add system_instructions
+do $$
+begin
+  if not exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public'
+    and table_name = 'pip_chats'
+    and column_name = 'system_instructions'
+  ) then
+    alter table public.pip_chats add column system_instructions text;
+  end if;
+end $$;
 
 -- pip_messages: individual messages within a chat
 create table if not exists public.pip_messages (
