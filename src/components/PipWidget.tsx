@@ -16,9 +16,15 @@ export function PipWidget({
 }) {
   const [chats, setChats] = useState<PipChat[]>(initialChats);
   const [activeChatId, setActiveChatId] = useState<string | null>(chats[0]?.id ?? null);
-  const [messages, setMessages] = useState<{ role: "user" | "pip"; text: string; id?: string }[]>([]);
+  // Cache messages per chat so switching back is instant
+  const [messageCache, setMessageCache] = useState<Map<string, { role: "user" | "pip"; text: string; id?: string }[]>>(new Map());
+  const messages = activeChatId ? (messageCache.get(activeChatId) ?? []) : [];
+  // Ref mirror of the cache so the effect below only depends on activeChatId
+  const cacheRef = useRef(messageCache);
+  cacheRef.current = messageCache;
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const sendingRef = useRef(false); // synchronous guard against double-Enter
   const [remaining, setRemaining] = useState(initialRemaining);
   const [editingTitle, setEditingTitle] = useState<string | null>(null);
   const [titleDraft, setTitleDraft] = useState("");
@@ -31,21 +37,25 @@ export function PipWidget({
     });
   }, []);
 
-  // Load messages when active chat changes
+  // Load messages when active chat changes — cached in messageCache.
+  // Only depends on activeChatId (uses cacheRef to avoid wasteful re-runs).
   useEffect(() => {
-    if (!activeChatId) {
-      setMessages([{ role: "pip", text: WELCOME_TEXT }]);
-      return;
-    }
+    if (!activeChatId) return;
+    if (cacheRef.current.has(activeChatId)) return; // already cached
     let cancelled = false;
     getMessages(activeChatId).then((msgs) => {
       if (cancelled) return;
-      if (msgs.length === 0) {
-        setMessages([{ role: "pip", text: WELCOME_TEXT }]);
-      } else {
-        setMessages(msgs.map((m) => ({ role: m.role, text: m.text, id: m.id })));
-      }
-      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "instant" as ScrollBehavior }), 50);
+      const loaded = msgs.length > 0
+        ? msgs.map((m) => ({ role: m.role, text: m.text, id: m.id }))
+        : [{ role: "pip" as const, text: WELCOME_TEXT }];
+      setMessageCache((prev) => {
+        const next = new Map(prev);
+        next.set(activeChatId, loaded);
+        return next;
+      });
+      requestAnimationFrame(() => {
+        bottomRef.current?.scrollIntoView({ behavior: "instant" as ScrollBehavior });
+      });
     });
     return () => { cancelled = true; };
   }, [activeChatId]);
@@ -61,7 +71,11 @@ export function PipWidget({
     if (id) {
       await refreshChats();
       setActiveChatId(id);
-      setMessages([{ role: "pip", text: WELCOME_TEXT }]);
+      setMessageCache((prev) => {
+        const next = new Map(prev);
+        next.set(id, [{ role: "pip", text: WELCOME_TEXT }]);
+        return next;
+      });
       setInput("");
       setTimeout(() => inputRef.current?.focus(), 100);
     }
@@ -71,9 +85,15 @@ export function PipWidget({
     e.stopPropagation();
     await deleteChat(chatId);
     await refreshChats();
+    // Evict from cache
+    setMessageCache((prev) => {
+      const next = new Map(prev);
+      next.delete(chatId);
+      return next;
+    });
     if (activeChatId === chatId) {
-      const remaining = chats.filter((c) => c.id !== chatId);
-      setActiveChatId(remaining[0]?.id ?? null);
+      const other = chats.filter((c) => c.id !== chatId);
+      setActiveChatId(other[0]?.id ?? null);
     }
   }
 
@@ -95,39 +115,58 @@ export function PipWidget({
 
   async function handleSend() {
     const question = input.trim();
-    if (!question || loading || remaining <= 0) return;
+    if (!question || loading || remaining <= 0 || sendingRef.current) return;
+    sendingRef.current = true;
 
-    // Auto-create a chat if none is active (first message ever, or all chats deleted)
+    // Auto-create a chat if none is active
     let chatId = activeChatId;
     if (!chatId) {
       const id = await createChat();
-      if (!id) return; // failed to create
+      if (!id) { sendingRef.current = false; return; }
       chatId = id;
       setActiveChatId(id);
+      setMessageCache((prev) => {
+        const next = new Map(prev);
+        next.set(id, [{ role: "pip", text: WELCOME_TEXT }]);
+        return next;
+      });
       await refreshChats();
     }
 
-    setMessages((prev) => [...prev, { role: "user", text: question }]);
+    setMessageCache((prev) => {
+      const next = new Map(prev);
+      const current = next.get(chatId) ?? [];
+      next.set(chatId, [...current, { role: "user", text: question }]);
+      return next;
+    });
     setInput("");
     setLoading(true);
     scrollToBottom();
 
     try {
       const result: PipResult = await askPip(question, chatId);
-      if (result.reply) {
-        const replyText = result.reply;
-        setMessages((prev) => [...prev, { role: "pip", text: replyText }]);
-        await refreshChats();
-      } else if (result.error) {
-        setMessages((prev) => [...prev, { role: "pip", text: `\u26a0\ufe0f ${result.error}` }]);
-      }
-      if (result.remaining !== undefined) {
-        setRemaining(result.remaining);
-      }
+      setMessageCache((prev) => {
+        const next = new Map(prev);
+        const current = next.get(chatId) ?? [];
+        if (result.reply) {
+          next.set(chatId, [...current, { role: "pip", text: result.reply }]);
+        } else if (result.error) {
+          next.set(chatId, [...current, { role: "pip", text: `\u26a0\ufe0f ${result.error}` }]);
+        }
+        return next;
+      });
+      if (result.reply) await refreshChats();
+      if (result.remaining !== undefined) setRemaining(result.remaining);
     } catch {
-      setMessages((prev) => [...prev, { role: "pip", text: "Something went wrong. Try again?" }]);
+      setMessageCache((prev) => {
+        const next = new Map(prev);
+        const current = next.get(chatId) ?? [];
+        next.set(chatId, [...current, { role: "pip", text: "Something went wrong. Try again?" }]);
+        return next;
+      });
     } finally {
       setLoading(false);
+      sendingRef.current = false;
       scrollToBottom();
     }
   }

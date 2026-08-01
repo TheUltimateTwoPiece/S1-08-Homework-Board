@@ -9,6 +9,7 @@ import { UpcomingWidget } from "@/components/dashboard/UpcomingWidget";
 import { NotificationsWidget } from "@/components/dashboard/NotificationsWidget";
 import { DutyWidget } from "@/components/dashboard/DutyWidget";
 import { FeedbackWidget } from "@/components/dashboard/FeedbackWidget";
+import { PipBubble } from "@/components/PipBubble";
 import type { AdminSchedule, Feedback, Notification, Post } from "@/lib/types";
 
 export const revalidate = 30;
@@ -120,6 +121,16 @@ export default async function DashboardPage() {
   const feedback = (feedbackResult.data as Feedback[]) ?? [];
   const firstName = profile.full_name.split(" ")[0] ?? profile.full_name;
 
+  // Pip bubble prompt count
+  const { data: pipUsage } = await supabase
+    .from("pip_prompts")
+    .select("count")
+    .eq("user_id", profile.id)
+    .eq("prompt_date", todayStr)
+    .maybeSingle();
+  const pipUsed = (pipUsage as { count?: number } | null)?.count ?? 0;
+  const pipRemaining = Math.max(0, 100 - pipUsed);
+
   return (
     <div className="mx-auto w-full max-w-[1400px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <PageTopBar
@@ -158,6 +169,8 @@ export default async function DashboardPage() {
           </>
         )}
       </div>
+
+      <PipBubble remaining={pipRemaining} />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-export const DAILY_LIMIT = 60;
+export const DAILY_LIMIT = 100;
 
 export type PipResult = {
   reply?: string;
