@@ -24,7 +24,8 @@ create table public.posts (
       'Math',
       'Science',
       'Humanities',
-      'ChangeMakers Safety & Wellness',
+      'ChangeMakers',
+      'Safety & Wellness',
       'CCE',
       'General'
     )),

@@ -111,7 +111,7 @@ const falsePositiveGuards = [
   // 'damned' must not match 'damn' (boundary blocks embedded match).
   "She was damned if she did.",
   // Subject names must not trip.
-  "Math, Science, English, Humanities, CCE, General, ChangeMakers Safety & Wellness",
+  "Math, Science, English, Humanities, CCE, General, ChangeMakers, Safety & Wellness",
 ];
 for (const t of falsePositiveGuards) {
   expect(`false-positive guard holds: ${JSON.stringify(t)}`, !containsProfanity(t));

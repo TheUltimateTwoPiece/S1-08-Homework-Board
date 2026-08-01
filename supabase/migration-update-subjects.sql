@@ -28,7 +28,8 @@ where subject not in (
   'Math',
   'Science',
   'Humanities',
-  'ChangeMakers Safety & Wellness',
+  'ChangeMakers',
+  'Safety & Wellness',
   'CCE',
   'General'
 );
@@ -46,7 +47,8 @@ alter table public.posts
     'Math',
     'Science',
     'Humanities',
-    'ChangeMakers Safety & Wellness',
+    'ChangeMakers',
+    'Safety & Wellness',
     'CCE',
     'General'
   ));
