@@ -124,29 +124,29 @@ async function buildUserContext(
     ([subj, { total, done }]) => `${subj}: ${done}/${total} done`,
   );
 
-  // Upcoming (due today or later, not completed) — include content snippet
+  // Upcoming (due today or later, not completed) — include content + ID
   const upcoming = typedPosts
     .filter((p) => p.due_at && p.due_at >= todayStr && !completedSet.has(p.id))
     .slice(0, 10)
     .map(
       (p) =>
-        `  - ${p.title} (${p.subject}, due ${p.due_at})\n    ${p.content.slice(0, 200)}${p.content.length > 200 ? "..." : ""}`,
+        `  - [${p.id}] ${p.title} (${p.subject}, due ${p.due_at})\n    ${p.content.slice(0, 200)}${p.content.length > 200 ? "..." : ""}`,
     );
 
-  // Overdue — include content snippet
+  // Overdue — include content + ID
   const overdue = typedPosts
     .filter((p) => p.due_at && p.due_at < todayStr && !completedSet.has(p.id))
     .slice(0, 5)
     .map(
       (p) =>
-        `  - ${p.title} (${p.subject}, overdue since ${p.due_at})\n    ${p.content.slice(0, 200)}${p.content.length > 200 ? "..." : ""}`,
+        `  - [${p.id}] ${p.title} (${p.subject}, overdue since ${p.due_at})\n    ${p.content.slice(0, 200)}${p.content.length > 200 ? "..." : ""}`,
     );
 
-  // Completed — last 10 for reference
+  // Completed — last 10 for reference, includes IDs
   const completed = typedPosts
     .filter((p) => completedSet.has(p.id))
     .slice(-10)
-    .map((p) => `  - ${p.title} (${p.subject})`);
+    .map((p) => `  - [${p.id}] ${p.title} (${p.subject})`);
 
   const userName =
     (profile as { full_name?: string; role?: string } | null)?.full_name ??
@@ -154,18 +154,20 @@ async function buildUserContext(
   const userRole =
     (profile as { full_name?: string; role?: string } | null)?.role ?? "student";
 
-  return `## User context (for your reference — do NOT repeat this verbatim)
+  return `## Your homework data (use these exact IDs for CONFIRM markers)
+
+### Profile
 Name: ${userName}
 Role: ${userRole}
-Homework completion: ${completedCount}/${totalPosts} posts completed
+Overall progress: ${completedCount}/${totalPosts} posts completed
 Unread notifications: ${unreadCount}
 
-Subject breakdown:
+### Subject breakdown
 ${subjectLines.join("\n")}
 
-${upcoming.length > 0 ? `Upcoming due (with instructions):\n${upcoming.join("\n")}` : ""}
-${overdue.length > 0 ? `Overdue (with instructions):\n${overdue.join("\n")}` : ""}
-${completed.length > 0 ? `Recently completed:\n${completed.join("\n")}` : ""}`;
+${upcoming.length > 0 ? `### Upcoming (each prefixed with its post ID in brackets)\n${upcoming.join("\n")}\n` : ""}\
+${overdue.length > 0 ? `### Overdue — tackle these first! (each prefixed with its post ID)\n${overdue.join("\n")}\n` : ""}\
+${completed.length > 0 ? `### Recently completed\n${completed.join("\n")}` : ""}`;
 }
 
 export async function askPip(
@@ -195,28 +197,36 @@ export async function askPip(
 
   const todayStr = format(new Date(), "yyyy-MM-dd");
 
-  // ── Step 1: Atomic rate-limit check-and-increment ──
-  const { data: newCount, error: rpcError } = await supabase.rpc(
-    "pip_try_increment",
-    {
+  // ── Step 1: Rate limit check AND context building in parallel ──
+  const [rpcResult, contextPromise] = await Promise.allSettled([
+    supabase.rpc("pip_try_increment", {
       p_date: todayStr,
       p_limit: DAILY_LIMIT,
-    },
-  );
+    }),
+    buildUserContext(supabase, user.id),
+  ]);
 
-  if (rpcError) {
-    console.error("Pip RPC error:", rpcError);
-    const msg = String(rpcError.message ?? rpcError.code ?? rpcError);
-    if (
-      msg.includes("Could not find") ||
-      msg.includes("function") ||
-      msg.includes("404")
-    ) {
-      return {
-        error:
-          "Pip isn't fully set up yet. Run the pip-prompts migration in Supabase.",
-      };
+  // Unpack rate limit result
+  let newCount: number | null = null;
+  if (rpcResult.status === "fulfilled") {
+    const { data, error } = rpcResult.value;
+    if (error) {
+      console.error("Pip RPC error:", error);
+      const msg = String(error.message ?? error.code ?? error);
+      if (
+        msg.includes("Could not find") ||
+        msg.includes("function") ||
+        msg.includes("404")
+      ) {
+        return {
+          error:
+            "Pip isn't fully set up yet. Run the pip-prompts migration in Supabase.",
+        };
+      }
+      return { error: "Something went wrong with rate limiting. Try again." };
     }
+    newCount = data;
+  } else {
     return { error: "Something went wrong with rate limiting. Try again." };
   }
 
@@ -237,20 +247,19 @@ export async function askPip(
 
   const remaining = DAILY_LIMIT - (newCount as number);
 
-  // ── Step 2: Call Gemini with full chat history ──
+  // Unpack context result
+  const userContext =
+    contextPromise.status === "fulfilled"
+      ? contextPromise.value
+      : "User context unavailable.";
+
+  // ── Step 2: Call Gemini ──
   const apiKey = process.env.GOOGLE_GEMINI_API_KEY;
   if (!apiKey) {
     return {
       error: "Gemini API key is not configured. Set GOOGLE_GEMINI_API_KEY.",
       remaining,
     };
-  }
-
-  let userContext: string;
-  try {
-    userContext = await buildUserContext(supabase, user.id);
-  } catch {
-    userContext = "User context unavailable.";
   }
 
   // Load previous messages from DB for multi-turn context
@@ -333,11 +342,13 @@ Only suggest an action when it's clearly helpful. Always put the marker at the v
     // Save messages to DB if we have a chatId (save the clean reply)
     if (chatId) {
       try {
-        await saveMessage(chatId, "user", trimmed);
-        await saveMessage(chatId, "pip", cleanReply);
-        // Auto-title: use first user message if chat is still "New chat"
-        const prevMessages = await getMessages(chatId);
-        if (prevMessages.length <= 2) {
+        await Promise.all([
+          saveMessage(chatId, "user", trimmed),
+          saveMessage(chatId, "pip", cleanReply),
+        ]);
+        // Auto-title: historyContents already has previous messages,
+        // so if it's empty this is the first exchange — title from question
+        if (historyContents.length === 0) {
           const title =
             trimmed.length > 50 ? trimmed.slice(0, 47) + "..." : trimmed;
           await renameChat(chatId, title);

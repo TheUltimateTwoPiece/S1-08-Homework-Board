@@ -129,7 +129,7 @@ export function PipWidget({
   async function handleNewChat() {
     const id = await createChat();
     if (id) {
-      await refreshChats();
+      // Show the new chat instantly, refresh sidebar in background
       setActiveChatId(id);
       setMessageCache((prev) => {
         const next = new Map(prev);
@@ -139,6 +139,7 @@ export function PipWidget({
       setInstructionsInput("");
       setShowInstructions(true);
       setInput("");
+      refreshChats().catch(() => {}); // fire-and-forget — sidebar catches up
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }
@@ -240,7 +241,7 @@ export function PipWidget({
         ]);
       }
 
-      if (result.reply) await refreshChats();
+      if (result.reply) refreshChats().catch(() => {}); // background — non-blocking
       if (result.remaining !== undefined) setRemaining(result.remaining);
     } catch {
       setMessageCache((prev) => {
