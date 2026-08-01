@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { askPip, DAILY_LIMIT, type PipResult } from "@/actions/pip";
+import { askPip } from "@/actions/pip";
+import { DAILY_LIMIT, type PipResult } from "@/lib/pip-types";
 
 type Message = {
   role: "user" | "pip";

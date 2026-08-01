@@ -6,14 +6,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { createClient } from "@/lib/supabase/server";
 import { DEFAULT_SUBJECT } from "@/lib/subjects";
 import { tripProfanity } from "@/lib/profanity";
-
-export const DAILY_LIMIT = 60;
-
-export type PipResult = {
-  reply?: string;
-  remaining?: number;
-  error?: string;
-};
+import { DAILY_LIMIT, type PipResult } from "@/lib/pip-types";
 
 /**
  * Builds a structured snapshot of the user's homework data to inject
