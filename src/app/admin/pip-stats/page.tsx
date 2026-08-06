@@ -24,14 +24,14 @@ export default async function AdminPipStatsPage() {
   if (profile.role !== "admin") redirect("/");
 
   const supabase = await createClient();
-  const todayStr = format(new Date(), "yyyy-MM-dd");
   const weekAgoStr = format(subDays(new Date(), 7), "yyyy-MM-dd");
 
-  // Fetch all profiles (students) with their pip usage, chats, messages, and completions
+  // Fetch all profiles (students) with their pip usage, chats, messages, and completions.
+  // We use promptsWeek (last 7 days) to derive both today's count and weekly totals,
+  // avoiding timezone mismatches between server-side Date and DB current_date.
   const [
     { data: students },
     { data: promptsAll },
-    { data: promptsToday },
     { data: promptsWeek },
     { data: chats },
     { data: messages },
@@ -47,11 +47,6 @@ export default async function AdminPipStatsPage() {
     supabase
       .from("pip_prompts")
       .select("user_id, count"),
-
-    supabase
-      .from("pip_prompts")
-      .select("user_id, count")
-      .eq("prompt_date", todayStr),
 
     supabase
       .from("pip_prompts")
@@ -77,14 +72,24 @@ export default async function AdminPipStatsPage() {
 
   const totalPosts = (posts ?? []).length;
 
+  // Build the daySums map FIRST so we can derive today's date from the DB data
+  const daySums = new Map<string, number>();
+  for (const r of promptsWeek ?? [])
+    daySums.set(r.prompt_date, (daySums.get(r.prompt_date) ?? 0) + r.count);
+
+  // Derive today's date from the most recent prompt_date in the DB data.
+  // This avoids timezone mismatches between server-side new Date() and DB current_date.
+  const dbDates = Array.from(daySums.keys()).sort();
+  const dbToday = dbDates.length > 0 ? dbDates[dbDates.length - 1] : format(new Date(), "yyyy-MM-dd");
+
   // Build lookup maps
   const todayMap = new Map<string, number>();
-  for (const r of promptsToday ?? [])
-    todayMap.set(r.user_id, r.count);
-
   const weekMap = new Map<string, number>();
-  for (const r of promptsWeek ?? [])
+  for (const r of promptsWeek ?? []) {
     weekMap.set(r.user_id, (weekMap.get(r.user_id) ?? 0) + r.count);
+    if (r.prompt_date === dbToday)
+      todayMap.set(r.user_id, (todayMap.get(r.user_id) ?? 0) + r.count);
+  }
 
   const totalMap = new Map<string, number>();
   for (const r of promptsAll ?? [])
@@ -157,11 +162,7 @@ export default async function AdminPipStatsPage() {
     dayCounts.push(0);
   }
 
-  // Aggregate prompts by day
-  const daySums = new Map<string, number>();
-  for (const r of promptsWeek ?? []) {
-    daySums.set(r.prompt_date, (daySums.get(r.prompt_date) ?? 0) + r.count);
-  }
+  // Fill chart dayCounts from the shared daySums map
   for (let i = 6; i >= 0; i--) {
     const d = subDays(new Date(), i);
     dayCounts[6 - i] = daySums.get(format(d, "yyyy-MM-dd")) ?? 0;
