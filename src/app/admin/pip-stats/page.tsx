@@ -4,12 +4,14 @@ import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
 import { PageTopBar } from "@/components/PageTopBar";
 
-export const revalidate = 60;
+export const revalidate = 0;
+export const dynamic = "force-dynamic";
 
 interface PipUserStats {
   userId: string;
   fullName: string;
   email: string;
+  role: string;
   promptsToday: number;
   promptsWeek: number;
   promptsTotal: number;
@@ -24,11 +26,14 @@ export default async function AdminPipStatsPage() {
   if (profile.role !== "admin") redirect("/");
 
   const supabase = await createClient();
-  const weekAgoStr = format(subDays(new Date(), 7), "yyyy-MM-dd");
+  const now = new Date();
+  const todayStr = format(now, "yyyy-MM-dd");
+  // Seven calendar dates: today plus the six preceding dates.
+  const weekAgoStr = format(subDays(now, 6), "yyyy-MM-dd");
 
-  // Fetch all profiles (students) with their pip usage, chats, messages, and completions.
-  // We use promptsWeek (last 7 days) to derive both today's count and weekly totals,
-  // avoiding timezone mismatches between server-side Date and DB current_date.
+  // Fetch every Pip user (students and admins) so the overview cards and chart
+  // measure the same population. The previous student-only filter excluded
+  // prompts made by an admin, even though those prompts were still in the chart.
   const [
     { data: students },
     { data: promptsAll },
@@ -40,8 +45,8 @@ export default async function AdminPipStatsPage() {
   ] = await Promise.all([
     supabase
       .from("profiles")
-      .select("id, full_name, email")
-      .eq("role", "student")
+      .select("id, full_name, email, role")
+      .in("role", ["student", "admin"])
       .order("full_name"),
 
     supabase
@@ -77,17 +82,12 @@ export default async function AdminPipStatsPage() {
   for (const r of promptsWeek ?? [])
     daySums.set(r.prompt_date, (daySums.get(r.prompt_date) ?? 0) + r.count);
 
-  // Derive today's date from the most recent prompt_date in the DB data.
-  // This avoids timezone mismatches between server-side new Date() and DB current_date.
-  const dbDates = Array.from(daySums.keys()).sort();
-  const dbToday = dbDates.length > 0 ? dbDates[dbDates.length - 1] : format(new Date(), "yyyy-MM-dd");
-
   // Build lookup maps
   const todayMap = new Map<string, number>();
   const weekMap = new Map<string, number>();
   for (const r of promptsWeek ?? []) {
     weekMap.set(r.user_id, (weekMap.get(r.user_id) ?? 0) + r.count);
-    if (r.prompt_date === dbToday)
+    if (r.prompt_date === todayStr)
       todayMap.set(r.user_id, (todayMap.get(r.user_id) ?? 0) + r.count);
   }
 
@@ -131,6 +131,7 @@ export default async function AdminPipStatsPage() {
       userId: s.id,
       fullName: s.full_name ?? "Unknown",
       email: s.email ?? "",
+      role: s.role ?? "student",
       promptsToday: todayMap.get(s.id) ?? 0,
       promptsWeek: weekMap.get(s.id) ?? 0,
       promptsTotal: totalMap.get(s.id) ?? 0,
@@ -145,26 +146,41 @@ export default async function AdminPipStatsPage() {
   userStats.sort((a, b) => b.promptsWeek - a.promptsWeek);
 
   // Aggregate stats
-  const totalPromptsToday = userStats.reduce((sum, u) => sum + u.promptsToday, 0);
-  const totalPromptsWeek = userStats.reduce((sum, u) => sum + u.promptsWeek, 0);
-  const activeUsersToday = userStats.filter((u) => u.promptsToday > 0).length;
-  const activeUsersWeek = userStats.filter((u) => u.promptsWeek > 0).length;
+  const studentStats = userStats.filter((u) => u.role === "student");
+  // Overview totals come directly from the same raw prompt rows as the chart.
+  // This keeps the card correct even if a prompt's profile is missing or has
+  // a role outside the normal student/admin set.
+  const totalPromptsToday = daySums.get(todayStr) ?? 0;
+  const totalPromptsWeek = (promptsWeek ?? []).reduce((sum, r) => sum + r.count, 0);
+  const activeUsersToday = new Set(
+    (promptsWeek ?? [])
+      .filter((r) => r.prompt_date === todayStr && r.count > 0)
+      .map((r) => r.user_id),
+  ).size;
+  const activeUsersWeek = new Set(
+    (promptsWeek ?? [])
+      .filter((r) => r.count > 0)
+      .map((r) => r.user_id),
+  ).size;
   const avgPromptsPerUser = activeUsersWeek > 0
     ? Math.round(totalPromptsWeek / activeUsersWeek)
+    : 0;
+  const avgStudentCompletion = studentStats.length > 0
+    ? Math.round(studentStats.reduce((sum, u) => sum + u.completionRate, 0) / studentStats.length)
     : 0;
 
   // 7-day chart data: day-by-day prompt counts for the bar chart
   const dayLabels: string[] = [];
   const dayCounts: number[] = [];
   for (let i = 6; i >= 0; i--) {
-    const d = subDays(new Date(), i);
+    const d = subDays(now, i);
     dayLabels.push(format(d, "EEE"));
     dayCounts.push(0);
   }
 
   // Fill chart dayCounts from the shared daySums map
   for (let i = 6; i >= 0; i--) {
-    const d = subDays(new Date(), i);
+    const d = subDays(now, i);
     dayCounts[6 - i] = daySums.get(format(d, "yyyy-MM-dd")) ?? 0;
   }
 
@@ -186,7 +202,7 @@ export default async function AdminPipStatsPage() {
         <StatCard
           label="Prompts today"
           value={totalPromptsToday}
-          sub={`${activeUsersToday} user${activeUsersToday !== 1 ? "s" : ""}`}
+          sub={`${activeUsersToday} active user${activeUsersToday !== 1 ? "s" : ""}`}
           color="blue"
           icon={
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -195,7 +211,7 @@ export default async function AdminPipStatsPage() {
         <StatCard
           label="Prompts this week"
           value={totalPromptsWeek}
-          sub={`${activeUsersWeek} user${activeUsersWeek !== 1 ? "s" : ""}`}
+          sub={`${activeUsersWeek} active user${activeUsersWeek !== 1 ? "s" : ""}`}
           color="violet"
           icon={
             <path d="M8 2v4M16 2v4M3 10h18M12 14v-4M8 14h8" />
@@ -213,7 +229,7 @@ export default async function AdminPipStatsPage() {
         <StatCard
           label="Active this week"
           value={activeUsersWeek}
-          sub={`of ${userStats.length} students`}
+          sub={`of ${userStats.length} Pip users`}
           color="emerald"
           icon={
             <>
@@ -225,8 +241,8 @@ export default async function AdminPipStatsPage() {
         />
         <StatCard
           label="Avg completion"
-          value={`${userStats.length > 0 ? Math.round(userStats.reduce((s, u) => s + u.completionRate, 0) / userStats.length) : 0}%`}
-          sub="avg across all students"
+          value={`${avgStudentCompletion}%`}
+          sub="avg across students"
           color="rose"
           icon={
             <>
@@ -276,8 +292,8 @@ export default async function AdminPipStatsPage() {
       {/* Per-user table */}
       <div className="mt-8 rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
-          <h2 className="hb-card-section text-base">All students</h2>
-          <span className="text-xs text-slate-400">{userStats.length} students</span>
+          <h2 className="hb-card-section text-base">All Pip users</h2>
+          <span className="text-xs text-slate-400">{userStats.length} users</span>
         </div>
 
         <div className="overflow-x-auto">
@@ -308,8 +324,15 @@ export default async function AdminPipStatsPage() {
                   className="transition hover:bg-slate-50 dark:hover:bg-slate-800/50"
                 >
                   <td className="px-5 py-3">
-                    <div className="font-medium text-slate-800 dark:text-slate-200">
-                      {u.fullName}
+                    <div className="flex items-center gap-2">
+                      <div className="font-medium text-slate-800 dark:text-slate-200">
+                        {u.fullName}
+                      </div>
+                      {u.role === "admin" && (
+                        <span className="rounded-full bg-violet-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-600 dark:bg-violet-900/40 dark:text-violet-300">
+                          Admin
+                        </span>
+                      )}
                     </div>
                     <div className="text-xs text-slate-400">{u.email}</div>
                   </td>
