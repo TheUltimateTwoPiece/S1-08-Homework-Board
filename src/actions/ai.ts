@@ -34,16 +34,6 @@ Return only the improved content, no additional commentary.`;
 
     console.error("AI enhancement error:", message);
 
-    if (message.includes("API key")) {
-      return { error: "Invalid Google Gemini API key. Please check your .env.local file." };
-    }
-    if (message.includes("quota")) {
-      return { error: "API quota exceeded. Please check your Google Cloud usage." };
-    }
-    if (message.includes("model")) {
-      return { error: "Model not available. Please check your API configuration." };
-    }
-
-    return { error: `Failed to enhance content: ${message || "Unknown error"}` };
+    return { error: `AI error: ${message}` };
   }
 }
