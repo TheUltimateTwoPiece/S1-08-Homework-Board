@@ -189,7 +189,9 @@ export function PipBubble({ remaining: initialRemaining }: { remaining: number }
     }`}>
       {/* Header */}
       <button onClick={() => setOpen((prev) => !prev)}
-        className={`flex shrink-0 items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition rounded-t-2xl ${open ? "border-b dark:border-slate-700" : "rounded-b-2xl"}`}>
+        className={`flex shrink-0 items-center hover:bg-slate-50 dark:hover:bg-slate-800 transition rounded-t-2xl ${
+          open ? "gap-3 px-4 py-3 border-b dark:border-slate-700" : "justify-center px-3 py-3 rounded-b-2xl"
+        }`}>
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-blue-600 text-white text-xs font-bold">P</div>
         {open && (
           <>
@@ -209,7 +211,7 @@ export function PipBubble({ remaining: initialRemaining }: { remaining: number }
             {messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                 {msg.role === "pip" ? (
-                  <div className="group relative max-w-[88%] rounded-xl bg-slate-100 dark:bg-slate-800 px-3 py-2 text-xs">
+                  <div className="group relative max-w-[88%] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs">
                     <MarkdownRenderer text={msg.text} />
                     <div className="absolute -bottom-1 right-1 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity translate-y-full pt-1 z-10">
                       <button onClick={() => handleCopy(msg.text, i)}
@@ -241,7 +243,7 @@ export function PipBubble({ remaining: initialRemaining }: { remaining: number }
             {/* Streaming */}
             {isStreaming && (
               <div className="flex justify-start items-end gap-1">
-                <div className="max-w-[88%] rounded-xl bg-slate-100 dark:bg-slate-800 px-3 py-2 text-xs">
+                <div className="max-w-[88%] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs">
                   {streamingText ? (
                     <MarkdownRenderer text={streamingText} />
                   ) : (

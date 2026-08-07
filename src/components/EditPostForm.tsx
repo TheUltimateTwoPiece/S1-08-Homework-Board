@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { updatePost } from "@/actions/posts";
-import { SUBJECTS } from "@/lib/subjects";
+import { SubjectPicker } from "@/components/SubjectPicker";
 import type { Post } from "@/lib/types";
 
 type EditPostFormProps = {
@@ -50,24 +50,14 @@ export function EditPostForm({ post }: EditPostFormProps) {
           />
         </div>
 
+        <div>
+          <span className="hb-card-section mb-1.5 block text-sm">
+            Subjects <span className="hb-card-meta text-xs font-normal">(select one or more)</span>
+          </span>
+          <SubjectPicker defaultSelected={post.subject} idPrefix="edit-subject" />
+        </div>
+
         <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label htmlFor="edit-subject" className="hb-card-section mb-1.5 block text-sm">
-              Subject
-            </label>
-            <select
-              id="edit-subject"
-              name="subject"
-              className="hb-input w-full rounded-lg px-3 py-2.5 text-sm"
-              defaultValue={post.subject}
-            >
-              {SUBJECTS.map((subject) => (
-                <option key={subject} value={subject}>
-                  {subject}
-                </option>
-              ))}
-            </select>
-          </div>
           <div>
             <label htmlFor="edit-dueAt" className="hb-card-section mb-1.5 block text-sm">
               Due date

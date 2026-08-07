@@ -1,11 +1,12 @@
 import { format } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
 import { DEFAULT_SUBJECT } from "@/lib/subjects";
+import { normalizePost } from "@/lib/types";
 
 type PostRow = {
   id: string;
   title: string;
-  subject: string;
+  subject: string[];
   due_at: string | null;
   content: string;
 };
@@ -98,7 +99,7 @@ export async function buildUserContext(
       supabase.from("profiles").select("full_name, role").eq("id", userId).single(),
     ]);
 
-  const typedPosts = (posts ?? []) as PostRow[];
+  const typedPosts = ((posts ?? []) as PostRow[]).map(normalizePost);
   const completedSet = new Set(
     (completions ?? []).map((c: CompletionsRow) => c.post_id),
   );
@@ -107,14 +108,16 @@ export async function buildUserContext(
   const completedCount = typedPosts.filter((p) => completedSet.has(p.id)).length;
   const unreadCount = (notifications ?? []).length;
 
-  // Subject breakdown
+  // Subject breakdown — a post counts toward EACH of its subjects.
   const subjectMap = new Map<string, { total: number; done: number }>();
   for (const p of typedPosts) {
-    const key = p.subject ?? DEFAULT_SUBJECT;
-    const entry = subjectMap.get(key) ?? { total: 0, done: 0 };
-    entry.total += 1;
-    if (completedSet.has(p.id)) entry.done += 1;
-    subjectMap.set(key, entry);
+    const keys = p.subject.length > 0 ? p.subject : [DEFAULT_SUBJECT];
+    for (const key of keys) {
+      const entry = subjectMap.get(key) ?? { total: 0, done: 0 };
+      entry.total += 1;
+      if (completedSet.has(p.id)) entry.done += 1;
+      subjectMap.set(key, entry);
+    }
   }
   const subjectLines = Array.from(subjectMap.entries()).map(
     ([subj, { total, done }]) => `${subj}: ${done}/${total} done`,
@@ -124,7 +127,7 @@ export async function buildUserContext(
   const remaining = typedPosts.filter((p) => !completedSet.has(p.id));
   const remainingLines = remaining.map(
     (p) =>
-      `  - [${p.id}] ${p.title} (${p.subject}${p.due_at ? `, due ${p.due_at}` : ", no due date"})`,
+      `  - [${p.id}] ${p.title} (${p.subject.join(" + ")}${p.due_at ? `, due ${p.due_at}` : ", no due date"})`,
   );
 
   // ── Overdue (due date in the past + uncompleted) — with content ──
@@ -133,7 +136,7 @@ export async function buildUserContext(
     .slice(0, 5)
     .map(
       (p) =>
-        `  - [${p.id}] ${p.title} (${p.subject}, overdue since ${p.due_at}) — ${p.content.slice(0, 300)}${p.content.length > 300 ? "..." : ""}`,
+        `  - [${p.id}] ${p.title} (${p.subject.join(" + ")}, overdue since ${p.due_at}) — ${p.content.slice(0, 300)}${p.content.length > 300 ? "..." : ""}`,
     );
 
   // ── Upcoming (due date today/future + uncompleted) — with content ──
@@ -142,7 +145,7 @@ export async function buildUserContext(
     .slice(0, 10)
     .map(
       (p) =>
-        `  - [${p.id}] ${p.title} (${p.subject}, due ${p.due_at}) — ${p.content.slice(0, 300)}${p.content.length > 300 ? "..." : ""}`,
+        `  - [${p.id}] ${p.title} (${p.subject.join(" + ")}, due ${p.due_at}) — ${p.content.slice(0, 300)}${p.content.length > 300 ? "..." : ""}`,
     );
 
   // ── No due date (uncompleted) — with content ──
@@ -151,14 +154,14 @@ export async function buildUserContext(
     .slice(0, 10)
     .map(
       (p) =>
-        `  - [${p.id}] ${p.title} (${p.subject}, no due date) — ${p.content.slice(0, 300)}${p.content.length > 300 ? "..." : ""}`,
+        `  - [${p.id}] ${p.title} (${p.subject.join(" + ")}, no due date) — ${p.content.slice(0, 300)}${p.content.length > 300 ? "..." : ""}`,
     );
 
   // ── Completed ──
   const completed = typedPosts
     .filter((p) => completedSet.has(p.id))
     .slice(-10)
-    .map((p) => `  - [${p.id}] ${p.title} (${p.subject})`);
+    .map((p) => `  - [${p.id}] ${p.title} (${p.subject.join(" + ")})`);
 
   const userName = (profile as ProfileRow)?.full_name ?? "Student";
   const userRole = (profile as ProfileRow)?.role ?? "student";

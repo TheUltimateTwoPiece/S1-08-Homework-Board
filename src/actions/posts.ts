@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { notifyNewPost } from "@/actions/notifications";
-import { DEFAULT_SUBJECT } from "@/lib/subjects";
+import { DEFAULT_SUBJECT, normalizeSubjects } from "@/lib/subjects";
 import { tripProfanity } from "@/lib/profanity";
 
 function normalizeMultilineText(value: string): string {
@@ -55,7 +55,7 @@ export async function createPost(formData: FormData) {
 
   const title = (formData.get("title") as string).trim();
   const content = normalizeMultilineText(formData.get("content") as string);
-  const subject = ((formData.get("subject") as string | null) ?? DEFAULT_SUBJECT).trim() || DEFAULT_SUBJECT;
+  const subjects = normalizeSubjects(formData.getAll("subject"));
   const dueAtRaw = ((formData.get("dueAt") as string | null) ?? "").trim();
   const pinned = formData.get("pinned") === "on";
   const files = (formData.getAll("files") as File[]).filter((file) => file.size > 0);
@@ -75,7 +75,7 @@ export async function createPost(formData: FormData) {
     .insert({
       title,
       content,
-      subject,
+      subject: subjects,
       due_at: dueAtRaw ? dueAtRaw : null,
       pinned,
       author_id: user.id,
@@ -171,6 +171,7 @@ export async function createPost(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/notifications");
+  revalidatePath("/your-progress");
   revalidatePath(`/posts/${post.id}`);
   return { success: true };
 }
@@ -198,7 +199,7 @@ async function fanOutPostNotifications(
   await notifyNewPost({
     postId,
     postTitle: (post as { title?: string }).title ?? "New homework",
-    postSubject: (post as { subject?: string }).subject ?? DEFAULT_SUBJECT,
+    postSubject: (post as { subject?: string[] }).subject ?? [DEFAULT_SUBJECT],
     postDueAt: (post as { due_at?: string | null }).due_at ?? null,
     authorId,
   });
@@ -210,7 +211,7 @@ export async function updatePost(formData: FormData) {
   const postId = formData.get("postId") as string;
   const title = (formData.get("title") as string).trim();
   const content = normalizeMultilineText(formData.get("content") as string);
-  const subject = ((formData.get("subject") as string | null) ?? DEFAULT_SUBJECT).trim() || DEFAULT_SUBJECT;
+  const subjects = normalizeSubjects(formData.getAll("subject"));
   const dueAtRaw = ((formData.get("dueAt") as string | null) ?? "").trim();
   const dueAt = dueAtRaw ? dueAtRaw : null;
   const pinned = formData.get("pinned") === "on";
@@ -235,9 +236,16 @@ export async function updatePost(formData: FormData) {
 
   const changes: Record<string, unknown> = {};
 
+  const existingSubjects = Array.isArray(existing.subject)
+    ? (existing.subject as string[])
+    : [(existing.subject as string | null) ?? DEFAULT_SUBJECT];
+  const sameSubjects =
+    existingSubjects.length === subjects.length &&
+    [...existingSubjects].sort().join("\u0000") === [...subjects].sort().join("\u0000");
+
   if (existing.title !== title) changes.title = { from: existing.title, to: title };
   if (existing.content !== content) changes.content = { from: existing.content, to: content };
-  if (existing.subject !== subject) changes.subject = { from: existing.subject, to: subject };
+  if (!sameSubjects) changes.subject = { from: existingSubjects, to: subjects };
   if ((existing.due_at ?? null) !== dueAt) changes.due_at = { from: existing.due_at ?? null, to: dueAt };
   if (existing.pinned !== pinned) changes.pinned = { from: existing.pinned, to: pinned };
 
@@ -250,7 +258,7 @@ export async function updatePost(formData: FormData) {
     .update({
       title,
       content,
-      subject,
+      subject: subjects,
       due_at: dueAt,
       pinned,
       updated_at: new Date().toISOString(),
@@ -273,6 +281,7 @@ export async function updatePost(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/calendar");
+  revalidatePath("/your-progress");
   revalidatePath(`/posts/${postId}`);
   revalidatePath("/admin");
   return { success: true };
@@ -340,6 +349,7 @@ export async function deletePost(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/admin");
+  revalidatePath("/your-progress");
   redirect("/");
 }
 

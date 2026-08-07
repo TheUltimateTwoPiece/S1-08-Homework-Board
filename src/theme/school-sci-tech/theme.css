@@ -219,7 +219,7 @@
 
 @keyframes hb-bar-fill {
   from { transform: scaleX(0); }
-  to { transform: scaleX(var(--hb-bar-target, 1)); }
+  to { transform: scaleX(var(--hb-bar-target, 0)); }
 }
 
 @keyframes hb-bell-shake-once {
@@ -1690,8 +1690,12 @@
     height: 100%;
     border-radius: 9999px;
     background: linear-gradient(90deg, var(--hb-success), var(--hb-success-light));
+    /* Base transform mirrors the animation target so the bar holds its true
+       percentage after the entrance animation ends (without this, the fill
+       reverts to transform:none = full width once the keyframes finish). */
+    transform: scaleX(var(--hb-bar-target, 0));
     transform-origin: left center;
-    animation: hb-bar-fill 900ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    animation: hb-bar-fill 900ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
     box-shadow: 0 0 8px rgba(22, 163, 74, 0.25);
   }
 

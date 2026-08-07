@@ -11,7 +11,7 @@ import { EditPostForm } from "@/components/EditPostForm";
 import { PendingButton } from "@/components/PendingButton";
 import { PostCompleteCheckbox } from "@/components/PostCompleteCheckbox";
 import { deletePost, setPostCommentsLocked, setPostPinned } from "@/actions/posts";
-import type { Attachment, Comment, Post, PostEdit, Profile } from "@/lib/types";
+import { normalizePost, type Attachment, type Comment, type Post, type PostEdit, type Profile } from "@/lib/types";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -45,7 +45,7 @@ export default async function PostPage({ params }: PageProps) {
 
   if (!post) notFound();
 
-  const typedPost = post as Post;
+  const typedPost = normalizePost(post as Post);
   const isCompleted = Boolean(completion);
   const isAdmin = profile.role === "admin";
   const commentsLocked = typedPost.comments_locked;
@@ -283,9 +283,14 @@ export default async function PostPage({ params }: PageProps) {
             {typedPost.pinned && (
               <span className="hb-badge-new inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold">📌 Pinned</span>
             )}
-            <span className="hb-badge-subject inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider">
-              {typedPost.subject}
-            </span>
+            {typedPost.subject.map((subject) => (
+              <span
+                key={subject}
+                className="hb-badge-subject inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
+              >
+                {subject}
+              </span>
+            ))}
             {dueBadge && (
               <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold ${dueBadge.className}`}>
                 {dueBadge.label}

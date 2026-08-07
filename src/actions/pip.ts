@@ -150,7 +150,12 @@ export async function askPip(
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
     console.error("Pip error:", message);
-    // Show the real error so users can debug (e.g. wrong model name, billing, etc.)
-    return { error: `Pip error: ${message}`, remaining };
+    if (message.includes("API key")) {
+      return { error: "Gemini API key is invalid. Check GOOGLE_GEMINI_API_KEY.", remaining };
+    }
+    if (message.includes("quota")) {
+      return { error: "Gemini quota exceeded. Try again later.", remaining };
+    }
+    return { error: "Pip ran into a problem. Try again.", remaining };
   }
 }

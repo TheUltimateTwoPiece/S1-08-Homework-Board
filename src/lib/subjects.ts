@@ -36,3 +36,18 @@ export const DEFAULT_SUBJECT: Subject = SUBJECTS[0];
 export function isSubject(value: unknown): value is Subject {
   return typeof value === "string" && (SUBJECTS as readonly string[]).includes(value);
 }
+
+/**
+ * Normalises raw multi-subject input (e.g. `formData.getAll("subject")`) into
+ * a validated, de-duplicated, non-empty subject array. Unknown/blank values
+ * are dropped; if nothing valid remains, falls back to DEFAULT_SUBJECT.
+ */
+export function normalizeSubjects(raw: FormDataEntryValue[] | string[] | null | undefined): Subject[] {
+  const seen = new Set<Subject>();
+  for (const value of raw ?? []) {
+    if (typeof value !== "string") continue;
+    const trimmed = value.trim();
+    if (isSubject(trimmed) && !seen.has(trimmed)) seen.add(trimmed);
+  }
+  return seen.size > 0 ? Array.from(seen) : [DEFAULT_SUBJECT];
+}

@@ -76,7 +76,7 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
                   <div className="flex items-center gap-2">
                     {post.pinned && <span aria-hidden="true" className="text-amber-600">📌</span>}
                     <span className={"hb-card-section truncate text-sm " + (done ? "hb-card-faded line-through" : "")}>{post.title}</span>
-                    <span className="hb-badge-subject shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold">{post.subject}</span>
+                    <span className="hb-badge-subject shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold">{post.subject.join(" + ")}</span>
                   </div>
                   {due && <div className={"mt-0.5 text-[11px] font-bold " + due.className}>{due.text}</div>}
                 </Link>

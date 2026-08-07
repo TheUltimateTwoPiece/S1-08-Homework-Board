@@ -10,25 +10,30 @@ create table public.profiles (
 );
 
 -- Homework posts (admin only)
--- Subject allowlist is enforced via the check constraint below so that
--- the same set of values is used by both this canonical schema and the
--- runtime list in src/lib/subjects.ts. If you ever add a new subject,
+-- A post can belong to MORE THAN ONE subject at once (e.g. a cross-
+-- curricular project in Math + Science), so `subject` is a text[] array.
+-- The allowlist is enforced via the containment check constraint below so
+-- that the same set of values is used by both this canonical schema and
+-- the runtime list in src/lib/subjects.ts. If you ever add a new subject,
 -- update BOTH places (and the migration that re-applies the constraint).
 create table public.posts (
   id uuid primary key default gen_random_uuid(),
   title text not null,
   content text not null,
-  subject text not null default 'English'
-    check (subject in (
-      'English',
-      'Math',
-      'Science',
-      'Humanities',
-      'ChangeMakers',
-      'Safety & Wellness',
-      'CCE',
-      'General'
-    )),
+  subject text[] not null default array['English']
+    check (
+      cardinality(subject) > 0
+      and subject <@ array[
+        'English',
+        'Math',
+        'Science',
+        'Humanities',
+        'ChangeMakers',
+        'Safety & Wellness',
+        'CCE',
+        'General'
+      ]::text[]
+    ),
   due_at date,
   pinned boolean not null default false,
   comments_locked boolean not null default false,

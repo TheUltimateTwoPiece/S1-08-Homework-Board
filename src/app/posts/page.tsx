@@ -6,7 +6,7 @@ import { PostFiltersBar } from "@/components/PostFiltersBar";
 import { PageTopBar } from "@/components/PageTopBar";
 import { requireProfile } from "@/lib/auth";
 import { SUBJECTS } from "@/lib/subjects";
-import type { Post } from "@/lib/types";
+import { normalizePost, type Post } from "@/lib/types";
 
 export const revalidate = 30;
 
@@ -51,7 +51,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
   }
 
   if (subject) {
-    postsQuery = postsQuery.eq("subject", subject);
+    postsQuery = postsQuery.contains("subject", [subject]);
   }
 
   if (due !== "all") {
@@ -77,7 +77,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
     completions?.map((completion) => completion.post_id as string) ?? [],
   );
 
-  const typedPosts = (posts as Post[]) ?? [];
+  const typedPosts = ((posts ?? []) as Post[]).map(normalizePost);
 
   const sortedPosts = [...typedPosts].sort((a, b) => {
     const aDone = completedPostIds.has(a.id) ? 1 : 0;

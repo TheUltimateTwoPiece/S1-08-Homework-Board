@@ -3,7 +3,8 @@
 import { useActionState, useState } from "react";
 import { createPost } from "@/actions/posts";
 import { enhanceContentWithAI } from "@/actions/ai";
-import { DEFAULT_SUBJECT, SUBJECTS } from "@/lib/subjects";
+import { DEFAULT_SUBJECT } from "@/lib/subjects";
+import { SubjectPicker } from "@/components/SubjectPicker";
 
 export function CreatePostForm() {
   const [content, setContent] = useState("");
@@ -66,24 +67,14 @@ export function CreatePostForm() {
           />
         </div>
 
+        <div>
+          <span className="hb-card-section mb-1.5 block text-sm">
+            Subjects <span className="hb-card-meta text-xs font-normal">(select one or more)</span>
+          </span>
+          <SubjectPicker defaultSelected={[DEFAULT_SUBJECT]} />
+        </div>
+
         <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label htmlFor="subject" className="hb-card-section mb-1.5 block text-sm">
-              Subject
-            </label>
-            <select
-              id="subject"
-              name="subject"
-              className="hb-input w-full rounded-lg px-3 py-2.5 text-sm"
-              defaultValue={DEFAULT_SUBJECT}
-            >
-              {SUBJECTS.map((subject) => (
-                <option key={subject} value={subject}>
-                  {subject}
-                </option>
-              ))}
-            </select>
-          </div>
           <div>
             <label htmlFor="dueAt" className="hb-card-section mb-1.5 block text-sm">
               Due date
