@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
 import { DEFAULT_SUBJECT } from "@/lib/subjects";
+import { normalizePost } from "@/lib/types";
 
 type PostRow = {
   id: string;
@@ -98,7 +99,7 @@ export async function buildUserContext(
       supabase.from("profiles").select("full_name, role").eq("id", userId).single(),
     ]);
 
-  const typedPosts = (posts ?? []) as PostRow[];
+  const typedPosts = ((posts ?? []) as PostRow[]).map(normalizePost);
   const completedSet = new Set(
     (completions ?? []).map((c: CompletionsRow) => c.post_id),
   );

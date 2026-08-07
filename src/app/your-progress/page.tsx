@@ -9,7 +9,7 @@ import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageTopBar } from "@/components/PageTopBar";
 import { DEFAULT_SUBJECT } from "@/lib/subjects";
-import type { Post } from "@/lib/types";
+import { normalizePost, type Post } from "@/lib/types";
 
 export const revalidate = 30;
 
@@ -34,7 +34,7 @@ export default async function YourProgressPage() {
       .eq("user_id", profile.id),
   ]);
 
-  const typedPosts = (posts as Post[]) ?? [];
+  const typedPosts = ((posts ?? []) as Post[]).map(normalizePost);
   const typedCompletions = (completions ?? []) as CompletionRow[];
 
   const completedSet = new Set<string>(

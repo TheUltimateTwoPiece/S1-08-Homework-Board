@@ -12,6 +12,7 @@ import {
 } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
+import { normalizePost } from "@/lib/types";
 
 type CalendarPageProps = {
   searchParams: Promise<{ month?: string }>;
@@ -52,7 +53,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
     .lte("due_at", endStr)
     .order("due_at", { ascending: true });
 
-  const byDay = (posts ?? []).reduce(
+  const byDay = ((posts ?? []) as { id: string; title: string; due_at: string | null; subject: unknown; pinned: boolean }[]).map(normalizePost).reduce(
     (acc, post) => {
       const key = post.due_at as string | null;
       if (!key) return acc;

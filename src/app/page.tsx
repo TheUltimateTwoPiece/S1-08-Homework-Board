@@ -10,7 +10,7 @@ import { NotificationsWidget } from "@/components/dashboard/NotificationsWidget"
 import { DutyWidget } from "@/components/dashboard/DutyWidget";
 import { FeedbackWidget } from "@/components/dashboard/FeedbackWidget";
 import { PipBubble } from "@/components/PipBubble";
-import type { AdminSchedule, Feedback, Notification, Post } from "@/lib/types";
+import { normalizePost, type AdminSchedule, type Feedback, type Notification, type Post } from "@/lib/types";
 
 export const revalidate = 30;
 
@@ -74,7 +74,7 @@ export default async function DashboardPage() {
       : Promise.resolve({ data: [] as unknown as Feedback[] }),
   ]);
 
-  const typedPosts = (posts as Post[]) ?? [];
+  const typedPosts = ((posts ?? []) as Post[]).map(normalizePost);
   const completedSet = new Set<string>(
     (completions ?? []).map((c) => c.post_id as string),
   );

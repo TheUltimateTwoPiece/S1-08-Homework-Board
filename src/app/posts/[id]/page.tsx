@@ -11,7 +11,7 @@ import { EditPostForm } from "@/components/EditPostForm";
 import { PendingButton } from "@/components/PendingButton";
 import { PostCompleteCheckbox } from "@/components/PostCompleteCheckbox";
 import { deletePost, setPostCommentsLocked, setPostPinned } from "@/actions/posts";
-import type { Attachment, Comment, Post, PostEdit, Profile } from "@/lib/types";
+import { normalizePost, type Attachment, type Comment, type Post, type PostEdit, type Profile } from "@/lib/types";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -45,7 +45,7 @@ export default async function PostPage({ params }: PageProps) {
 
   if (!post) notFound();
 
-  const typedPost = post as Post;
+  const typedPost = normalizePost(post as Post);
   const isCompleted = Boolean(completion);
   const isAdmin = profile.role === "admin";
   const commentsLocked = typedPost.comments_locked;

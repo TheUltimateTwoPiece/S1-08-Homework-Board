@@ -132,3 +132,24 @@ export type AdminDutyLog = {
   created_at: string;
   profiles?: Pick<Profile, "full_name" | "avatar_url">;
 };
+
+/**
+ * Normalises a post row from Supabase so that `subject` is guaranteed to be a
+ * `string[]`. The database migration converts the legacy `text` column to a
+ * `text[]` array, but PostgREST may still return a plain string for rows that
+ * haven't been re-saved since the migration.
+ */
+export function normalizePost<T extends { subject: unknown }>(
+  post: T,
+): Omit<T, "subject"> & { subject: string[] } {
+  const raw = (post as Record<string, unknown>).subject;
+  let subject: string[];
+  if (Array.isArray(raw)) {
+    subject = raw as string[];
+  } else if (typeof raw === "string") {
+    subject = [raw];
+  } else {
+    subject = [];
+  }
+  return { ...post, subject };
+}
