@@ -26,7 +26,7 @@ function normalizeStorageError(message: string): string {
 function normalizeDatabaseError(message: string): string {
   if (!message) return "Request failed.";
   if (message.toLowerCase().includes("row-level security")) {
-    return "Upload saved, but attaching the file was blocked by database security. Ensure RLS insert policies exist for the attachments table.";
+    return "Attaching files was blocked by database security. Ensure RLS insert policies exist for the attachments table.";
   }
   return message;
 }
@@ -53,8 +53,10 @@ async function requireAdmin() {
 export async function createPost(formData: FormData) {
   const { supabase, user } = await requireAdmin();
 
-  const title = (formData.get("title") as string).trim();
-  const content = normalizeMultilineText(formData.get("content") as string);
+  const titleValue = formData.get("title");
+  const contentValue = formData.get("content");
+  const title = typeof titleValue === "string" ? titleValue.trim() : "";
+  const content = typeof contentValue === "string" ? normalizeMultilineText(contentValue) : "";
   const subjects = normalizeSubjects(formData.getAll("subject"));
   const dueAtRaw = ((formData.get("dueAt") as string | null) ?? "").trim();
   const pinned = formData.get("pinned") === "on";
@@ -62,6 +64,20 @@ export async function createPost(formData: FormData) {
 
   if (!title || !content) {
     return { error: "Title and content are required." };
+  }
+
+  // Validate attachments before inserting the post. Otherwise a rejected
+  // file would return an error while leaving an orphaned post in the database.
+  const maxBytes = 10 * 1024 * 1024;
+  for (const file of files) {
+    if (file.size > maxBytes) {
+      return { error: `File "${file.name}" is too large.` };
+    }
+    const isAllowed =
+      file.type === "application/pdf" || file.type.startsWith("image/");
+    if (!isAllowed) {
+      return { error: `File type not allowed: "${file.name}".` };
+    }
   }
 
   // Profanity gate: redirect to PROFANITY_REDIRECT_URL if title or
@@ -88,21 +104,6 @@ export async function createPost(formData: FormData) {
   }
 
   if (post && files.length > 0) {
-    const maxBytes = 10 * 1024 * 1024;
-
-    // Validate every file up front so we don't half-upload and have to
-    // roll back on a single bad file later in the loop.
-    for (const file of files) {
-      if (file.size > maxBytes) {
-        return { error: `File "${file.name}" is too large.` };
-      }
-      const isAllowed =
-        file.type === "application/pdf" || file.type.startsWith("image/");
-      if (!isAllowed) {
-        return { error: `File type not allowed: "${file.name}".` };
-      }
-    }
-
     const bucket = "attachments";
     const paths = files.map(
       (file) => `posts/${post.id}/${crypto.randomUUID()}-${normalizeFileName(file.name)}`,
@@ -208,9 +209,12 @@ async function fanOutPostNotifications(
 export async function updatePost(formData: FormData) {
   const { supabase, user } = await requireAdmin();
 
-  const postId = formData.get("postId") as string;
-  const title = (formData.get("title") as string).trim();
-  const content = normalizeMultilineText(formData.get("content") as string);
+  const postIdValue = formData.get("postId");
+  const titleValue = formData.get("title");
+  const contentValue = formData.get("content");
+  const postId = typeof postIdValue === "string" ? postIdValue.trim() : "";
+  const title = typeof titleValue === "string" ? titleValue.trim() : "";
+  const content = typeof contentValue === "string" ? normalizeMultilineText(contentValue) : "";
   const subjects = normalizeSubjects(formData.getAll("subject"));
   const dueAtRaw = ((formData.get("dueAt") as string | null) ?? "").trim();
   const dueAt = dueAtRaw ? dueAtRaw : null;
