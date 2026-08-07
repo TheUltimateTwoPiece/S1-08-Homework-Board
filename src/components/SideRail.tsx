@@ -165,6 +165,21 @@ const ADMIN_NAV_ITEMS: RailItem[] = [
     ),
     adminOnly: true,
   },
+  {
+    href: "/admin/pip-stats",
+    label: "Pip Stats",
+    icon: (
+      <Icon>
+        <rect x="4" y="4" width="16" height="16" rx="2" />
+        <rect x="9" y="9" width="6" height="6" rx="1" />
+        <path d="M9 2v2" /><path d="M15 2v2" />
+        <path d="M9 20v2" /><path d="M15 20v2" />
+        <path d="M20 9h2" /><path d="M2 9h2" />
+        <path d="M20 15h2" /><path d="M2 15h2" />
+      </Icon>
+    ),
+    adminOnly: true,
+  },
 ];
 
 // Routes the user hits often — prefetch the full RSC payload eagerly so the
