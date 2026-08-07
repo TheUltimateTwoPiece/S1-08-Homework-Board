@@ -177,11 +177,7 @@ export async function POST(request: NextRequest) {
       } catch (error: unknown) {
         const msg = error instanceof Error ? error.message : String(error);
         console.error("Pip stream error:", msg);
-        if (msg.includes("quota")) {
-          controller.enqueue(encoder.encode(sseEvent({ type: "error", message: "Gemini quota exceeded. Try again later.", remaining })));
-        } else {
-          controller.enqueue(encoder.encode(sseEvent({ type: "error", message: "Pip ran into a problem. Try again.", remaining })));
-        }
+        controller.enqueue(encoder.encode(sseEvent({ type: "error", message: `Pip error: ${msg}`, remaining })));
       } finally {
         controller.close();
       }
