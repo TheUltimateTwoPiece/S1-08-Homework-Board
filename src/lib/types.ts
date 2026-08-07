@@ -26,7 +26,8 @@ export type Post = {
   id: string;
   title: string;
   content: string;
-  subject: string;
+  /** A post can belong to multiple subjects at once — always ≥ 1 element. */
+  subject: string[];
   due_at: string | null;
   pinned: boolean;
   comments_locked: boolean;

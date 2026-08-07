@@ -65,17 +65,20 @@ export default async function YourProgressPage() {
     totalPosts === 0 ? 0 : Math.round((completedCount / totalPosts) * 100);
   const pct = Math.max(0, Math.min(100, pctRaw));
 
-  // Subject breakdown
+  // Subject breakdown — a post counts toward EACH of its subjects, so a
+  // multi-subject post appears in every bar it's tagged with.
   const subjectMap = new Map<
     string,
     { total: number; done: number }
   >();
   for (const p of typedPosts) {
-    const key = p.subject ?? DEFAULT_SUBJECT;
-    const entry = subjectMap.get(key) ?? { total: 0, done: 0 };
-    entry.total += 1;
-    if (completedSet.has(p.id)) entry.done += 1;
-    subjectMap.set(key, entry);
+    const keys = p.subject.length > 0 ? p.subject : [DEFAULT_SUBJECT];
+    for (const key of keys) {
+      const entry = subjectMap.get(key) ?? { total: 0, done: 0 };
+      entry.total += 1;
+      if (completedSet.has(p.id)) entry.done += 1;
+      subjectMap.set(key, entry);
+    }
   }
   const subjectRows = Array.from(subjectMap.entries())
     .map(([subject, { total, done }]) => ({
@@ -290,7 +293,7 @@ export default async function YourProgressPage() {
                       <div className="hb-card-section line-clamp-1 text-sm">
                         {post.title}
                       </div>
-                      <div className="hb-card-meta text-xs">{post.subject}</div>
+                      <div className="hb-card-meta text-xs">{post.subject.join(" + ")}</div>
                     </div>
                     <div
                       className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-bold ${
@@ -352,7 +355,7 @@ export default async function YourProgressPage() {
                     <div className="hb-card-section line-clamp-1 text-sm">
                       {post.title}
                     </div>
-                    <div className="hb-card-meta text-xs">{post.subject}</div>
+                    <div className="hb-card-meta text-xs">{post.subject.join(" + ")}</div>
                   </div>
                   <div className="hb-card-meta shrink-0 text-xs">
                     {formatDistanceToNow(new Date(completedAt), { addSuffix: true })}

@@ -52,10 +52,11 @@ type NotificationRow = {
 export async function notifyNewPost(params: {
   postId: string;
   postTitle: string;
-  postSubject: string;
+  postSubject: string[];
   postDueAt: string | null;
   authorId: string;
 }) {
+  const subjectLabel = params.postSubject.join(" + ");
   const supabase = await createClient();
 
   // Pull candidates: students + admins (everyone who could plausibly want to
@@ -87,8 +88,8 @@ export async function notifyNewPost(params: {
     user_id: c.id,
     title: `New homework: ${params.postTitle}`,
     message: params.postDueAt
-      ? `A new ${params.postSubject} assignment is posted, due ${params.postDueAt}.`
-      : `A new ${params.postSubject} assignment is posted.`,
+      ? `A new ${subjectLabel} assignment is posted, due ${params.postDueAt}.`
+      : `A new ${subjectLabel} assignment is posted.`,
     created_by: params.authorId,
   }));
 
@@ -235,7 +236,7 @@ export async function notifyNewPost(params: {
         recipientName: q.fullName,
         postTitle: params.postTitle,
         authorName,
-        subject: params.postSubject,
+        subject: subjectLabel,
         dueAt: params.postDueAt,
         postId: params.postId,
       });

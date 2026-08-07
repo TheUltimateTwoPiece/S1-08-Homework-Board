@@ -62,7 +62,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
     },
     {} as Record<
       string,
-      { id: string; title: string; subject: string; pinned: boolean }[]
+      { id: string; title: string; subject: string[]; pinned: boolean }[]
     >,
   );
 

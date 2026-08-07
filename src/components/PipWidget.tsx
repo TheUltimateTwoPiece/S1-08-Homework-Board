@@ -479,7 +479,7 @@ export function PipWidget({
             <div key={msg.id ?? i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               {/* Pip messages get markdown + hover actions */}
               {msg.role === "pip" ? (
-                <div className="group relative max-w-[90%] sm:max-w-[80%] rounded-xl bg-slate-100 dark:bg-slate-800 px-3 sm:px-4 py-2.5 text-sm">
+                <div className="group relative max-w-[90%] sm:max-w-[80%] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 sm:px-4 py-2.5 text-sm">
                   <MarkdownRenderer text={msg.text} />
                   {/* Hover actions */}
                   <div className="absolute -bottom-1 right-1 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity translate-y-full pt-1">
@@ -512,7 +512,7 @@ export function PipWidget({
           {/* Streaming message */}
           {isStreaming && (
             <div className="flex justify-start">
-              <div className="max-w-[90%] sm:max-w-[80%] rounded-xl bg-slate-100 dark:bg-slate-800 px-3 sm:px-4 py-2.5 text-sm">
+              <div className="max-w-[90%] sm:max-w-[80%] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 sm:px-4 py-2.5 text-sm">
                 {streamingText ? (
                   <MarkdownRenderer text={streamingText} />
                 ) : (

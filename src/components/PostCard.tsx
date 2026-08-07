@@ -35,9 +35,14 @@ export function PostCard({ post, completed }: PostCardProps) {
                   📌 Pinned
                 </span>
               )}
-              <span className="hb-badge-subject inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider">
-                {post.subject}
-              </span>
+              {post.subject.map((subject) => (
+                <span
+                  key={subject}
+                  className="hb-badge-subject inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
+                >
+                  {subject}
+                </span>
+              ))}
               {dueBadge && (
                 <span className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${dueBadge.className}`}>
                   {dueBadge.label}

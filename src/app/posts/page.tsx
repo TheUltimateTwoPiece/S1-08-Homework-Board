@@ -51,7 +51,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
   }
 
   if (subject) {
-    postsQuery = postsQuery.eq("subject", subject);
+    postsQuery = postsQuery.contains("subject", [subject]);
   }
 
   if (due !== "all") {

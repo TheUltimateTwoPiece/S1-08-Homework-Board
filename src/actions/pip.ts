@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { format } from "date-fns";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { createClient } from "@/lib/supabase/server";
-import { DEFAULT_SUBJECT } from "@/lib/subjects";
 import { tripProfanity } from "@/lib/profanity";
 import {
   getMessages,
@@ -13,162 +12,14 @@ import {
   getChatInstructions,
 } from "@/actions/pip-chats";
 import {
+  buildUserContext,
+  buildSystemPrompt,
+  parseConfirmActions,
+} from "@/lib/pip-context";
+import {
   DAILY_LIMIT,
-  type ConfirmAction,
   type PipResult,
 } from "@/lib/pip-types";
-
-// ── Regex to parse [CONFIRM:type|key=val,...|label=text] markers ──
-const CONFIRM_REGEX = /\[CONFIRM:([^|\]]+)\|([^|\]]+)\|label=([^\]]+)\]/g;
-
-function parseConfirmActions(reply: string): {
-  cleanReply: string;
-  actions: ConfirmAction[];
-} {
-  const actions: ConfirmAction[] = [];
-  const cleanReply = reply.replace(CONFIRM_REGEX, (_match, type, paramsStr, label) => {
-    const actionType = type.trim();
-    if (actionType !== "mark_complete" && actionType !== "unmark_complete") {
-      return ""; // unknown action — strip silently
-    }
-
-    const params: Record<string, string> = {};
-    for (const pair of paramsStr.split(",")) {
-      const [k, ...v] = pair.split("=");
-      if (k && v.length > 0) params[k.trim()] = v.join("=").trim();
-    }
-
-    // Only add if it has the required params
-    if ((actionType === "mark_complete" || actionType === "unmark_complete") && params.post_id) {
-      actions.push({
-        type: actionType as ConfirmAction["type"],
-        params,
-        label: label.trim() || (actionType === "mark_complete" ? "Mark complete" : "Unmark complete"),
-      });
-    }
-
-    return ""; // strip the marker from visible text
-  });
-
-  // Clean up double newlines left by removed markers
-  return {
-    cleanReply: cleanReply.replace(/\n{3,}/g, "\n\n").trim(),
-    actions,
-  };
-}
-
-/**
- * Builds a structured snapshot of the user's homework data to inject
- * into the Gemini system prompt so Pip can answer personalised questions.
- */
-async function buildUserContext(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  userId: string,
-): Promise<string> {
-  const todayStr = format(new Date(), "yyyy-MM-dd");
-
-  const [
-    { data: posts },
-    { data: completions },
-    { data: notifications },
-    { data: profile },
-  ] = await Promise.all([
-    supabase
-      .from("posts")
-      .select("id, title, subject, due_at, content")
-      .order("due_at", { ascending: true, nullsFirst: false })
-      .limit(100),
-    supabase
-      .from("post_completions")
-      .select("post_id")
-      .eq("user_id", userId),
-    supabase
-      .from("notifications")
-      .select("id, read_at")
-      .eq("user_id", userId)
-      .is("read_at", null),
-    supabase
-      .from("profiles")
-      .select("full_name, role")
-      .eq("id", userId)
-      .single(),
-  ]);
-
-  const typedPosts = (posts ?? []) as Array<{
-    id: string;
-    title: string;
-    subject: string;
-    due_at: string | null;
-    content: string;
-  }>;
-
-  const completedSet = new Set(
-    (completions ?? []).map((c: { post_id: string }) => c.post_id),
-  );
-
-  const totalPosts = typedPosts.length;
-  const completedCount = typedPosts.filter((p) => completedSet.has(p.id)).length;
-  const unreadCount = (notifications ?? []).length;
-
-  // Subject breakdown
-  const subjectMap = new Map<string, { total: number; done: number }>();
-  for (const p of typedPosts) {
-    const key = p.subject ?? DEFAULT_SUBJECT;
-    const entry = subjectMap.get(key) ?? { total: 0, done: 0 };
-    entry.total += 1;
-    if (completedSet.has(p.id)) entry.done += 1;
-    subjectMap.set(key, entry);
-  }
-
-  const subjectLines = Array.from(subjectMap.entries()).map(
-    ([subj, { total, done }]) => `${subj}: ${done}/${total} done`,
-  );
-
-  // Upcoming (due today or later, not completed) — include content + ID
-  const upcoming = typedPosts
-    .filter((p) => p.due_at && p.due_at >= todayStr && !completedSet.has(p.id))
-    .slice(0, 10)
-    .map(
-      (p) =>
-        `  - [${p.id}] ${p.title} (${p.subject}, due ${p.due_at})\n    ${p.content.slice(0, 200)}${p.content.length > 200 ? "..." : ""}`,
-    );
-
-  // Overdue — include content + ID
-  const overdue = typedPosts
-    .filter((p) => p.due_at && p.due_at < todayStr && !completedSet.has(p.id))
-    .slice(0, 5)
-    .map(
-      (p) =>
-        `  - [${p.id}] ${p.title} (${p.subject}, overdue since ${p.due_at})\n    ${p.content.slice(0, 200)}${p.content.length > 200 ? "..." : ""}`,
-    );
-
-  // Completed — last 10 for reference, includes IDs
-  const completed = typedPosts
-    .filter((p) => completedSet.has(p.id))
-    .slice(-10)
-    .map((p) => `  - [${p.id}] ${p.title} (${p.subject})`);
-
-  const userName =
-    (profile as { full_name?: string; role?: string } | null)?.full_name ??
-    "Student";
-  const userRole =
-    (profile as { full_name?: string; role?: string } | null)?.role ?? "student";
-
-  return `## Your homework data (use these exact IDs for CONFIRM markers)
-
-### Profile
-Name: ${userName}
-Role: ${userRole}
-Overall progress: ${completedCount}/${totalPosts} posts completed
-Unread notifications: ${unreadCount}
-
-### Subject breakdown
-${subjectLines.join("\n")}
-
-${upcoming.length > 0 ? `### Upcoming (each prefixed with its post ID in brackets)\n${upcoming.join("\n")}\n` : ""}\
-${overdue.length > 0 ? `### Overdue — tackle these first! (each prefixed with its post ID)\n${overdue.join("\n")}\n` : ""}\
-${completed.length > 0 ? `### Recently completed\n${completed.join("\n")}` : ""}`;
-}
 
 export async function askPip(
   question: string,
@@ -182,46 +33,28 @@ export async function askPip(
 
   if (!user) redirect("/login");
 
-  // ── Server-side input validation ──
   const trimmed = question.trim();
-  if (!trimmed) {
-    return { error: "Ask Pip something!" };
-  }
-  if (trimmed.length > 500) {
-    return { error: "Message is too long (max 500 characters)." };
-  }
+  if (!trimmed) return { error: "Ask Pip something!" };
+  if (trimmed.length > 500) return { error: "Message is too long (max 500 characters)." };
 
-  // ── Profanity gate ──
   const profanity = tripProfanity({ userId: user.id }, trimmed);
   if (profanity.triggered) redirect(profanity.redirectUrl);
 
   const todayStr = format(new Date(), "yyyy-MM-dd");
 
-  // ── Step 1: Rate limit check AND context building in parallel ──
   const [rpcResult, contextPromise] = await Promise.allSettled([
-    supabase.rpc("pip_try_increment", {
-      p_date: todayStr,
-      p_limit: DAILY_LIMIT,
-    }),
+    supabase.rpc("pip_try_increment", { p_date: todayStr, p_limit: DAILY_LIMIT }),
     buildUserContext(supabase, user.id),
   ]);
 
-  // Unpack rate limit result
   let newCount: number | null = null;
   if (rpcResult.status === "fulfilled") {
     const { data, error } = rpcResult.value;
     if (error) {
       console.error("Pip RPC error:", error);
       const msg = String(error.message ?? error.code ?? error);
-      if (
-        msg.includes("Could not find") ||
-        msg.includes("function") ||
-        msg.includes("404")
-      ) {
-        return {
-          error:
-            "Pip isn't fully set up yet. Run the pip-prompts migration in Supabase.",
-        };
+      if (msg.includes("Could not find") || msg.includes("function") || msg.includes("404")) {
+        return { error: "Pip isn't fully set up yet. Run the pip-prompts migration in Supabase." };
       }
       return { error: "Something went wrong with rate limiting. Try again." };
     }
@@ -237,7 +70,6 @@ export async function askPip(
       .eq("user_id", user.id)
       .eq("prompt_date", todayStr)
       .maybeSingle();
-
     const used = (usage as { count?: number } | null)?.count ?? DAILY_LIMIT;
     return {
       error: `You've used all ${DAILY_LIMIT} daily prompts. Resets at midnight UTC.`,
@@ -247,26 +79,15 @@ export async function askPip(
 
   const remaining = DAILY_LIMIT - (newCount as number);
 
-  // Unpack context result
   const userContext =
-    contextPromise.status === "fulfilled"
-      ? contextPromise.value
-      : "User context unavailable.";
+    contextPromise.status === "fulfilled" ? contextPromise.value : "User context unavailable.";
 
-  // ── Step 2: Call Gemini ──
   const apiKey = process.env.GOOGLE_GEMINI_API_KEY;
   if (!apiKey) {
-    return {
-      error: "Gemini API key is not configured. Set GOOGLE_GEMINI_API_KEY.",
-      remaining,
-    };
+    return { error: "Gemini API key is not configured. Set GOOGLE_GEMINI_API_KEY.", remaining };
   }
 
-  // Load previous messages from DB for multi-turn context
-  const historyContents: Array<{
-    role: "user" | "model";
-    parts: { text: string }[];
-  }> = [];
+  const historyContents: Array<{ role: "user" | "model"; parts: { text: string }[] }> = [];
   let dbInstructions: string | null = null;
   if (chatId) {
     try {
@@ -277,57 +98,28 @@ export async function askPip(
           : getChatInstructions(chatId),
       ]);
       dbInstructions = instructions;
-      const recent = prevMessages.slice(-20);
-      for (const msg of recent) {
+      for (const msg of prevMessages.slice(-20)) {
         historyContents.push({
           role: msg.role === "user" ? "user" : "model",
           parts: [{ text: msg.text }],
         });
       }
-    } catch {
-      // If history fetch fails, proceed without it — better than crashing
-    }
+    } catch { /* proceed without history */ }
   }
 
-  // Custom instructions take priority: passed-in > DB-stored
-  const effectiveInstructions =
-    systemInstructions?.trim() || dbInstructions?.trim() || null;
+  const effectiveInstructions = systemInstructions?.trim() || dbInstructions?.trim() || null;
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-3.1-flash-lite",
-    });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
 
-    const systemPrompt = `You are Pip, a friendly and helpful homework assistant for students. You have access to the student's real homework data (completion status, upcoming due dates, subject breakdown, notifications, and the full instructions for each assignment).
-
-Your personality: encouraging, concise, and slightly playful. Use emoji sparingly. Keep answers short but helpful — students are busy.
-${effectiveInstructions ? `\nCUSTOM INSTRUCTIONS FROM THE STUDENT (follow these above all else):\n${effectiveInstructions}\n` : ""}
-${userContext}
-
-Guidelines:
-- Answer questions about the student's homework, progress, and deadlines.
-- When the student asks about a specific assignment, share the actual instructions/details from the context — you have the post content!
-- If they ask about something not in their data, say so honestly.
-- Encourage them to complete overdue work first.
-- Celebrate milestones (all caught up, finishing a subject, etc.).
-- Never make up data. Only reference what's in the context above.
-- Keep responses under 3 paragraphs unless the question demands detail.
-
-AVAILABLE ACTIONS — you can suggest these by ending your message with a special marker:
-- To suggest marking a post complete: [CONFIRM:mark_complete|post_id=THE_UUID|label=✅ Mark complete]
-- To suggest unmarking a post: [CONFIRM:unmark_complete|post_id=THE_UUID|label=↩ Unmark]
-Only suggest an action when it's clearly helpful. Always put the marker at the very end of your message, on its own line. Use the exact post IDs from the context above.`;
+    const systemPrompt = buildSystemPrompt(userContext, effectiveInstructions);
 
     const contents = [
       { role: "user" as const, parts: [{ text: systemPrompt }] },
       {
         role: "model" as const,
-        parts: [
-          {
-            text: "Got it! I'm Pip, your homework assistant. I have all your homework data loaded, including the full instructions for each assignment. What can I help with?",
-          },
-        ],
+        parts: [{ text: "Got it! I'm Pip, your homework assistant. I have all your homework data loaded. What can I help with?" }],
       },
       ...historyContents,
       { role: "user" as const, parts: [{ text: trimmed }] },
@@ -335,27 +127,19 @@ Only suggest an action when it's clearly helpful. Always put the marker at the v
 
     const result = await model.generateContent({ contents });
     const rawReply = result.response.text();
-
-    // Parse confirmation actions from the reply
     const { cleanReply, actions } = parseConfirmActions(rawReply);
 
-    // Save messages to DB if we have a chatId (save the clean reply)
     if (chatId) {
       try {
         await Promise.all([
           saveMessage(chatId, "user", trimmed),
           saveMessage(chatId, "pip", cleanReply),
         ]);
-        // Auto-title: historyContents already has previous messages,
-        // so if it's empty this is the first exchange — title from question
         if (historyContents.length === 0) {
-          const title =
-            trimmed.length > 50 ? trimmed.slice(0, 47) + "..." : trimmed;
+          const title = trimmed.length > 50 ? trimmed.slice(0, 47) + "..." : trimmed;
           await renameChat(chatId, title);
         }
-      } catch {
-        // Non-critical — the messages will still appear in the UI this session
-      }
+      } catch { /* non-critical */ }
     }
 
     return {
@@ -366,17 +150,12 @@ Only suggest an action when it's clearly helpful. Always put the marker at the v
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
     console.error("Pip error:", message);
-
     if (message.includes("API key")) {
-      return {
-        error: "Gemini API key is invalid. Check GOOGLE_GEMINI_API_KEY.",
-        remaining,
-      };
+      return { error: "Gemini API key is invalid. Check GOOGLE_GEMINI_API_KEY.", remaining };
     }
     if (message.includes("quota")) {
       return { error: "Gemini quota exceeded. Try again later.", remaining };
     }
-
     return { error: "Pip ran into a problem. Try again.", remaining };
   }
 }
