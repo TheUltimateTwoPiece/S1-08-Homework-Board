@@ -31,7 +31,7 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
       style={{ gridColumn: "span 7", gridRow: "span 2", animationDelay: "40ms" }}
     >
       <div className="hb-bento-head relative z-[1]">
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <div className="hb-bento-icon-box">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
               <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 19.5" />
@@ -39,12 +39,12 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
               <path d="M9 14h6" />
             </svg>
           </div>
-          <div>
-            <h2 className="hb-card-section text-base tracking-tight">{firstName}'s homework</h2>
-            <p className="hb-card-body text-xs font-semibold">{totalDone} of {top.length} done · tap to open</p>
+          <div className="min-w-0">
+            <h2 className="hb-card-section hb-truncate text-base tracking-tight">{firstName}'s homework</h2>
+            <p className="hb-card-body hb-truncate text-xs font-semibold">{totalDone} of {top.length} done · tap to open</p>
           </div>
         </div>
-        <span className="rounded-md px-2.5 py-1.5 text-xs font-bold text-blue-700 transition group-hover:bg-blue-100">
+        <span className="hb-bento-action">
           View all →
         </span>
       </div>
@@ -61,11 +61,18 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
           <p className="hb-card-meta text-xs">No homework waiting for you.</p>
         </div>
       ) : (
-        <ul className="-mx-2 max-h-[calc(100%-56px)] space-y-1 overflow-y-auto pb-6">
+        <ul className="hb-list-scroll -mx-2 space-y-1 pb-6">
           {top.map((post, i) => {
             const done = completedSet.has(post.id);
             const due = formatDueLabel(post.due_at);
             const rowClass = done ? "hb-posts-widget-row--done" : post.pinned ? "hb-posts-widget-row--pinned" : "hb-posts-widget-row--todo";
+            // Cap the subject tag at two subjects + an overflow count instead of
+            // letting a long list stretch or clip awkwardly inside the row.
+            const subjects = Array.isArray(post.subject) ? post.subject : [];
+            const subjectLabel =
+              subjects.length > 2
+                ? subjects.slice(0, 2).join(" + ") + ` +${subjects.length - 2}`
+                : subjects.join(" + ");
             return (
               <li key={post.id} className={"hb-posts-widget-row " + rowClass} style={{ animationDelay: (60 + i * 28) + "ms" }}>
                 <form action={togglePostComplete} className="hb-posts-widget-check relative z-[3]">
@@ -73,10 +80,10 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
                   <PostCompleteButton completed={done} compact />
                 </form>
                 <Link href={"/posts/" + post.id} className="min-w-0 flex-1 relative z-[3]">
-                  <div className="flex items-center gap-2">
-                    {post.pinned && <span aria-hidden="true" className="text-amber-600">📌</span>}
-                    <span className={"hb-card-section truncate text-sm " + (done ? "hb-card-faded line-through" : "")}>{post.title}</span>
-                    <span className="hb-badge-subject shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold">{post.subject.join(" + ")}</span>
+                  <div className="flex items-center gap-2 min-w-0">
+                    {post.pinned && <span aria-hidden="true" className="text-amber-600 shrink-0">📌</span>}
+                    <span className={"hb-card-section hb-truncate text-sm " + (done ? "hb-card-faded line-through" : "")}>{post.title}</span>
+                    <span className="hb-badge-subject hb-truncate max-w-[72px] shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold">{subjectLabel}</span>
                   </div>
                   {due && <div className={"mt-0.5 text-[11px] font-bold " + due.className}>{due.text}</div>}
                 </Link>

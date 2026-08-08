@@ -7,24 +7,24 @@ type UpcomingWidgetProps = { posts: Post[]; };
 export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
   const upcoming = posts
     .filter((p) => p.due_at && p.due_at >= format(new Date(), "yyyy-MM-dd"))
-    .slice(0, 4);
+    .slice(0, 3);
 
   return (
     <section
       className="hb-bento-card hb-bento-card--clickable group relative "
-      style={{ gridColumn: "span 4", gridRow: "span 1", animationDelay: "160ms" }}
+      style={{ gridColumn: "span 4", gridRow: "span 2", animationDelay: "160ms" }}
     >
       <div className="hb-bento-head relative z-[1]">
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-3">
           <div className="hb-bento-icon-box" style={{ background: "linear-gradient(135deg, rgba(217,119,6,0.18), rgba(217,119,6,0.04))", color: "#b45309" }}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
               <circle cx="12" cy="12" r="10" />
               <polyline points="12 6 12 12 16 14" />
             </svg>
           </div>
-          <h2 className="hb-card-section text-sm tracking-tight">Upcoming deadlines</h2>
+          <h2 className="hb-card-section truncate text-sm tracking-tight">Upcoming deadlines</h2>
         </div>
-        <span className="rounded-md px-2 py-1 text-[11px] font-bold text-blue-700 transition group-hover:bg-blue-100">
+        <span className="hb-bento-action">
           Calendar →
         </span>
       </div>
@@ -37,7 +37,7 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
           </div>
         </div>
       ) : (
-        <ul className="-mx-1 space-y-1 pb-5">
+        <ul className="hb-list-scroll -mx-1 space-y-1 pb-1">
           {upcoming.map((post, i) => {
             const due = parseISO(post.due_at as string);
             const today = isToday(due);
@@ -48,7 +48,7 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
                   <span className="text-sm font-bold leading-tight">{format(due, "d")}</span>
                 </div>
                 <Link href={"/posts/" + post.id} className="min-w-0 flex-1 relative z-[3]">
-                  <div className="hb-card-section line-clamp-1 text-sm">{post.title}</div>
+                  <div className="hb-card-section hb-truncate text-sm">{post.title}</div>
                   <div className={"text-[11px] font-bold " + (today ? "text-amber-800" : "hb-card-meta")}>
                     {today ? "Today" : formatDistanceToNow(due, { addSuffix: true })}
                   </div>
