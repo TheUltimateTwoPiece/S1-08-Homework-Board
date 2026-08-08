@@ -1323,7 +1323,9 @@
   .hb-bento {
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    grid-auto-rows: 120px;
+    /* 136px rows give span-2 cards (280px+) enough room for the mini
+       calendar + header and for 3 list rows without clipping. */
+    grid-auto-rows: 136px;
     gap: 16px;
   }
 
@@ -1332,7 +1334,7 @@
   }
 
   @media (max-width: 640px) {
-    .hb-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 110px; gap: 12px; }
+    .hb-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 132px; gap: 12px; }
   }
 
   .hb-bento-card {
@@ -1345,7 +1347,7 @@
     box-shadow:
       0 1px 2px rgba(15, 23, 42, 0.07),
       0 4px 12px -2px rgba(15, 23, 42, 0.06);
-    padding: 18px;
+    padding: 16px;
     transition:
       transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
       box-shadow 220ms ease,
@@ -1455,13 +1457,17 @@
   .hb-mini-cal-cell--link {
     position: relative;
     z-index: 1;
-    transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+    transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+    pointer-events: auto;
   }
 
   .hb-mini-cal-cell--link:hover {
-    transform: scale(1.18) translateY(-1px);
     z-index: 4;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  }
+
+  .hb-mini-cal-cell--link:hover .hb-mini-cal-num {
+    transform: scale(1.15);
+    box-shadow: 0 2px 10px rgba(37, 99, 235, 0.22);
   }
 
   /* ── Bento Card Headers ──────────────────────── */
@@ -1470,7 +1476,26 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
+    gap: 8px;
+  }
+
+  /* Standardized action link in card headers */
+  .hb-bento-action {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #2563eb;
+    white-space: nowrap;
+    transition: background-color 180ms ease, color 180ms ease;
+  }
+
+  .group:hover .hb-bento-action {
+    background: rgba(37, 99, 235, 0.08);
   }
 
   .hb-bento-icon-box {
@@ -1495,7 +1520,7 @@
 
   .hb-posts-widget-row {
     display: grid;
-    grid-template-columns: 8px 1fr auto;
+    grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
     gap: 12px;
     padding: 12px 12px;
@@ -1518,15 +1543,41 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    min-width: 0;
   }
 
-  /* ── Calendar Mini Widget ────────────────────── */
+  /* ── Dashboard List Helpers ──────────────────── */
+
+  /* Single-line ellipsis truncation (text-overflow trio). Pair with a
+     min-width:0 flex/grid child so the text can actually shrink. */
+  .hb-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Scrollable list inside a fixed-height bento card. Never lets rows
+     overflow the card — extra items scroll instead of clipping. */
+  .hb-list-scroll {
+    max-height: calc(100% - 56px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  /* ── Calendar Mini Widget (Modern Compact) ───── */
 
   .hb-mini-cal {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
+    /* minmax(0,1fr) keeps the 7 tracks perfectly even — long content in a
+       single cell can never blow the grid lines or bleed into neighbours. */
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 1px;
     font-size: 10px;
+    padding: 0;
+    min-width: 0;
+    /* Let dead zones (weekday labels, gaps, trailing cells) fall through to
+       the full-card calendar link; only day cells capture their own clicks. */
+    pointer-events: none;
   }
 
   .hb-mini-cal-head {
@@ -1535,48 +1586,81 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    padding: 4px 0;
+    padding: 0 0 4px;
     font-size: 9px;
+    line-height: 1;
   }
 
   .hb-mini-cal-cell {
-    aspect-ratio: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border-radius: 6px;
+    gap: 1px;
+    border-radius: 8px;
     font-weight: 500;
     color: var(--hb-text-muted);
     position: relative;
-    transition: background-color 150ms ease, color 150ms ease, transform 150ms ease;
+    padding: 1px 0;
+    min-height: 28px;
+    min-width: 0;
+    overflow: visible;
+    transition: background-color 150ms ease, color 150ms ease;
   }
 
-  .hb-mini-cal-cell--out { opacity: 0.35; }
-  .hb-mini-cal-cell--today {
+  /* Small circular pill for the date number */
+  .hb-mini-cal-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 9999px;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1;
+    flex: none;
+    transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  }
+
+  .hb-mini-cal-cell--out { opacity: 0.3; }
+  .hb-mini-cal-cell--out .hb-mini-cal-num { font-weight: 400; }
+
+  /* Today: solid filled pill */
+  .hb-mini-cal-cell--today .hb-mini-cal-num {
     background: #2563eb;
     color: #ffffff;
     font-weight: 700;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.38);
   }
 
-  .hb-mini-cal-cell--has-due {
-    color: var(--hb-text);
-    background: rgba(217, 119, 6, 0.12);
+  /* Days with homework: soft amber pill + indicator dot */
+  .hb-mini-cal-cell--has-due .hb-mini-cal-num {
+    background: rgba(217, 119, 6, 0.14);
+    color: #92400e;
     font-weight: 700;
   }
 
   .hb-mini-cal-cell--has-due:hover {
-    background: rgba(217, 119, 6, 0.22);
-    transform: scale(1.1);
+    background: rgba(217, 119, 6, 0.08);
+  }
+
+  /* When today also has homework, keep the filled-blue emphasis */
+  .hb-mini-cal-cell--today.hb-mini-cal-cell--has-due .hb-mini-cal-num {
+    background: #2563eb;
+    color: #ffffff;
   }
 
   .hb-mini-cal-dot {
-    width: 3px;
-    height: 3px;
+    width: 4px;
+    height: 4px;
     border-radius: 9999px;
-    background: var(--hb-warning);
-    margin-top: 1px;
+    background: #d97706;
+    flex: none;
+  }
+
+  .hb-mini-cal-cell--today .hb-mini-cal-dot {
+    background: #2563eb;
   }
 
   /* ── Stats Bubble Chart ──────────────────────── */
@@ -1656,13 +1740,14 @@
 
   .hb-snippet {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 10px;
     padding: 10px;
     border-radius: 10px;
     border: 1px solid transparent;
     transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
     animation: hb-stagger-in 380ms ease-out backwards;
+    overflow: hidden;
   }
 
   .hb-snippet:hover {

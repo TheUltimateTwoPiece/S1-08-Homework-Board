@@ -1,12 +1,11 @@
 import Link from "next/link";
-
+import type { CSSProperties } from "react";
 
 type StatsWidgetProps = {
   totalPosts: number;
   completedCount: number;
   upcomingCount: number;
   overdueCount: number;
-  
 };
 
 export function StatsWidget({
@@ -22,17 +21,19 @@ export function StatsWidget({
   const circumference = 2 * Math.PI * radius;
   const offset = circumference * (1 - safePct / 100);
 
+  const barStyle = { "--hb-bar-target": safePct / 100 } as CSSProperties;
+
   return (
     <section
-      className="hb-bento-card hb-bento-card--clickable group relative overflow-hidden "
+      className="hb-bento-card hb-bento-card--clickable group relative overflow-hidden"
       style={{
         gridColumn: "span 4",
-        gridRow: "span 1",
+        gridRow: "span 2",
         animationDelay: "120ms",
       }}
     >
       <div className="hb-bento-head relative z-[1]">
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-3">
           <div
             className="hb-bento-icon-box"
             style={{
@@ -45,16 +46,16 @@ export function StatsWidget({
               <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
             </svg>
           </div>
-          <h2 className="text-sm font-bold tracking-tight text-slate-800 dark:text-slate-200">
+          <h2 className="hb-card-section truncate text-sm font-bold tracking-tight">
             Your progress
           </h2>
         </div>
-        <span className="rounded-md px-2.5 py-1.5 text-[11px] font-bold text-blue-700 transition group-hover:bg-blue-100">
+        <span className="hb-bento-action">
           View →
         </span>
       </div>
 
-      <div className="grid grid-cols-[96px_1fr] items-center gap-4">
+      <div className="grid grid-cols-[96px_1fr] items-center gap-4 overflow-hidden">
         <div className="relative flex items-center justify-center">
           <svg viewBox="0 0 100 100" className="hb-progress-ring h-24 w-24" aria-hidden="true">
             <circle cx="50" cy="50" r={radius} fill="none" strokeWidth="9" className="text-zinc-200 dark:text-slate-600" stroke="currentColor" />
@@ -84,21 +85,42 @@ export function StatsWidget({
             </span>
           </div>
         </div>
-        <div className="space-y-1.5 text-xs">
+        <div className="min-w-0 space-y-1.5 text-xs">
           <div className="flex items-center justify-between rounded-md bg-emerald-50 px-2 py-1.5 dark:bg-emerald-900/30">
-            <span className="font-bold text-emerald-800 dark:text-emerald-200">Done</span>
-            <span className="text-base font-bold tabular-nums text-emerald-800 dark:text-emerald-100">{completedCount}</span>
+            <span className="hb-truncate font-bold text-emerald-800 dark:text-emerald-200">Done</span>
+            <span className="ml-2 shrink-0 text-base font-bold tabular-nums leading-none text-emerald-800 dark:text-emerald-100">{completedCount}</span>
           </div>
           <div className="flex items-center justify-between rounded-md bg-amber-50 px-2 py-1.5 dark:bg-amber-900/30">
-            <span className="font-bold text-amber-800 dark:text-amber-200">Upcoming</span>
-            <span className="text-base font-bold tabular-nums text-amber-800 dark:text-amber-100">{upcomingCount}</span>
+            <span className="hb-truncate font-bold text-amber-800 dark:text-amber-200">Upcoming</span>
+            <span className="ml-2 shrink-0 text-base font-bold tabular-nums leading-none text-amber-800 dark:text-amber-100">{upcomingCount}</span>
           </div>
           {overdueCount > 0 && (
             <div className="flex items-center justify-between rounded-md bg-rose-50 px-2 py-1.5 dark:bg-rose-900/30">
-              <span className="font-bold text-rose-800 dark:text-rose-200">Overdue</span>
-              <span className="text-base font-bold tabular-nums text-rose-800 dark:text-rose-100">{overdueCount}</span>
+              <span className="hb-truncate font-bold text-rose-800 dark:text-rose-200">Overdue</span>
+              <span className="ml-2 shrink-0 text-base font-bold tabular-nums leading-none text-rose-800 dark:text-rose-100">{overdueCount}</span>
             </div>
           )}
+        </div>
+      </div>
+
+      <div className="mt-4">
+        <div className="mb-1.5 flex items-center justify-between gap-2">
+          <span className="hb-card-meta min-w-0 truncate text-[11px] font-semibold">
+            {completedCount} of {totalPosts} completed
+          </span>
+          <span className="shrink-0 text-[11px] font-bold tabular-nums text-emerald-700 dark:text-emerald-300">
+            {safePct}%
+          </span>
+        </div>
+        <div
+          className="hb-bar-track"
+          role="progressbar"
+          aria-valuenow={safePct}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Overall homework completion"
+        >
+          <div className="hb-bar-fill" style={barStyle} />
         </div>
       </div>
 

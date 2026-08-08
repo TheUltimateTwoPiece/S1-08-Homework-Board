@@ -23,10 +23,10 @@ export function DutyWidget({ todaySchedules, completedToday, todayStr, currentAd
   return (
     <section
       className="hb-bento-card hb-bento-card--clickable group relative "
-      style={{ gridColumn: "span 6", gridRow: "span 1", animationDelay: "200ms" }}
+      style={{ gridColumn: "span 6", gridRow: "span 2", animationDelay: "200ms" }}
     >
       <div className="hb-bento-head relative z-[1]">
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-3">
           <div className="hb-bento-icon-box" style={{ background: "linear-gradient(135deg, rgba(22,163,74,0.18), rgba(22,163,74,0.04))", color: "#15803d" }}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
               <rect x="3" y="4" width="18" height="18" rx="2" />
@@ -36,8 +36,8 @@ export function DutyWidget({ todaySchedules, completedToday, todayStr, currentAd
               <path d="m9 16 2 2 4-4" />
             </svg>
           </div>
-          <div>
-            <h2 className="hb-card-section text-sm tracking-tight">
+          <div className="min-w-0">
+            <h2 className="hb-card-section truncate text-sm tracking-tight">
               Today's duty · {format(parseISO(todayStr), "EEE")}
             </h2>
             <p className="hb-card-body text-xs font-semibold">
@@ -45,20 +45,20 @@ export function DutyWidget({ todaySchedules, completedToday, todayStr, currentAd
             </p>
           </div>
         </div>
-        <span className="rounded-md px-2 py-1 text-[11px] font-bold text-blue-700 transition group-hover:bg-blue-100">
+        <span className="hb-bento-action">
           Schedule →
         </span>
       </div>
 
       {todaySchedules.length === 0 ? (
-        <div className="flex h-[calc(100%-44px)] items-center justify-center text-center">
+        <div className="flex h-[calc(100%-56px)] items-center justify-center text-center">
           <div>
             <p className="hb-card-section text-sm">No admins assigned today</p>
             <p className="hb-card-meta mt-1 text-xs">Assign someone on the schedule page</p>
           </div>
         </div>
       ) : (
-        <ul className="space-y-1.5 pb-5">
+        <ul className="hb-list-scroll space-y-1.5 pb-1">
           {todaySchedules.map((s, i) => {
             const done = completedSet.has(s.admin_id);
             const isMe = s.admin_id === currentAdminId;
@@ -71,7 +71,7 @@ export function DutyWidget({ todaySchedules, completedToday, todayStr, currentAd
                   size="md"
                 />
                 <div className="min-w-0 flex-1">
-                  <div className="hb-card-section line-clamp-1 text-sm">
+                  <div className="hb-card-section hb-truncate text-sm">
                     {s.profiles?.full_name ?? "Admin"}
                     {isMe && <span className="ml-1.5 text-[10px] font-bold text-blue-700">you</span>}
                   </div>

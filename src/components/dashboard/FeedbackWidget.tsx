@@ -6,38 +6,40 @@ import type { Feedback } from "@/lib/types";
 type FeedbackWidgetProps = { feedback: Feedback[]; };
 
 export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
-  const top = feedback.slice(0, 3);
+  // Cap at two items — three feedback rows (name + message + timestamp)
+  // don't fit the fixed card height without a scrollbar.
+  const top = feedback.slice(0, 2);
 
   return (
     <section
       className="hb-bento-card hb-bento-card--clickable group relative "
-      style={{ gridColumn: "span 6", gridRow: "span 1", animationDelay: "80ms" }}
+      style={{ gridColumn: "span 6", gridRow: "span 2", animationDelay: "80ms" }}
     >
       <div className="hb-bento-head relative z-[1]">
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-3">
           <div className="hb-bento-icon-box" style={{ background: "linear-gradient(135deg, rgba(217,119,6,0.18), rgba(217,119,6,0.04))", color: "#b45309" }}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
           </div>
-          <h2 className="hb-card-section text-sm tracking-tight">Feedback inbox</h2>
+          <h2 className="hb-card-section truncate text-sm tracking-tight">Feedback inbox</h2>
           {feedback.length > 0 && (
-            <span className="rounded-full bg-amber-200 px-1.5 py-0.5 text-[10px] font-bold text-amber-900 dark:bg-amber-800/60 dark:text-amber-100">
+            <span className="shrink-0 rounded-full bg-amber-200 px-1.5 py-0.5 text-[10px] font-bold text-amber-900 dark:bg-amber-800/60 dark:text-amber-100">
               {feedback.length}
             </span>
           )}
         </div>
-        <span className="rounded-md px-2 py-1 text-[11px] font-bold text-blue-700 transition group-hover:bg-blue-100">
+        <span className="hb-bento-action">
           View all →
         </span>
       </div>
 
       {top.length === 0 ? (
-        <div className="flex h-[calc(100%-44px)] items-center justify-center text-center">
+        <div className="flex h-[calc(100%-56px)] items-center justify-center text-center">
           <p className="hb-card-section text-sm">No feedback yet</p>
         </div>
       ) : (
-        <ul className="space-y-1.5 pb-5">
+        <ul className="hb-list-scroll space-y-1.5 pb-1">
           {top.map((f, i) => (
             <li key={f.id} className="hb-snippet relative z-[3]" style={{ animationDelay: (120 + i * 28) + "ms" }}>
               <Avatar
@@ -47,16 +49,16 @@ export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
                 size="md"
               />
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5">
-                  <div className="hb-card-section line-clamp-1 text-sm">
+                <div className="flex min-w-0 items-center gap-1.5">
+                  <div className="hb-card-section hb-truncate text-sm">
                     {f.profiles?.full_name ?? "Student"}
                   </div>
-                  <span className="hb-card-meta rounded bg-zinc-200 px-1 py-0.5 text-[10px] font-bold">
+                  <span className="hb-card-meta hb-truncate max-w-[88px] shrink-0 rounded bg-zinc-200 px-1 py-0.5 text-[10px] font-bold">
                     {f.category}
                   </span>
                 </div>
-                <div className="hb-card-body line-clamp-1 text-xs">{f.message}</div>
-                <div className="hb-card-meta text-[10px]">
+                <div className="hb-card-body hb-truncate text-xs">{f.message}</div>
+                <div className="hb-card-meta hb-truncate text-[10px]">
                   {formatDistanceToNow(new Date(f.created_at), { addSuffix: true })}
                 </div>
               </div>
