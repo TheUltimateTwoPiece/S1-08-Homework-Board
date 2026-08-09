@@ -166,7 +166,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
               Try adjusting your search or filter criteria
             </p>
             {profile.role === "admin" && (
-              <Link href="/admin" className="hb-btn-primary mt-6 gap-2 px-4 py-2 text-sm font-medium">
+              <Link href="/admin" className="button mt-6 gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
                   <path d="M5 12h14" />
                   <path d="M12 5v14" />

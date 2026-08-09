@@ -371,7 +371,7 @@ export function SettingsForm({ profile }: SettingsFormProps) {
           pendingContent="Saving..."
           disabled={blocked}
           aria-disabled={blocked}
-          className="hb-btn-primary gap-2 px-4 py-2 text-sm font-medium"
+          className="button gap-2"
         >
           Save changes
         </PendingButton>

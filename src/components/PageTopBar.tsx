@@ -33,7 +33,7 @@ export function PageTopBar({
         {showAdminCta && profile.role === "admin" && (
           <Link
             href="/admin"
-            className="hb-btn-primary gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium"
+            className="button gap-1.5"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

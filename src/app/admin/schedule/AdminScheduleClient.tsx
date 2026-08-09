@@ -129,7 +129,7 @@ export function AdminScheduleClient({
                       className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                         done
                           ? "bg-slate-200 text-slate-700 hover:bg-slate-300"
-                          : "hb-btn-primary px-3 py-1.5 text-xs font-medium"
+                          : "button px-3 py-1.5 text-xs font-medium"
                       }`}
                     >
                       {done ? "Undo" : "Mark done"}
@@ -212,7 +212,7 @@ export function AdminScheduleClient({
           <button
             type="submit"
             disabled={schedulePending || !selectedAdmin || !selectedDay}
-            className={`hb-btn-primary gap-2 px-4 py-2 text-sm font-medium ${schedulePending ? "hb-btn--pending" : ""}`}
+            className={`button gap-2 ${schedulePending ? "hb-btn--pending" : ""}`}
           >
             {schedulePending && <span className="hb-spinner" aria-hidden="true" />}
             Save assignment

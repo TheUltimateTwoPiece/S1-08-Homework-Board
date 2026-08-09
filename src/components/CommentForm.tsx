@@ -68,7 +68,7 @@ export function CommentForm({
         <button
           type="submit"
           disabled={pending}
-          className={`hb-btn-primary gap-2 rounded-lg px-4 py-2 text-sm font-medium ${
+          className={`button gap-2 ${
             pending ? "hb-btn--pending" : ""
           }`}
         >

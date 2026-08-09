@@ -117,7 +117,7 @@ export function EditPostForm({ post }: EditPostFormProps) {
         <button
           type="submit"
           disabled={pending}
-          className={`hb-btn-primary w-full gap-2 py-2.5 text-sm font-medium ${
+          className={`button w-full gap-2 ${
             pending ? "hb-btn--pending" : ""
           }`}
         >

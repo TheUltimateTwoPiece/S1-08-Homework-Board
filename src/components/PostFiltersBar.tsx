@@ -139,9 +139,9 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
         <button
           type="submit"
           disabled={isPending}
-          className={`hb-btn-primary h-[38px] px-4 text-sm font-medium ${
+          className={`button h-[38px] gap-2 sm:mb-0 ${
             isPending ? "hb-btn--pending" : ""
-          } gap-2 sm:mb-0`}
+          }`}
         >
           {isPending && <span className="hb-spinner" aria-hidden="true" />}
           {isPending ? "Searching..." : "Search"}
