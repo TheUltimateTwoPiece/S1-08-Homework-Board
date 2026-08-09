@@ -562,7 +562,7 @@ export function PipWidget({
             ) : (
               <button onClick={() => handleSend()}
                 disabled={loading || !input.trim() || exceeded}
-                className="hb-btn-primary shrink-0 rounded-lg px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium disabled:opacity-40">
+                className="button shrink-0 gap-2">
                 Send
               </button>
             )}
