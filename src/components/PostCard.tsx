@@ -43,6 +43,11 @@ export function PostCard({ post, completed }: PostCardProps) {
                   {subject}
                 </span>
               ))}
+              {(post.checklist?.length ?? 0) > 0 && (
+                <span className="hb-card-meta inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold dark:bg-slate-800">
+                  ✓ {post.checklist.length} step{post.checklist.length === 1 ? "" : "s"}
+                </span>
+              )}
               {dueBadge && (
                 <span className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${dueBadge.className}`}>
                   {dueBadge.label}

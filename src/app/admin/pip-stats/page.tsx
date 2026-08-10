@@ -256,28 +256,30 @@ export default async function AdminPipStatsPage() {
       {/* 7-day usage chart */}
       <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <h2 className="hb-card-section text-base">Prompts — last 7 days</h2>
-        <div className="mt-4 flex items-end gap-2 sm:gap-3" style={{ height: "140px" }}>
+        <div className="mt-4 grid grid-cols-7 items-end gap-2 sm:gap-3" style={{ height: "180px" }}>
           {dayLabels.map((label, i) => {
             const hPct = (dayCounts[i] / maxDayCount) * 100;
             const isToday = i === 6;
             return (
-              <div key={label} className="flex flex-1 flex-col items-center justify-end gap-1.5">
+              <div key={`${label}-${i}`} className="flex h-full min-w-0 flex-col items-center justify-end gap-1.5">
                 <span className={`text-xs font-semibold tabular-nums ${
                   dayCounts[i] > 0 ? "text-slate-700 dark:text-slate-300" : "text-slate-400 dark:text-slate-600"
                 }`}>
                   {dayCounts[i]}
                 </span>
-                <div
-                  className={`w-full max-w-[40px] rounded-t-md transition-all duration-300 ${
-                    isToday
-                      ? "bg-gradient-to-t from-blue-500 to-blue-400"
-                      : dayCounts[i] > 0
-                        ? "bg-gradient-to-t from-slate-300 to-slate-200 dark:from-slate-700 dark:to-slate-600"
-                        : "bg-slate-100 dark:bg-slate-800"
-                  }`}
-                  style={{ height: `${Math.max(hPct, 4)}%` }}
-                  title={`${label}: ${dayCounts[i]} prompts`}
-                />
+                <div className="flex w-full max-w-[40px] flex-1 items-end">
+                  <div
+                    className={`w-full rounded-t-md transition-[height] duration-300 ${
+                      isToday
+                        ? "bg-gradient-to-t from-blue-500 to-blue-400"
+                        : dayCounts[i] > 0
+                          ? "bg-gradient-to-t from-slate-300 to-slate-200 dark:from-slate-700 dark:to-slate-600"
+                          : "bg-slate-100 dark:bg-slate-800"
+                    }`}
+                    style={{ height: dayCounts[i] > 0 ? `${Math.max(hPct, 4)}%` : "0%" }}
+                    title={`${label}: ${dayCounts[i]} prompts`}
+                  />
+                </div>
                 <span className={`text-[10px] font-semibold uppercase tracking-wider ${
                   isToday ? "text-blue-600 dark:text-blue-400" : "text-slate-400 dark:text-slate-500"
                 }`}>

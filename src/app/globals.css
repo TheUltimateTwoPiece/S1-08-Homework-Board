@@ -1,6 +1,17 @@
 @import "tailwindcss";
 @import "../theme/school-sci-tech/theme.css";
 
+/* Pip uses a dark chat surface. Keep its generated markdown readable in dark
+   mode without changing the established light-mode palette. */
+.dark .pip-markdown,
+.dark .pip-markdown :is(p, li, span, em, blockquote, code, pre, strong, h1, h2, h3, h4, h5, h6) {
+  color: #f8fafc !important;
+}
+
+.dark .pip-markdown a {
+  color: #93c5fd !important;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
