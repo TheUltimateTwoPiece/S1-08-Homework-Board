@@ -10,6 +10,7 @@ import { CommentList } from "@/components/CommentList";
 import { EditPostForm } from "@/components/EditPostForm";
 import { PendingButton } from "@/components/PendingButton";
 import { PostCompleteCheckbox } from "@/components/PostCompleteCheckbox";
+import { PostChecklist } from "@/components/PostChecklist";
 import { deletePost, setPostCommentsLocked, setPostPinned } from "@/actions/posts";
 import { normalizePost, type Attachment, type Comment, type Post, type PostEdit, type Profile } from "@/lib/types";
 
@@ -24,7 +25,12 @@ export default async function PostPage({ params }: PageProps) {
   const profile = await requireProfile();
   const supabase = await createClient();
 
-  const [{ data: post }, { data: comments }, { data: completion }] = await Promise.all([
+  const [
+    { data: post },
+    { data: comments },
+    { data: completion },
+    { data: checklistProgress },
+  ] = await Promise.all([
     supabase
       .from("posts")
       .select("*, profiles(full_name, avatar_url)")
@@ -41,12 +47,20 @@ export default async function PostPage({ params }: PageProps) {
       .eq("post_id", id)
       .eq("user_id", profile.id)
       .maybeSingle(),
+    supabase
+      .from("post_checklist_completions")
+      .select("item_id")
+      .eq("post_id", id)
+      .eq("user_id", profile.id),
   ]);
 
   if (!post) notFound();
 
   const typedPost = normalizePost(post as Post);
   const isCompleted = Boolean(completion);
+  const checkedChecklistIds = (checklistProgress ?? [])
+    .map((row) => row.item_id as string)
+    .filter((itemId) => typedPost.checklist.some((item) => item.id === itemId));
   const isAdmin = profile.role === "admin";
   const commentsLocked = typedPost.comments_locked;
   const canComment = isAdmin || !commentsLocked;
@@ -317,6 +331,14 @@ export default async function PostPage({ params }: PageProps) {
             {typedPost.content}
           </div>
 
+          {(typedPost.checklist?.length ?? 0) > 0 && (
+            <PostChecklist
+              postId={typedPost.id}
+              items={typedPost.checklist ?? []}
+              initialCheckedIds={checkedChecklistIds}
+            />
+          )}
+
           <AttachmentList attachments={signedPostAttachments} />
         </article>
 
@@ -398,6 +420,7 @@ export default async function PostPage({ params }: PageProps) {
                 id: typedPost.id,
                 title: typedPost.title,
                 content: typedPost.content,
+                checklist: typedPost.checklist ?? [],
                 subject: typedPost.subject,
                 due_at: typedPost.due_at,
                 pinned: typedPost.pinned,

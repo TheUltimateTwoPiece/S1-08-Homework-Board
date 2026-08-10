@@ -211,7 +211,7 @@ export function PipBubble({ remaining: initialRemaining }: { remaining: number }
             {messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                 {msg.role === "pip" ? (
-                  <div className="group relative max-w-[88%] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs">
+                  <div className="group relative max-w-[88%] rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-800 dark:bg-slate-800 px-3 py-2 text-xs">
                     <MarkdownRenderer text={msg.text} />
                     <div className="absolute -bottom-1 right-1 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity translate-y-full pt-1 z-10">
                       <button onClick={() => handleCopy(msg.text, i)}
@@ -243,7 +243,7 @@ export function PipBubble({ remaining: initialRemaining }: { remaining: number }
             {/* Streaming */}
             {isStreaming && (
               <div className="flex justify-start items-end gap-1">
-                <div className="max-w-[88%] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs">
+                <div className="max-w-[88%] rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-800 dark:bg-slate-800 px-3 py-2 text-xs">
                   {streamingText ? (
                     <MarkdownRenderer text={streamingText} />
                   ) : (
