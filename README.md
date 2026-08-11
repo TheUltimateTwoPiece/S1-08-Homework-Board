@@ -306,7 +306,7 @@ Don't use `disable trigger all` — that turns off every trigger on the table, i
 
 - Ensure your `GOOGLE_GEMINI_API_KEY` is set in `.env.local`
 - Verify the API key has the necessary permissions in Google Cloud Console
-- Check that you have available quota in your Gemini API usage
+- Check that you have available quota in your Gemini API usage (test)
 
 ## Tech stack
 
