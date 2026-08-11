@@ -85,7 +85,7 @@ export function DutyWidget({ todaySchedules, completedToday, todayStr, currentAd
                     <PendingButton
                       type="submit"
                       pendingContent="..."
-                      className={"rounded-md px-2 py-1 text-[11px] font-bold transition " + (done ? "bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/40 dark:text-amber-200 dark:hover:bg-amber-900/60" : "bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-200 dark:hover:bg-emerald-900/60")}
+                      className={"rounded-md px-2 py-1 text-[11px] font-bold transition " + (done ? "bg-amber-100 text-amber-800 hover:bg-amber-200" : "bg-emerald-100 text-emerald-800 hover:bg-emerald-200")}
                     >
                       {done ? "Undo" : "Mark done"}
                     </PendingButton>

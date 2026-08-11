@@ -51,7 +51,7 @@ export default async function AdminPipStatsPage() {
 
     supabase
       .from("pip_prompts")
-      .select("user_id, count"),
+      .select("user_id, count, last_active_at"),
 
     supabase
       .from("pip_prompts")
@@ -95,6 +95,17 @@ export default async function AdminPipStatsPage() {
   for (const r of promptsAll ?? [])
     totalMap.set(r.user_id, (totalMap.get(r.user_id) ?? 0) + r.count);
 
+  // Last active: the newest last_active_at stamped across a user's prompt rows.
+  // This is the source of truth — it survives chat deletion and failed message
+  // saves, which previously made the chats-only updated_at signal stale.
+  const lastActiveMap = new Map<string, string>();
+  for (const r of promptsAll ?? []) {
+    const t = r.last_active_at as string | null;
+    if (!t) continue;
+    const prev = lastActiveMap.get(r.user_id);
+    if (!prev || t > prev) lastActiveMap.set(r.user_id, t);
+  }
+
   const chatsMap = new Map<string, { count: number; lastActive: string | null }>();
   for (const r of chats ?? []) {
     const entry = chatsMap.get(r.user_id);
@@ -127,6 +138,8 @@ export default async function AdminPipStatsPage() {
   // Build per-user stats
   const userStats: PipUserStats[] = (students ?? []).map((s) => {
     const completed = completionsMap.get(s.id) ?? 0;
+    const promptLast = lastActiveMap.get(s.id) ?? null;
+    const chatLast = chatsMap.get(s.id)?.lastActive ?? null;
     return {
       userId: s.id,
       fullName: s.full_name ?? "Unknown",
@@ -137,7 +150,12 @@ export default async function AdminPipStatsPage() {
       promptsTotal: totalMap.get(s.id) ?? 0,
       chatsCount: chatsMap.get(s.id)?.count ?? 0,
       messagesCount: messagesMap.get(s.id) ?? 0,
-      lastActive: chatsMap.get(s.id)?.lastActive ?? null,
+      // Newest of the two signals: prompt timestamps survive chat deletion,
+      // while chat updated_at still captures non-prompt activity like renames.
+      lastActive:
+        promptLast && (!chatLast || promptLast > chatLast)
+          ? promptLast
+          : chatLast,
       completionRate: totalPosts > 0 ? Math.round((completed / totalPosts) * 100) : 0,
     };
   });
