@@ -1,6 +1,17 @@
 @import "tailwindcss";
 @import "../theme/school-sci-tech/theme.css";
 
+/* Pip's response bubbles are dark in both themes, so force every markdown
+   text node to white. This scoped rule beats prose plugin defaults. */
+.pip-markdown,
+.pip-markdown :is(p, li, span, em, blockquote, code, pre, strong, h1, h2, h3, h4, h5, h6) {
+  color: #ffffff !important;
+}
+
+.pip-markdown a {
+  color: #93c5fd !important;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
