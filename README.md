@@ -10,6 +10,7 @@ A daily homework posting site for admins and students. Built with Next.js, Supab
 - **Checklist** — students tick off homework when done; progress is saved per student
 - **Reminders** — admins send homework reminders to all students, individuals, or only those who haven't completed specific tasks. Optional email via Brevo (300/day on free tier) — admins see per-recipient delivery status
 - **AI-powered post creation** — use Google Gemini AI to format and enhance homework posts
+- **Bug reports** — every authenticated user, including admins, can submit a report with one or more required screenshots; admins review them in `/admin/bug-reports`
 - **Anti-swear filter** — every free-form text field (post title + content, comment, feedback, profile display name, admin reminder body) is checked for profanity before being saved. If a blocked word is detected, the user is redirected away from the app. See the [Anti-swear filter](#anti-swear-filter) section below
 
 ## Anti-swear filter
@@ -86,7 +87,8 @@ npm install
 
 1. Create a new project at [supabase.com](https://supabase.com)
 2. Run the SQL migrations in the `supabase/` directory in the Supabase SQL Editor (`schema.sql` first, then any migrations in order — at minimum `migration-email-status.sql` and `migration-profile-email-prefs.sql` if you use Brevo, plus `migration-notifications-admin-select.sql` for any existing deployment that predates the admin `SELECT` policy on notifications)
-3. Copy your project URL and anon key from Supabase Settings → API
+3. Run `supabase/migration-20-bug-reports.sql` after the earlier numbered migrations. It creates the bug-report inbox and requires at least one screenshot per report. Screenshots use the existing private `attachments` storage bucket.
+4. Copy your project URL and anon key from Supabase Settings → API
 
 ### 4. Configure environment variables
 
@@ -106,6 +108,9 @@ BREVO_FROM_EMAIL=
 BREVO_FROM_NAME=
 # Required for the "View assignment" CTA links inside emails to resolve.
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
+# Optional — date-only homework values use this timezone instead of Vercel UTC.
+# The default is America/New_York; set it to your school's IANA timezone.
+APP_TIME_ZONE=America/New_York
 ```
 
 ### 5. Create accounts

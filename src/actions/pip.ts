@@ -1,7 +1,6 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { format } from "date-fns";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { createClient } from "@/lib/supabase/server";
 import { tripProfanity } from "@/lib/profanity";
@@ -16,6 +15,7 @@ import {
   buildSystemPrompt,
   parseConfirmActions,
 } from "@/lib/pip-context";
+import { getTodayString } from "@/lib/time";
 import {
   DAILY_LIMIT,
   type PipResult,
@@ -40,7 +40,7 @@ export async function askPip(
   const profanity = tripProfanity({ userId: user.id }, trimmed);
   if (profanity.triggered) redirect(profanity.redirectUrl);
 
-  const todayStr = format(new Date(), "yyyy-MM-dd");
+  const todayStr = getTodayString();
 
   const [rpcResult, contextPromise] = await Promise.allSettled([
     supabase.rpc("pip_try_increment", { p_date: todayStr, p_limit: DAILY_LIMIT }),

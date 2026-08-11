@@ -1,5 +1,4 @@
 import { NextRequest } from "next/server";
-import { format } from "date-fns";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { createClient } from "@/lib/supabase/server";
 import { tripProfanity } from "@/lib/profanity";
@@ -15,6 +14,7 @@ import {
   parseConfirmActions,
 } from "@/lib/pip-context";
 import { DAILY_LIMIT } from "@/lib/pip-types";
+import { getTodayString } from "@/lib/time";
 
 function sseEvent(data: Record<string, unknown>): string {
   return `data: ${JSON.stringify(data)}\n\n`;
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const todayStr = format(new Date(), "yyyy-MM-dd");
+  const todayStr = getTodayString();
 
   const [rpcResult, contextPromise] = await Promise.allSettled([
     supabase.rpc("pip_try_increment", { p_date: todayStr, p_limit: DAILY_LIMIT }),

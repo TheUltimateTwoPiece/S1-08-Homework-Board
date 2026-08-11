@@ -3,6 +3,7 @@ import { format, isPast, parseISO } from "date-fns";
 import { PostCompleteButton } from "@/components/PostCompleteButton";
 import { togglePostComplete } from "@/actions/completions";
 import type { Post } from "@/lib/types";
+import { getTodayString } from "@/lib/time";
 
 type PostsWidgetProps = {
   posts: Post[];
@@ -13,10 +14,10 @@ type PostsWidgetProps = {
 function formatDueLabel(due: string | null) {
   if (!due) return null;
   const date = parseISO(due);
-  if (isPast(date) && due < format(new Date(), "yyyy-MM-dd")) {
+  const today = getTodayString();
+  if (isPast(date) && due < today) {
     return { text: "Overdue", className: "text-rose-700" };
   }
-  const today = format(new Date(), "yyyy-MM-dd");
   if (due === today) return { text: "Due today", className: "text-amber-700" };
   return { text: "Due " + format(date, "MMM d"), className: "hb-card-meta" };
 }

@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
 import { Avatar } from "@/components/Avatar";
 import type { Feedback } from "@/lib/types";
+import { formatAppDateTime } from "@/lib/time";
 
 export const revalidate = 30;
 
@@ -57,7 +58,7 @@ export default async function AdminFeedbackPage() {
                 )}
               </div>
               <time className="hb-card-meta shrink-0 text-xs" dateTime={item.created_at}>
-                {new Date(item.created_at).toLocaleString()}
+                {formatAppDateTime(item.created_at)}
               </time>
             </div>
             <p className="hb-card-body whitespace-pre-line text-sm leading-relaxed">

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { format, subDays } from "date-fns";
+import { parseISO } from "date-fns";
+import { formatAppDate, formatAppDateTime, getDateAfterDaysString, getTodayString } from "@/lib/time";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
 import { PageTopBar } from "@/components/PageTopBar";
@@ -27,9 +28,9 @@ export default async function AdminPipStatsPage() {
 
   const supabase = await createClient();
   const now = new Date();
-  const todayStr = format(now, "yyyy-MM-dd");
+  const todayStr = getTodayString(now);
   // Seven calendar dates: today plus the six preceding dates.
-  const weekAgoStr = format(subDays(now, 6), "yyyy-MM-dd");
+  const weekAgoStr = getDateAfterDaysString(-6, now);
 
   // Fetch every Pip user (students and admins) so the overview cards and chart
   // measure the same population. The previous student-only filter excluded
@@ -191,15 +192,15 @@ export default async function AdminPipStatsPage() {
   const dayLabels: string[] = [];
   const dayCounts: number[] = [];
   for (let i = 6; i >= 0; i--) {
-    const d = subDays(now, i);
-    dayLabels.push(format(d, "EEE"));
+    const d = parseISO(getDateAfterDaysString(-i, now));
+    dayLabels.push(formatAppDate(d, { weekday: "short" }));
     dayCounts.push(0);
   }
 
   // Fill chart dayCounts from the shared daySums map
   for (let i = 6; i >= 0; i--) {
-    const d = subDays(now, i);
-    dayCounts[6 - i] = daySums.get(format(d, "yyyy-MM-dd")) ?? 0;
+    const dateKey = getDateAfterDaysString(-i, now);
+    dayCounts[6 - i] = daySums.get(dateKey) ?? 0;
   }
 
   const maxDayCount = Math.max(1, ...dayCounts);
@@ -401,7 +402,7 @@ export default async function AdminPipStatsPage() {
                   </td>
                   <td className="px-5 py-3 text-right text-xs text-slate-400">
                     {u.lastActive
-                      ? format(new Date(u.lastActive), "MMM d, h:mm a")
+                      ? formatAppDateTime(u.lastActive)
                       : "—"}
                   </td>
                 </tr>

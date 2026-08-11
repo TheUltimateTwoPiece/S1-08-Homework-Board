@@ -1,4 +1,5 @@
-import { differenceInCalendarDays, format, parseISO, startOfDay } from "date-fns";
+import { differenceInCalendarDays, format, parseISO } from "date-fns";
+import { getTodayString } from "@/lib/time";
 
 export type DueBadge = {
   label: string;
@@ -8,8 +9,8 @@ export type DueBadge = {
 export function getDueBadge(dueAt: string | null): DueBadge | null {
   if (!dueAt) return null;
 
-  const dueDate = startOfDay(parseISO(dueAt));
-  const today = startOfDay(new Date());
+  const dueDate = parseISO(dueAt);
+  const today = parseISO(getTodayString());
   const diff = differenceInCalendarDays(dueDate, today);
 
   if (diff < 0) {

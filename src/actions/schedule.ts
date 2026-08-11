@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { format } from "date-fns";
+import { getAppDayOfWeek, getTodayString } from "@/lib/time";
 import { createClient } from "@/lib/supabase/server";
 
 async function requireAdmin() {
@@ -100,8 +100,8 @@ export async function markDutyCompleted(formData: FormData) {
 export async function sendDutyReminders() {
   const { supabase, user } = await requireAdmin();
 
-  const today = format(new Date(), "yyyy-MM-dd");
-  const dayOfWeek = new Date().getDay();
+  const today = getTodayString();
+  const dayOfWeek = getAppDayOfWeek();
 
   // Find all admins scheduled for today
   const { data: schedules } = await supabase

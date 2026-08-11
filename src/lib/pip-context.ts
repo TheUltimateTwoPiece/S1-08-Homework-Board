@@ -1,7 +1,7 @@
-import { format } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
 import { DEFAULT_SUBJECT } from "@/lib/subjects";
 import { normalizePost } from "@/lib/types";
+import { getTodayString } from "@/lib/time";
 
 type PostRow = {
   id: string;
@@ -85,7 +85,7 @@ export async function buildUserContext(
   supabase: Awaited<ReturnType<typeof createClient>>,
   userId: string,
 ): Promise<string> {
-  const todayStr = format(new Date(), "yyyy-MM-dd");
+  const todayStr = getTodayString();
 
   const [{ data: posts }, { data: completions }, { data: notifications }, { data: profile }] =
     await Promise.all([

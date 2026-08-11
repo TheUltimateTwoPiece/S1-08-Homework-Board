@@ -120,6 +120,17 @@ const NAV_ITEMS: RailItem[] = [
     ),
   },
   {
+    href: "/bug-report",
+    label: "Report a bug",
+    icon: (
+      <Icon>
+        <path d="M10.3 2.8 1.8 17.5A2 2 0 0 0 3.5 20.5h17a2 2 0 0 0 1.7-3L13.7 2.8a2 2 0 0 0-3.4 0Z" />
+        <path d="M12 9v4" />
+        <path d="M12 17h.01" />
+      </Icon>
+    ),
+  },
+  {
     href: "/settings",
     label: "Settings",
     icon: (
@@ -175,6 +186,19 @@ const ADMIN_NAV_ITEMS: RailItem[] = [
         <rect x="7" y="12" width="2.5" height="4" rx="0.5" />
         <rect x="11.5" y="9" width="2.5" height="7" rx="0.5" />
         <rect x="16" y="5" width="2.5" height="11" rx="0.5" />
+      </Icon>
+    ),
+    adminOnly: true,
+  },
+  {
+    href: "/admin/bug-reports",
+    label: "Bug reports",
+    icon: (
+      <Icon>
+        <path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" />
+        <path d="M8 8h8" />
+        <path d="M8 12h8" />
+        <path d="M8 16h5" />
       </Icon>
     ),
     adminOnly: true,

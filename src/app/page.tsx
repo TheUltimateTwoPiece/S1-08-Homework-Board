@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { getAppDayOfWeek, getTodayString, formatAppDate } from "@/lib/time";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
 import { PageTopBar } from "@/components/PageTopBar";
@@ -20,8 +20,8 @@ type ScheduleRow = AdminSchedule & { profiles: { full_name: string } | null };
 export default async function DashboardPage() {
   const profile = await requireProfile();
   const supabase = await createClient();
-  const todayStr = format(new Date(), "yyyy-MM-dd");
-  const dayOfWeek = new Date().getDay();
+  const todayStr = getTodayString();
+  const dayOfWeek = getAppDayOfWeek();
   const isAdmin = profile.role === "admin";
 
   const [
@@ -136,7 +136,7 @@ export default async function DashboardPage() {
       <PageTopBar
         profile={profile}
         greetingName={firstName}
-        subtitle={`It's ${format(new Date(), "EEEE, MMMM d")}. Here's your homework dashboard.`}
+        subtitle={`It's ${formatAppDate(new Date())}. Here's your homework dashboard.`}
         showAdminCta
       />
 

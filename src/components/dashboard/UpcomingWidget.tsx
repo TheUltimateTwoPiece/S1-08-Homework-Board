@@ -1,12 +1,14 @@
 import Link from "next/link";
-import { format, formatDistanceToNow, isToday, parseISO } from "date-fns";
+import { format, formatDistanceToNow, parseISO } from "date-fns";
+import { getTodayString } from "@/lib/time";
 import type { Post } from "@/lib/types";
 
 type UpcomingWidgetProps = { posts: Post[]; };
 
 export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
+  const todayStr = getTodayString();
   const upcoming = posts
-    .filter((p) => p.due_at && p.due_at >= format(new Date(), "yyyy-MM-dd"))
+    .filter((p) => p.due_at && p.due_at >= todayStr)
     .slice(0, 3);
 
   return (
@@ -40,7 +42,7 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
         <ul className="hb-list-scroll -mx-1 space-y-1 pb-1">
           {upcoming.map((post, i) => {
             const due = parseISO(post.due_at as string);
-            const today = isToday(due);
+            const today = post.due_at === todayStr;
             return (
               <li key={post.id} className="hb-snippet relative z-[3]" style={{ animationDelay: (200 + i * 28) + "ms" }}>
                 <div className={"flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-lg text-[10px] font-bold " + (today ? "bg-amber-200 text-amber-900" : "hb-card-meta bg-zinc-100")}>

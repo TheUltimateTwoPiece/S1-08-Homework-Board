@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { addDays, format } from "date-fns";
+import { getDateAfterDaysString, getTodayString } from "@/lib/time";
 import { createClient } from "@/lib/supabase/server";
 import { PostCard } from "@/components/PostCard";
 import { PostFiltersBar } from "@/components/PostFiltersBar";
@@ -29,8 +29,8 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
   const status = (params.status ?? "all").trim();
   const due = (params.due ?? "all").trim();
 
-  const todayStr = format(new Date(), "yyyy-MM-dd");
-  const tomorrowStr = format(addDays(new Date(), 1), "yyyy-MM-dd");
+  const todayStr = getTodayString();
+  const tomorrowStr = getDateAfterDaysString(1);
 
   let postsQuery = supabase
     .from("posts")
