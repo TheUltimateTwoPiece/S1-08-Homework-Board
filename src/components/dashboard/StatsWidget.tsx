@@ -79,25 +79,25 @@ export function StatsWidget({
             </defs>
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-2xl font-bold tabular-nums text-slate-800 dark:text-slate-200">
+            <span className="text-2xl font-bold tabular-nums text-slate-800">
               {safePct}
-              <span className="text-xs font-bold text-slate-700">%</span>
+              <span className="text-xs font-bold text-slate-600">%</span>
             </span>
           </div>
         </div>
         <div className="min-w-0 space-y-1.5 text-xs">
-          <div className="flex items-center justify-between rounded-md bg-emerald-50 px-2 py-1.5 dark:bg-emerald-900/30">
-            <span className="hb-truncate font-bold text-emerald-800 dark:text-emerald-200">Done</span>
-            <span className="ml-2 shrink-0 text-base font-bold tabular-nums leading-none text-emerald-800 dark:text-emerald-100">{completedCount}</span>
+          <div className="flex items-center justify-between rounded-md bg-emerald-50 px-2 py-1.5">
+            <span className="hb-truncate font-bold text-emerald-800">Done</span>
+            <span className="ml-2 shrink-0 text-base font-bold tabular-nums leading-none text-emerald-800">{completedCount}</span>
           </div>
-          <div className="flex items-center justify-between rounded-md bg-amber-50 px-2 py-1.5 dark:bg-amber-900/30">
-            <span className="hb-truncate font-bold text-amber-800 dark:text-amber-200">Upcoming</span>
-            <span className="ml-2 shrink-0 text-base font-bold tabular-nums leading-none text-amber-800 dark:text-amber-100">{upcomingCount}</span>
+          <div className="flex items-center justify-between rounded-md bg-amber-50 px-2 py-1.5">
+            <span className="hb-truncate font-bold text-amber-800">Upcoming</span>
+            <span className="ml-2 shrink-0 text-base font-bold tabular-nums leading-none text-amber-800">{upcomingCount}</span>
           </div>
           {overdueCount > 0 && (
-            <div className="flex items-center justify-between rounded-md bg-rose-50 px-2 py-1.5 dark:bg-rose-900/30">
-              <span className="hb-truncate font-bold text-rose-800 dark:text-rose-200">Overdue</span>
-              <span className="ml-2 shrink-0 text-base font-bold tabular-nums leading-none text-rose-800 dark:text-rose-100">{overdueCount}</span>
+            <div className="flex items-center justify-between rounded-md bg-rose-50 px-2 py-1.5">
+              <span className="hb-truncate font-bold text-rose-800">Overdue</span>
+              <span className="ml-2 shrink-0 text-base font-bold tabular-nums leading-none text-rose-800">{overdueCount}</span>
             </div>
           )}
         </div>
@@ -108,7 +108,7 @@ export function StatsWidget({
           <span className="hb-card-meta min-w-0 truncate text-[11px] font-semibold">
             {completedCount} of {totalPosts} completed
           </span>
-          <span className="shrink-0 text-[11px] font-bold tabular-nums text-emerald-700 dark:text-emerald-300">
+          <span className="shrink-0 text-[11px] font-bold tabular-nums text-emerald-700">
             {safePct}%
           </span>
         </div>

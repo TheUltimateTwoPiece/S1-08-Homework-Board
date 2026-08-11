@@ -767,7 +767,10 @@
 
   .hb-badge-subject {
     background: rgba(100, 116, 139, 0.1);
-    color: var(--hb-text-muted);
+    /* Fixed dark slate — these badges sit on always-light card surfaces, so
+       the theme-flipped --hb-text-muted (slate-300 in dark mode) was
+       unreadable grey-on-white. */
+    color: #334155;
     font-weight: 500;
   }
 
@@ -1497,7 +1500,10 @@
   }
 
   .hb-posts-widget-row:hover {
-    background: var(--hb-surface-hover);
+    /* Fixed light hover — rows live on always-white cards, so the
+       theme-flipped --hb-surface-hover (slate-700 in dark mode) rendered as
+       a dark block on a white card. */
+    background: rgba(15, 23, 42, 0.05);
     transform: translateX(2px);
   }
 
@@ -1548,7 +1554,8 @@
 
   .hb-mini-cal-head {
     text-align: center;
-    color: var(--hb-text-subtle);
+    /* Fixed slate — mini-cal renders on an always-white card. */
+    color: #64748b;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -1565,7 +1572,8 @@
     gap: 1px;
     border-radius: 8px;
     font-weight: 500;
-    color: var(--hb-text-muted);
+    /* Fixed slate — mini-cal renders on an always-white card. */
+    color: #475569;
     position: relative;
     padding: 1px 0;
     min-height: 28px;
@@ -1717,8 +1725,9 @@
   }
 
   .hb-snippet:hover {
-    background: var(--hb-surface-hover);
-    border-color: var(--hb-border);
+    /* Fixed light hover — snippets live on always-white cards (see above). */
+    background: rgba(15, 23, 42, 0.05);
+    border-color: rgba(15, 23, 42, 0.08);
     transform: translateX(2px);
   }
 
@@ -1732,7 +1741,10 @@
   .hb-bar-track {
     height: 6px;
     border-radius: 9999px;
-    background: var(--hb-surface-hover);
+    /* Fixed light grey — progress tracks sit on always-white cards, so the
+       theme-flipped --hb-surface-hover (slate-700 in dark mode) rendered as
+       a dark bar on a white card. */
+    background: rgba(15, 23, 42, 0.08);
     overflow: hidden;
     position: relative;
   }

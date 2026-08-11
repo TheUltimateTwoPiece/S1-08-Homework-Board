@@ -265,7 +265,7 @@ export default async function YourProgressPage() {
           </div>
           <Link
             href="/posts"
-            className="hb-card-section rounded-md px-3 py-1.5 text-xs transition hover:bg-slate-100 dark:hover:bg-slate-700"
+            className="hb-card-section rounded-md px-3 py-1.5 text-xs transition hover:bg-slate-100"
           >
             View all →
           </Link>
@@ -287,7 +287,7 @@ export default async function YourProgressPage() {
                 <li key={post.id}>
                   <Link
                     href={`/posts/${post.id}`}
-                    className="hb-snippet flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/40"
+                    className="hb-snippet flex items-center justify-between gap-3 hover:bg-slate-50"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="hb-card-section line-clamp-1 text-sm">
@@ -298,9 +298,9 @@ export default async function YourProgressPage() {
                     <div
                       className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-bold ${
                         overdue
-                          ? "bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-200"
+                          ? "bg-rose-100 text-rose-800"
                           : daysUntil === 0
-                          ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200"
+                          ? "bg-amber-100 text-amber-800"
                           : "hb-card-meta bg-slate-100"
                       }`}
                     >
@@ -349,7 +349,7 @@ export default async function YourProgressPage() {
               <li key={post.id}>
                 <Link
                   href={`/posts/${post.id}`}
-                  className="hb-snippet flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/40"
+                  className="hb-snippet flex items-center justify-between gap-3 hover:bg-slate-50"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="hb-card-section line-clamp-1 text-sm">

@@ -24,7 +24,7 @@ export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
           </div>
           <h2 className="hb-card-section truncate text-sm tracking-tight">Feedback inbox</h2>
           {feedback.length > 0 && (
-            <span className="shrink-0 rounded-full bg-amber-200 px-1.5 py-0.5 text-[10px] font-bold text-amber-900 dark:bg-amber-800/60 dark:text-amber-100">
+            <span className="shrink-0 rounded-full bg-amber-200 px-1.5 py-0.5 text-[10px] font-bold text-amber-900">
               {feedback.length}
             </span>
           )}
