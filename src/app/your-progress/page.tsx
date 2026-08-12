@@ -261,7 +261,7 @@ export default async function YourProgressPage() {
           </div>
           <Link
             href="/posts"
-            className="hb-card-section rounded-md px-3 py-1.5 text-xs transition hover:bg-slate-100 dark:hover:bg-slate-700"
+            className="hb-card-section rounded-md px-3 py-1.5 text-xs transition hover:bg-slate-100"
           >
             View all →
           </Link>
@@ -281,7 +281,7 @@ export default async function YourProgressPage() {
                 <li key={post.id}>
                   <Link
                     href={`/posts/${post.id}`}
-                    className="hb-snippet flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/40"
+                    className="hb-snippet flex items-center justify-between gap-3 hover:bg-slate-50"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="hb-card-section line-clamp-1 text-sm">
@@ -345,7 +345,7 @@ export default async function YourProgressPage() {
               <li key={post.id}>
                 <Link
                   href={`/posts/${post.id}`}
-                  className="hb-snippet flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/40"
+                  className="hb-snippet flex items-center justify-between gap-3 hover:bg-slate-50"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="hb-card-section line-clamp-1 text-sm">

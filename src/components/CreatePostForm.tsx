@@ -5,6 +5,7 @@ import { createPost } from "@/actions/posts";
 import { enhanceContentWithAI } from "@/actions/ai";
 import { DEFAULT_SUBJECT } from "@/lib/subjects";
 import { SubjectPicker } from "@/components/SubjectPicker";
+import { ChecklistEditor } from "@/components/ChecklistEditor";
 
 export function CreatePostForm() {
   const [content, setContent] = useState("");
@@ -73,6 +74,8 @@ export function CreatePostForm() {
           </span>
           <SubjectPicker defaultSelected={[DEFAULT_SUBJECT]} />
         </div>
+
+        <ChecklistEditor />
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>

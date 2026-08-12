@@ -23,7 +23,7 @@ export function NotificationsWidget({ notifications }: NotificationsWidgetProps)
           </div>
           <h2 className="hb-card-section truncate text-sm tracking-tight">Reminders</h2>
           {unread > 0 && (
-            <span className="shrink-0 rounded-full bg-rose-200 px-1.5 py-0.5 text-[10px] font-bold text-rose-800 dark:bg-rose-900/60 dark:text-rose-100">
+            <span className="shrink-0 rounded-full bg-rose-200 px-1.5 py-0.5 text-[10px] font-bold text-rose-800">
               {unread} new
             </span>
           )}
@@ -42,7 +42,7 @@ export function NotificationsWidget({ notifications }: NotificationsWidgetProps)
         <ul className="hb-list-scroll -mx-1 space-y-1 pb-1">
           {recent.map((n, i) => (
             <li key={n.id} className={"hb-snippet " + (!n.read_at ? "hb-snippet--unread" : "")} style={{ animationDelay: (200 + i * 28) + "ms" }}>
-              <div className={"mt-0.5 h-2 w-2 shrink-0 rounded-full " + (n.read_at ? "bg-zinc-400 dark:bg-zinc-600" : "bg-amber-500 hb-pulse-dot")} />
+              <div className={"mt-0.5 h-2 w-2 shrink-0 rounded-full " + (n.read_at ? "bg-zinc-400" : "bg-amber-500 hb-pulse-dot")} />
               <div className="min-w-0 flex-1">
                 <div className="hb-card-section hb-truncate text-sm">{n.title}</div>
                 <div className="hb-card-meta hb-truncate text-xs">

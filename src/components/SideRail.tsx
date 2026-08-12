@@ -170,12 +170,11 @@ const ADMIN_NAV_ITEMS: RailItem[] = [
     label: "Pip Stats",
     icon: (
       <Icon>
-        <rect x="4" y="4" width="16" height="16" rx="2" />
-        <rect x="9" y="9" width="6" height="6" rx="1" />
-        <path d="M9 2v2" /><path d="M15 2v2" />
-        <path d="M9 20v2" /><path d="M15 20v2" />
-        <path d="M20 9h2" /><path d="M2 9h2" />
-        <path d="M20 15h2" /><path d="M2 15h2" />
+        <path d="M4 19V5" />
+        <path d="M4 19h17" />
+        <rect x="7" y="12" width="2.5" height="4" rx="0.5" />
+        <rect x="11.5" y="9" width="2.5" height="7" rx="0.5" />
+        <rect x="16" y="5" width="2.5" height="11" rx="0.5" />
       </Icon>
     ),
     adminOnly: true,

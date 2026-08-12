@@ -6,9 +6,39 @@ import { createClient } from "@/lib/supabase/server";
 import { notifyNewPost } from "@/actions/notifications";
 import { DEFAULT_SUBJECT, normalizeSubjects } from "@/lib/subjects";
 import { tripProfanity } from "@/lib/profanity";
+import type { ChecklistItem } from "@/lib/types";
+
+const MAX_CHECKLIST_ITEMS = 12;
+const MAX_CHECKLIST_ITEM_LENGTH = 160;
 
 function normalizeMultilineText(value: string): string {
   return value.replace(/\r\n/g, "\n").replace(/\r/g, "\n").trim();
+}
+
+function parseChecklist(value: FormDataEntryValue | null): ChecklistItem[] {
+  if (typeof value !== "string" || !value.trim()) return [];
+  try {
+    const parsed: unknown = JSON.parse(value);
+    if (!Array.isArray(parsed)) return [];
+    const ids = new Set<string>();
+    return parsed
+      .slice(0, MAX_CHECKLIST_ITEMS)
+      .flatMap((item): ChecklistItem[] => {
+        if (!item || typeof item !== "object") return [];
+        const text = "text" in item && typeof item.text === "string"
+          ? normalizeMultilineText(item.text).slice(0, MAX_CHECKLIST_ITEM_LENGTH)
+          : "";
+        if (!text) return [];
+        const proposedId = "id" in item && typeof item.id === "string"
+          ? item.id.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 80)
+          : "";
+        const id = proposedId && !ids.has(proposedId) ? proposedId : crypto.randomUUID();
+        ids.add(id);
+        return [{ id, text }];
+      });
+  } catch {
+    return [];
+  }
 }
 
 function normalizeFileName(name: string): string {
@@ -26,7 +56,7 @@ function normalizeStorageError(message: string): string {
 function normalizeDatabaseError(message: string): string {
   if (!message) return "Request failed.";
   if (message.toLowerCase().includes("row-level security")) {
-    return "Upload saved, but attaching the file was blocked by database security. Ensure RLS insert policies exist for the attachments table.";
+    return "Attaching files was blocked by database security. Ensure RLS insert policies exist for the attachments table.";
   }
   return message;
 }
@@ -53,9 +83,12 @@ async function requireAdmin() {
 export async function createPost(formData: FormData) {
   const { supabase, user } = await requireAdmin();
 
-  const title = (formData.get("title") as string).trim();
-  const content = normalizeMultilineText(formData.get("content") as string);
+  const titleValue = formData.get("title");
+  const contentValue = formData.get("content");
+  const title = typeof titleValue === "string" ? titleValue.trim() : "";
+  const content = typeof contentValue === "string" ? normalizeMultilineText(contentValue) : "";
   const subjects = normalizeSubjects(formData.getAll("subject"));
+  const checklist = parseChecklist(formData.get("checklist"));
   const dueAtRaw = ((formData.get("dueAt") as string | null) ?? "").trim();
   const pinned = formData.get("pinned") === "on";
   const files = (formData.getAll("files") as File[]).filter((file) => file.size > 0);
@@ -64,10 +97,29 @@ export async function createPost(formData: FormData) {
     return { error: "Title and content are required." };
   }
 
+  // Validate attachments before inserting the post. Otherwise a rejected
+  // file would return an error while leaving an orphaned post in the database.
+  const maxBytes = 10 * 1024 * 1024;
+  for (const file of files) {
+    if (file.size > maxBytes) {
+      return { error: `File "${file.name}" is too large.` };
+    }
+    const isAllowed =
+      file.type === "application/pdf" || file.type.startsWith("image/");
+    if (!isAllowed) {
+      return { error: `File type not allowed: "${file.name}".` };
+    }
+  }
+
   // Profanity gate: redirect to PROFANITY_REDIRECT_URL if title or
   // content contain any blocked word. Runs BEFORE the insert so
   // nothing is saved when the user trips the filter.
-  const profanity = tripProfanity({ userId: user.id }, title, content);
+  const profanity = tripProfanity(
+    { userId: user.id },
+    title,
+    content,
+    ...checklist.map((item) => item.text),
+  );
   if (profanity.triggered) redirect(profanity.redirectUrl);
 
   const { data: post, error } = await supabase
@@ -75,6 +127,7 @@ export async function createPost(formData: FormData) {
     .insert({
       title,
       content,
+      checklist,
       subject: subjects,
       due_at: dueAtRaw ? dueAtRaw : null,
       pinned,
@@ -88,21 +141,6 @@ export async function createPost(formData: FormData) {
   }
 
   if (post && files.length > 0) {
-    const maxBytes = 10 * 1024 * 1024;
-
-    // Validate every file up front so we don't half-upload and have to
-    // roll back on a single bad file later in the loop.
-    for (const file of files) {
-      if (file.size > maxBytes) {
-        return { error: `File "${file.name}" is too large.` };
-      }
-      const isAllowed =
-        file.type === "application/pdf" || file.type.startsWith("image/");
-      if (!isAllowed) {
-        return { error: `File type not allowed: "${file.name}".` };
-      }
-    }
-
     const bucket = "attachments";
     const paths = files.map(
       (file) => `posts/${post.id}/${crypto.randomUUID()}-${normalizeFileName(file.name)}`,
@@ -208,10 +246,14 @@ async function fanOutPostNotifications(
 export async function updatePost(formData: FormData) {
   const { supabase, user } = await requireAdmin();
 
-  const postId = formData.get("postId") as string;
-  const title = (formData.get("title") as string).trim();
-  const content = normalizeMultilineText(formData.get("content") as string);
+  const postIdValue = formData.get("postId");
+  const titleValue = formData.get("title");
+  const contentValue = formData.get("content");
+  const postId = typeof postIdValue === "string" ? postIdValue.trim() : "";
+  const title = typeof titleValue === "string" ? titleValue.trim() : "";
+  const content = typeof contentValue === "string" ? normalizeMultilineText(contentValue) : "";
   const subjects = normalizeSubjects(formData.getAll("subject"));
+  const checklist = parseChecklist(formData.get("checklist"));
   const dueAtRaw = ((formData.get("dueAt") as string | null) ?? "").trim();
   const dueAt = dueAtRaw ? dueAtRaw : null;
   const pinned = formData.get("pinned") === "on";
@@ -220,13 +262,18 @@ export async function updatePost(formData: FormData) {
   if (!title || !content) return { error: "Title and content are required." };
 
   // Same profanity gate as createPost — admins shouldn't sneak past the
-  // filter by editing an existing post.
-  const profanity = tripProfanity({ userId: user.id }, title, content);
+  // filter by editing an existing post or checklist step.
+  const profanity = tripProfanity(
+    { userId: user.id },
+    title,
+    content,
+    ...checklist.map((item) => item.text),
+  );
   if (profanity.triggered) redirect(profanity.redirectUrl);
 
   const { data: existing, error: existingError } = await supabase
     .from("posts")
-    .select("title, content, subject, due_at, pinned")
+    .select("title, content, checklist, subject, due_at, pinned")
     .eq("id", postId)
     .single();
 
@@ -242,9 +289,14 @@ export async function updatePost(formData: FormData) {
   const sameSubjects =
     existingSubjects.length === subjects.length &&
     [...existingSubjects].sort().join("\u0000") === [...subjects].sort().join("\u0000");
+  const existingChecklist = parseChecklist(
+    typeof existing.checklist === "string" ? existing.checklist : JSON.stringify(existing.checklist ?? []),
+  );
+  const sameChecklist = JSON.stringify(existingChecklist) === JSON.stringify(checklist);
 
   if (existing.title !== title) changes.title = { from: existing.title, to: title };
   if (existing.content !== content) changes.content = { from: existing.content, to: content };
+  if (!sameChecklist) changes.checklist = { from: existingChecklist, to: checklist };
   if (!sameSubjects) changes.subject = { from: existingSubjects, to: subjects };
   if ((existing.due_at ?? null) !== dueAt) changes.due_at = { from: existing.due_at ?? null, to: dueAt };
   if (existing.pinned !== pinned) changes.pinned = { from: existing.pinned, to: pinned };
@@ -258,6 +310,7 @@ export async function updatePost(formData: FormData) {
     .update({
       title,
       content,
+      checklist,
       subject: subjects,
       due_at: dueAt,
       pinned,

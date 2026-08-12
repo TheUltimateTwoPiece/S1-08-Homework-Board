@@ -22,10 +22,16 @@ export type Profile = {
   email_reminder_notifications: boolean;
 };
 
+export type ChecklistItem = {
+  id: string;
+  text: string;
+};
+
 export type Post = {
   id: string;
   title: string;
   content: string;
+  checklist: ChecklistItem[];
   /** A post can belong to multiple subjects at once — always ≥ 1 element. */
   subject: string[];
   due_at: string | null;
@@ -139,17 +145,34 @@ export type AdminDutyLog = {
  * `text[]` array, but PostgREST may still return a plain string for rows that
  * haven't been re-saved since the migration.
  */
+export function normalizeChecklist(raw: unknown): ChecklistItem[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((item): ChecklistItem[] => {
+    if (!item || typeof item !== "object") return [];
+    const candidate = item as { id?: unknown; text?: unknown };
+    if (typeof candidate.text !== "string" || !candidate.text.trim()) return [];
+    return [{
+      id: typeof candidate.id === "string" && candidate.id ? candidate.id : crypto.randomUUID(),
+      text: candidate.text.trim(),
+    }];
+  });
+}
+
 export function normalizePost<T extends { subject: unknown }>(
   post: T,
-): Omit<T, "subject"> & { subject: string[] } {
+): Omit<T, "subject"> & { subject: string[]; checklist: ChecklistItem[] } {
   const raw = (post as Record<string, unknown>).subject;
   let subject: string[];
   if (Array.isArray(raw)) {
-    subject = raw as string[];
+    subject = raw.filter((value): value is string => typeof value === "string");
   } else if (typeof raw === "string") {
     subject = [raw];
   } else {
     subject = [];
   }
-  return { ...post, subject };
+  return {
+    ...post,
+    subject,
+    checklist: normalizeChecklist((post as Record<string, unknown>).checklist),
+  };
 }

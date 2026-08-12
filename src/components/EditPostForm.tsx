@@ -3,10 +3,11 @@
 import { useActionState, useState } from "react";
 import { updatePost } from "@/actions/posts";
 import { SubjectPicker } from "@/components/SubjectPicker";
+import { ChecklistEditor } from "@/components/ChecklistEditor";
 import type { Post } from "@/lib/types";
 
 type EditPostFormProps = {
-  post: Pick<Post, "id" | "title" | "content" | "subject" | "due_at" | "pinned">;
+  post: Pick<Post, "id" | "title" | "content" | "checklist" | "subject" | "due_at" | "pinned">;
 };
 
 export function EditPostForm({ post }: EditPostFormProps) {
@@ -56,6 +57,8 @@ export function EditPostForm({ post }: EditPostFormProps) {
           </span>
           <SubjectPicker defaultSelected={post.subject} idPrefix="edit-subject" />
         </div>
+
+        <ChecklistEditor defaultItems={post.checklist} />
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
