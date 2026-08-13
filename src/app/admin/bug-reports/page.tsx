@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
 import { Avatar } from "@/components/Avatar";
+import { PendingButton } from "@/components/PendingButton";
+import { setBugReportStatus } from "@/actions/inbox";
 import { formatAppDateTime } from "@/lib/time";
 
 type BugReport = {
@@ -12,11 +14,17 @@ type BugReport = {
   steps_to_reproduce: string;
   category: string;
   screenshot_paths: string[];
+  status: "unread" | "in_progress" | "resolved";
   created_at: string;
   profiles?: { full_name?: string; email?: string; avatar_url?: string | null } | null;
 };
 
 export const dynamic = "force-dynamic";
+
+async function applyBugReportStatus(formData: FormData) {
+  "use server";
+  await setBugReportStatus(formData);
+}
 
 export default async function AdminBugReportsPage() {
   const profile = await requireProfile();
@@ -42,8 +50,8 @@ export default async function AdminBugReportsPage() {
     <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
       <div className="mb-8 flex items-start justify-between gap-4">
         <div>
-          <h1 className="hb-page-title text-2xl tracking-tight">Bug reports</h1>
-          <p className="hb-body-text mt-1 text-sm">Review issues submitted by students and admins.</p>
+          <h1 className="hb-page-title text-2xl tracking-tight">Bug report inbox</h1>
+          <p className="hb-body-text mt-1 text-sm">Review, triage, and resolve issues submitted by students and admins.</p>
         </div>
         <span className="hb-card-meta rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold dark:bg-slate-800">{withScreenshots.length} total</span>
       </div>
@@ -64,7 +72,37 @@ export default async function AdminBugReportsPage() {
                     <p className="hb-card-meta text-xs">{report.profiles?.full_name ?? "User"}{report.profiles?.email ? ` · ${report.profiles.email}` : ""}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center justify-end gap-2">
+                  {(() => {
+                    const status = report.status ?? "unread";
+                    const nextStatus = status === "unread" ? "in_progress" : status === "in_progress" ? "resolved" : "unread";
+                    const nextLabel = status === "unread" ? "Start triage" : status === "in_progress" ? "Resolve" : "Reopen";
+                    const statusLabel = status === "in_progress" ? "In progress" : status.charAt(0).toUpperCase() + status.slice(1);
+                    return (
+                      <>
+                        <span className={`rounded-full px-2 py-1 text-[10px] font-bold ${
+                          status === "unread"
+                            ? "bg-amber-100 text-amber-800"
+                            : status === "resolved"
+                              ? "bg-emerald-100 text-emerald-800"
+                              : "bg-blue-100 text-blue-800"
+                        }`}>
+                          {statusLabel}
+                        </span>
+                        <form action={applyBugReportStatus} className="flex items-center">
+                          <input type="hidden" name="reportId" value={report.id} />
+                          <input type="hidden" name="status" value={nextStatus} />
+                          <PendingButton
+                            type="submit"
+                            pendingContent="Saving..."
+                            className="hb-card-section rounded-md px-2 py-1 text-[10px] transition hover:bg-slate-100"
+                          >
+                            {nextLabel}
+                          </PendingButton>
+                        </form>
+                      </>
+                    );
+                  })()}
                   <span className="rounded-full bg-rose-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-rose-800 dark:bg-rose-900/40 dark:text-rose-200">{report.category}</span>
                   <time className="hb-card-meta text-xs" dateTime={report.created_at}>{formatAppDateTime(report.created_at)}</time>
                 </div>

@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { SideRail } from "@/components/SideRail";
 import { SideRailBadge } from "@/components/SideRailBadge";
 import { PageTransition } from "@/components/PageTransition";
-import { getCurrentProfile } from "@/lib/auth";
+import { getAdminInboxCounts, getCurrentProfile } from "@/lib/auth";
 import type { Profile } from "@/lib/types";
 
 export async function AppShell({ children }: { children: React.ReactNode }) {
@@ -12,10 +12,15 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
+  const adminInboxCounts = profile.role === "admin"
+    ? await getAdminInboxCounts()
+    : undefined;
+
   return (
     <div className="hb-app-shell">
       <SideRail
         profile={profile}
+        adminInboxCounts={adminInboxCounts}
         unreadBadgeSlot={
           <Suspense
             fallback={

@@ -79,6 +79,7 @@ export type Feedback = {
   author_id: string;
   category: "post" | "website";
   message: string;
+  status: "unread" | "read" | "resolved";
   created_at: string;
   profiles?: Pick<Profile, "full_name" | "email" | "avatar_url">;
 };

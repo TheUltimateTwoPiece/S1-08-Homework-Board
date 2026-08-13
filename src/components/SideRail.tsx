@@ -12,6 +12,10 @@ import type { Profile } from "@/lib/types";
 type SideRailProps = {
   profile: Profile;
   unreadBadgeSlot?: ReactNode;
+  adminInboxCounts?: {
+    feedback: number;
+    bugReports: number;
+  };
 };
 
 type RailItem = {
@@ -20,6 +24,7 @@ type RailItem = {
   icon: React.ReactNode;
   exactMatch?: boolean;
   adminOnly?: boolean;
+  inbox?: "feedback" | "bugReports";
 };
 
 function Icon({ children }: { children: React.ReactNode }) {
@@ -166,17 +171,6 @@ const ADMIN_NAV_ITEMS: RailItem[] = [
     adminOnly: true,
   },
   {
-    href: "/admin/feedback",
-    label: "Inbox",
-    icon: (
-      <Icon>
-        <path d="M22 12h-6l-2 3h-4l-2-3H2" />
-        <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
-      </Icon>
-    ),
-    adminOnly: true,
-  },
-  {
     href: "/admin/pip-stats",
     label: "Pip Stats",
     icon: (
@@ -191,8 +185,20 @@ const ADMIN_NAV_ITEMS: RailItem[] = [
     adminOnly: true,
   },
   {
+    href: "/admin/feedback",
+    label: "Feedback inbox",
+    icon: (
+      <Icon>
+        <path d="M22 12h-6l-2 3h-4l-2-3H2" />
+        <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+      </Icon>
+    ),
+    adminOnly: true,
+    inbox: "feedback",
+  },
+  {
     href: "/admin/bug-reports",
-    label: "Bug reports",
+    label: "Bug report inbox",
     icon: (
       <Icon>
         <path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" />
@@ -202,8 +208,23 @@ const ADMIN_NAV_ITEMS: RailItem[] = [
       </Icon>
     ),
     adminOnly: true,
+    inbox: "bugReports",
   },
 ];
+
+function InboxStatusBadge({ count }: { count: number }) {
+  const label = count > 0
+    ? `${count > 99 ? "99+" : count} new`
+    : "Clear";
+  return (
+    <span
+      className={`hb-siderail-admin-status ${count > 0 ? "hb-siderail-admin-status--new" : "hb-siderail-admin-status--clear"}`}
+      aria-label={count > 0 ? `${count} unread` : "No unread items"}
+    >
+      {label}
+    </span>
+  );
+}
 
 // Routes the user hits often — prefetch the full RSC payload eagerly so the
 // first click feels instant. Other routes use Next's default "auto"
@@ -211,10 +232,12 @@ const ADMIN_NAV_ITEMS: RailItem[] = [
 // destinations.
 const EAGER_PREFETCH = new Set<string>(["/", "/calendar", "/admin"]);
 
-export function SideRail({ profile, unreadBadgeSlot }: SideRailProps) {
+export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRailProps) {
   const pathname = usePathname();
   const [pulsedHref, setPulsedHref] = useState<string | null>(null);
+  const [adminMenuOpen, setAdminMenuOpen] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const adminMenuRef = useRef<HTMLDivElement | null>(null);
 
   function activeFor(path: string, exact?: boolean) {
     if (exact) return pathname === path;
@@ -241,6 +264,7 @@ export function SideRail({ profile, unreadBadgeSlot }: SideRailProps) {
     if (!href) return;
     if (timerRef.current) clearTimeout(timerRef.current);
     setPulsedHref(href);
+    if (!href.startsWith("/admin")) setAdminMenuOpen(false);
     timerRef.current = setTimeout(() => {
       setPulsedHref(null);
       timerRef.current = null;
@@ -256,10 +280,32 @@ export function SideRail({ profile, unreadBadgeSlot }: SideRailProps) {
     [],
   );
 
-  const allItems =
-    profile.role === "admin"
-      ? [...NAV_ITEMS, ...ADMIN_NAV_ITEMS]
-      : NAV_ITEMS;
+  const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
+
+  // Close the flyout when focus moves elsewhere or Escape is pressed. This
+  // keeps the compact rail from leaving an overlay stranded over page content.
+  useEffect(() => {
+    if (!adminMenuOpen) return;
+
+    function handlePointerDown(event: PointerEvent) {
+      if (!adminMenuRef.current?.contains(event.target as Node)) {
+        setAdminMenuOpen(false);
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setAdminMenuOpen(false);
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [adminMenuOpen]);
+
+  const allItems = NAV_ITEMS;
 
   return (
     <aside className="hb-siderail" aria-label="Primary navigation">
@@ -309,6 +355,60 @@ export function SideRail({ profile, unreadBadgeSlot }: SideRailProps) {
             </Link>
           );
         })}
+
+        {profile.role === "admin" && (
+          <div className="hb-siderail-admin-group" ref={adminMenuRef}>
+            <button
+              type="button"
+              className={`hb-siderail-btn hb-siderail-admin-toggle ${isAdminRoute || adminMenuOpen ? "hb-siderail-btn--active" : ""}`}
+              aria-label="Admin tools"
+              aria-expanded={adminMenuOpen}
+              aria-controls="hb-siderail-admin-menu"
+              onClick={(event) => {
+                event.stopPropagation();
+                setAdminMenuOpen((open) => !open);
+              }}
+            >
+              <Icon>
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </Icon>
+              <span className="hb-siderail-tooltip">Admin tools</span>
+            </button>
+
+            {adminMenuOpen && (
+              <div id="hb-siderail-admin-menu" className="hb-siderail-admin-menu" role="menu">
+                <div className="hb-siderail-admin-menu-title">Admin tools</div>
+                <div className="hb-siderail-admin-section-label">Workspace</div>
+                {ADMIN_NAV_ITEMS.map((item, index) => {
+                  const isActive = activeFor(item.href, item.exactMatch);
+                  const showInboxHeading = item.inbox && !ADMIN_NAV_ITEMS[index - 1]?.inbox;
+                  const count = item.inbox === "feedback"
+                    ? adminInboxCounts?.feedback ?? 0
+                    : item.inbox === "bugReports"
+                      ? adminInboxCounts?.bugReports ?? 0
+                      : 0;
+                  return (
+                    <div key={item.href}>
+                      {showInboxHeading && <div className="hb-siderail-admin-section-label hb-siderail-admin-section-label--inbox">Inboxes</div>}
+                      <Link
+                        href={item.href}
+                        prefetch={EAGER_PREFETCH.has(item.href) ? true : undefined}
+                        role="menuitem"
+                        aria-current={isActive ? "page" : undefined}
+                        className={`hb-siderail-admin-link ${isActive ? "hb-siderail-admin-link--active" : ""}`}
+                        onClick={() => setAdminMenuOpen(false)}
+                      >
+                        {item.icon}
+                        <span className="hb-siderail-admin-link-label">{item.label}</span>
+                        {item.inbox && <InboxStatusBadge count={count} />}
+                      </Link>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </nav>
 
       <div className="hb-siderail-footer">
