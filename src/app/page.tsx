@@ -1,4 +1,4 @@
-import { getAppDayOfWeek, getTodayString, formatAppDate } from "@/lib/time";
+import { getAppDayOfWeek, getTodayString, getPromptDateString, formatAppDate } from "@/lib/time";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
 import { PageTopBar } from "@/components/PageTopBar";
@@ -126,7 +126,7 @@ export default async function DashboardPage() {
     .from("pip_prompts")
     .select("count")
     .eq("user_id", profile.id)
-    .eq("prompt_date", todayStr)
+    .eq("prompt_date", getPromptDateString())
     .maybeSingle();
   const pipUsed = (pipUsage as { count?: number } | null)?.count ?? 0;
   const pipRemaining = Math.max(0, 100 - pipUsed);

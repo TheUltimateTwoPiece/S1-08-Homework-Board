@@ -36,6 +36,41 @@ export function getDateAfterDaysString(days: number, date = new Date()): string 
   return format(addDays(parseISO(getTodayString(date)), days), "yyyy-MM-dd");
 }
 
+/**
+ * Pip's database rate-limit buckets intentionally reset at midnight UTC.
+ * Keep this separate from date-only homework calculations, which use the
+ * school's configured APP_TIME_ZONE.
+ */
+export function getPromptDateString(date = new Date()): string {
+  return date.toISOString().slice(0, 10);
+}
+
+export function getPromptDateAfterDaysString(days: number, date = new Date()): string {
+  return format(addDays(parseISO(getPromptDateString(date)), days), "yyyy-MM-dd");
+}
+
+export function formatPromptDateLabel(dateString: string): string {
+  return formatAppDateOnly(dateString, { weekday: "short" });
+}
+
+/**
+ * Formats a date-only database value without letting the server's timezone
+ * shift it to the previous or next calendar day. Date-only homework values
+ * have no clock time, so they are intentionally rendered in UTC as a plain
+ * calendar date.
+ */
+export function formatAppDateOnly(
+  dateString: string,
+  options: Intl.DateTimeFormatOptions = { month: "long", day: "numeric" },
+): string {
+  const [year, month, day] = dateString.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day, 12));
+  return new Intl.DateTimeFormat("en-US", {
+    ...options,
+    timeZone: "UTC",
+  }).format(date);
+}
+
 export function getAppDayOfWeek(date = new Date()): number {
   const weekday = new Intl.DateTimeFormat("en-US", {
     weekday: "long",

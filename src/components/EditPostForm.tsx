@@ -46,6 +46,7 @@ export function EditPostForm({ post }: EditPostFormProps) {
             id="edit-title"
             name="title"
             required
+            maxLength={160}
             defaultValue={post.title}
             className="hb-input w-full rounded-lg px-3 py-2.5 text-sm"
           />
@@ -99,6 +100,7 @@ export function EditPostForm({ post }: EditPostFormProps) {
             onChange={(e) => setContent(e.target.value)}
             rows={8}
             required
+            maxLength={20000}
             className="hb-input w-full rounded-lg px-3 py-2.5 text-sm"
           />
         </div>

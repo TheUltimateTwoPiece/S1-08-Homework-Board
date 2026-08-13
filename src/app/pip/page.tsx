@@ -1,4 +1,4 @@
-import { getTodayString } from "@/lib/time";
+import { getPromptDateString } from "@/lib/time";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
 import { PageTopBar } from "@/components/PageTopBar";
@@ -12,7 +12,7 @@ export default async function PipPage() {
   const profile = await requireProfile();
   const supabase = await createClient();
 
-  const todayStr = getTodayString();
+  const todayStr = getPromptDateString();
 
   const [{ data: usage }, chats] = await Promise.all([
     supabase

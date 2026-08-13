@@ -7,6 +7,9 @@ import { tripProfanity } from "@/lib/profanity";
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
 const BUG_BUCKET = "attachments";
+const MAX_TITLE_LENGTH = 160;
+const MAX_DESCRIPTION_LENGTH = 5000;
+const MAX_STEPS_LENGTH = 5000;
 
 type BugReportResult = { error?: string; success?: boolean };
 
@@ -37,6 +40,15 @@ export async function submitBugReport(formData: FormData): Promise<BugReportResu
 
   if (!title || !description) {
     return { error: "Add a short title and describe what went wrong." };
+  }
+  if (title.length > MAX_TITLE_LENGTH) {
+    return { error: `Title is too long (max ${MAX_TITLE_LENGTH} characters).` };
+  }
+  if (description.length > MAX_DESCRIPTION_LENGTH) {
+    return { error: `Description is too long (max ${MAX_DESCRIPTION_LENGTH} characters).` };
+  }
+  if (steps.length > MAX_STEPS_LENGTH) {
+    return { error: `Reproduction steps are too long (max ${MAX_STEPS_LENGTH} characters).` };
   }
   if (screenshots.length === 0) {
     return { error: "Please attach at least one screenshot so the issue can be diagnosed." };

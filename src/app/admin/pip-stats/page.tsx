@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
-import { parseISO } from "date-fns";
-import { formatAppDate, formatAppDateTime, getDateAfterDaysString, getTodayString } from "@/lib/time";
+import { formatAppDateTime, formatPromptDateLabel, getPromptDateAfterDaysString, getPromptDateString } from "@/lib/time";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
 import { PageTopBar } from "@/components/PageTopBar";
@@ -28,9 +27,9 @@ export default async function AdminPipStatsPage() {
 
   const supabase = await createClient();
   const now = new Date();
-  const todayStr = getTodayString(now);
-  // Seven calendar dates: today plus the six preceding dates.
-  const weekAgoStr = getDateAfterDaysString(-6, now);
+  const todayStr = getPromptDateString(now);
+  // Seven UTC calendar dates: today plus the six preceding dates.
+  const weekAgoStr = getPromptDateAfterDaysString(-6, now);
 
   // Fetch every Pip user (students and admins) so the overview cards and chart
   // measure the same population. The previous student-only filter excluded
@@ -57,7 +56,8 @@ export default async function AdminPipStatsPage() {
     supabase
       .from("pip_prompts")
       .select("user_id, count, prompt_date")
-      .gte("prompt_date", weekAgoStr),
+      .gte("prompt_date", weekAgoStr)
+      .lte("prompt_date", todayStr),
 
     supabase
       .from("pip_chats")
@@ -192,15 +192,9 @@ export default async function AdminPipStatsPage() {
   const dayLabels: string[] = [];
   const dayCounts: number[] = [];
   for (let i = 6; i >= 0; i--) {
-    const d = parseISO(getDateAfterDaysString(-i, now));
-    dayLabels.push(formatAppDate(d, { weekday: "short" }));
-    dayCounts.push(0);
-  }
-
-  // Fill chart dayCounts from the shared daySums map
-  for (let i = 6; i >= 0; i--) {
-    const dateKey = getDateAfterDaysString(-i, now);
-    dayCounts[6 - i] = daySums.get(dateKey) ?? 0;
+    const dateKey = getPromptDateAfterDaysString(-i, now);
+    dayLabels.push(formatPromptDateLabel(dateKey));
+    dayCounts.push(daySums.get(dateKey) ?? 0);
   }
 
   const maxDayCount = Math.max(1, ...dayCounts);

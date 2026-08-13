@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { tripProfanity } from "@/lib/profanity";
 
+const MAX_FEEDBACK_LENGTH = 5000;
+
 export async function submitFeedback(formData: FormData) {
   const supabase = await createClient();
   const {
@@ -19,6 +21,9 @@ export async function submitFeedback(formData: FormData) {
 
   if (!message) {
     return { error: "Feedback cannot be empty." };
+  }
+  if (message.length > MAX_FEEDBACK_LENGTH) {
+    return { error: `Feedback is too long (max ${MAX_FEEDBACK_LENGTH} characters).` };
   }
 
   // Profanity gate: feedback messages go through the same filter as

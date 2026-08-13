@@ -15,6 +15,7 @@ export function PostCompleteCheckbox({
   return (
     <form action={togglePostComplete} className="shrink-0">
       <input type="hidden" name="postId" value={postId} />
+      <input type="hidden" name="completed" value={completed ? "false" : "true"} />
       <PostCompleteButton completed={completed} compact={compact} />
     </form>
   );

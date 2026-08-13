@@ -15,7 +15,7 @@ import {
   buildSystemPrompt,
   parseConfirmActions,
 } from "@/lib/pip-context";
-import { getTodayString } from "@/lib/time";
+import { getPromptDateString } from "@/lib/time";
 import {
   DAILY_LIMIT,
   type PipResult,
@@ -37,10 +37,15 @@ export async function askPip(
   if (!trimmed) return { error: "Ask Pip something!" };
   if (trimmed.length > 500) return { error: "Message is too long (max 500 characters)." };
 
+  const instructions = typeof systemInstructions === "string" ? systemInstructions.trim() : "";
+  if (instructions.length > 300) return { error: "Instructions are too long (max 300 characters)." };
+  const instructionProfanity = tripProfanity({ userId: user.id }, instructions);
+  if (instructionProfanity.triggered) redirect(instructionProfanity.redirectUrl);
+
   const profanity = tripProfanity({ userId: user.id }, trimmed);
   if (profanity.triggered) redirect(profanity.redirectUrl);
 
-  const todayStr = getTodayString();
+  const todayStr = getPromptDateString();
 
   const [rpcResult, contextPromise] = await Promise.allSettled([
     supabase.rpc("pip_try_increment", { p_date: todayStr, p_limit: DAILY_LIMIT }),
@@ -79,9 +84,14 @@ export async function askPip(
 
   const remaining = DAILY_LIMIT - (newCount as number);
 
-  const userContext =
-    contextPromise.status === "fulfilled" ? contextPromise.value : "User context unavailable.";
+  if (contextPromise.status !== "fulfilled") {
+    return {
+      error: "Pip couldn't load your current homework data. Please try again.",
+      remaining,
+    };
+  }
 
+  const userContext = contextPromise.value;
   const apiKey = process.env.GOOGLE_GEMINI_API_KEY;
   if (!apiKey) {
     return { error: "Gemini API key is not configured. Set GOOGLE_GEMINI_API_KEY.", remaining };
@@ -107,20 +117,17 @@ export async function askPip(
     } catch { /* proceed without history */ }
   }
 
-  const effectiveInstructions = systemInstructions?.trim() || dbInstructions?.trim() || null;
+  const effectiveInstructions = instructions || dbInstructions?.trim() || null;
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite" });
-
     const systemPrompt = buildSystemPrompt(userContext, effectiveInstructions);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-3.1-flash-lite",
+      systemInstruction: systemPrompt,
+    });
 
     const contents = [
-      { role: "user" as const, parts: [{ text: systemPrompt }] },
-      {
-        role: "model" as const,
-        parts: [{ text: "Got it! I'm Pip, your homework assistant. I have all your homework data loaded. What can I help with?" }],
-      },
       ...historyContents,
       { role: "user" as const, parts: [{ text: trimmed }] },
     ];
@@ -150,10 +157,11 @@ export async function askPip(
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
     console.error("Pip error:", message);
-    if (message.includes("API key")) {
-      return { error: "Gemini API key is invalid. Check GOOGLE_GEMINI_API_KEY.", remaining };
+    const lower = message.toLowerCase();
+    if (lower.includes("api key") || lower.includes("unauthorized") || lower.includes("forbidden")) {
+      return { error: "Gemini is not configured correctly. Please contact an admin.", remaining };
     }
-    if (message.includes("quota")) {
+    if (lower.includes("quota") || lower.includes("429") || lower.includes("resource exhausted")) {
       return { error: "Gemini quota exceeded. Try again later.", remaining };
     }
     return { error: "Pip ran into a problem. Try again.", remaining };

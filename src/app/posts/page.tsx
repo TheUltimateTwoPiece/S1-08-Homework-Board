@@ -10,6 +10,17 @@ import { normalizePost, type Post } from "@/lib/types";
 
 export const revalidate = 30;
 
+function sanitizeSearchTerm(value: string): string {
+  // PostgREST's `.or()` grammar uses punctuation as operators, while `%` and
+  // `_` are LIKE wildcards. Keep search input to letters, numbers, spaces,
+  // and hyphens so a query cannot break the filter expression or broaden it
+  // into an unintended wildcard search.
+  return value
+    .replace(/[^\p{L}\p{N} -]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 type PostsPageProps = {
   searchParams?: Promise<{
     q?: string;
@@ -24,7 +35,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
   const profile = await requireProfile();
   const supabase = await createClient();
 
-  const q = (params.q ?? "").trim().slice(0, 100);
+  const q = sanitizeSearchTerm((params.q ?? "").trim().slice(0, 100));
   const subject = (params.subject ?? "").trim();
   const status = (params.status ?? "all").trim();
   const due = (params.due ?? "all").trim();
@@ -44,9 +55,8 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
     .limit(200);
 
   if (q) {
-    const qSafe = q.replace(/[,]/g, " ");
     postsQuery = postsQuery.or(
-      `title.ilike.%${qSafe}%,content.ilike.%${qSafe}%`,
+      `title.ilike.%${q}%,content.ilike.%${q}%`,
     );
   }
 

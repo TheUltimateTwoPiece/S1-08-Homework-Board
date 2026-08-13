@@ -10,6 +10,7 @@ A daily homework posting site for admins and students. Built with Next.js, Supab
 - **Checklist** — students tick off homework when done; progress is saved per student
 - **Reminders** — admins send homework reminders to all students, individuals, or only those who haven't completed specific tasks. Optional email via Brevo (300/day on free tier) — admins see per-recipient delivery status
 - **AI-powered post creation** — use Google Gemini AI to format and enhance homework posts
+- **Pip** — a Gemini homework assistant with persistent chats, account-level context, a 100-prompt UTC-day limit, and confirmation-gated completion actions
 - **Bug reports** — every authenticated user, including admins, can submit a report with one or more required screenshots; admins review them in `/admin/bug-reports`
 - **Anti-swear filter** — every free-form text field (post title + content, comment, feedback, profile display name, admin reminder body) is checked for profanity before being saved. If a blocked word is detected, the user is redirected away from the app. See the [Anti-swear filter](#anti-swear-filter) section below
 
@@ -88,7 +89,8 @@ npm install
 1. Create a new project at [supabase.com](https://supabase.com)
 2. Run the SQL migrations in the `supabase/` directory in the Supabase SQL Editor (`schema.sql` first, then any migrations in order — at minimum `migration-email-status.sql` and `migration-profile-email-prefs.sql` if you use Brevo, plus `migration-notifications-admin-select.sql` for any existing deployment that predates the admin `SELECT` policy on notifications)
 3. Run `supabase/migration-20-bug-reports.sql` after the earlier numbered migrations. It creates the bug-report inbox and requires at least one screenshot per report. Screenshots use the existing private `attachments` storage bucket.
-4. Copy your project URL and anon key from Supabase Settings → API
+4. Make sure the Pip and checklist migrations are applied: `migration-pip-prompts.sql`, `migration-pip-chats.sql`, `migration-pip-add-instructions.sql`, `migration-pip-admin-rls.sql`, `migration-17-post-checklists.sql`, `migration-18-post-checklist-progress.sql`, and `migration-19-pip-last-active.sql` (use the existing migration files and skip any already applied). Then run `migration-21-auth-role-hardening.sql` and `migration-22-pip-rate-limit-hardening.sql`; these prevent forged admin signup metadata and direct Pip rate-limit bypasses.
+5. Copy your project URL and anon key from Supabase Settings → API
 
 ### 4. Configure environment variables
 
@@ -97,7 +99,9 @@ Copy `.env.local.example` to `.env.local` and fill in the values:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-ADMIN_ACCESS_CODE=your-16-character-code
+ADMIN_SIGNUP_CODE=your-16-character-code
+# Server-only: required for the verified admin signup flow.
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
 GOOGLE_GEMINI_API_KEY=your-gemini-api-key
 
 # Optional — enable real email delivery for reminders via Brevo.
@@ -116,7 +120,7 @@ APP_TIME_ZONE=America/New_York
 ### 5. Create accounts
 
 - **Students** — go to `/login`, switch to **Sign up**, choose **Student**, and register
-- **Admins (you)** — go to `/login`, switch to **Sign up**, choose **Admin**, and enter your 16-character access code from `.env.local`
+- **Admins (you)** — go to `/login`, switch to **Sign up**, choose **Admin**, and enter your 16-character access code from `.env.local`. The server also needs `SUPABASE_SERVICE_ROLE_KEY` to provision the admin role safely; never expose that key to the browser.
 
 ### 6. Run the development server
 

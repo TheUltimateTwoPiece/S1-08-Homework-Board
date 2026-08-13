@@ -174,12 +174,17 @@ export function PipWidget({
 
     let chatId = activeChatId;
     if (!chatId) {
-      const id = await createChat(instructionsInput || undefined);
-      if (!id) { sendingRef.current = false; return; }
-      chatId = id;
-      setActiveChatId(id);
-      setMessageCache((prev) => { const next = new Map(prev); next.set(id, [{ role: "pip", text: WELCOME_TEXT }]); return next; });
-      await refreshChats();
+      try {
+        const id = await createChat(instructionsInput || undefined);
+        if (!id) { sendingRef.current = false; return; }
+        chatId = id;
+        setActiveChatId(id);
+        setMessageCache((prev) => { const next = new Map(prev); next.set(id, [{ role: "pip", text: WELCOME_TEXT }]); return next; });
+        refreshChats().catch(() => {});
+      } catch {
+        sendingRef.current = false;
+        return;
+      }
     }
 
     // Optimistic user message
@@ -218,7 +223,8 @@ export function PipWidget({
         signal: controller.signal,
       });
 
-      if (!res.ok) {
+      const contentType = res.headers.get("content-type") ?? "";
+      if (!res.ok || !contentType.includes("text/event-stream")) {
         const text = await res.text();
         throw new Error(text || "Stream failed");
       }
@@ -347,6 +353,7 @@ export function PipWidget({
     try {
       const formData = new FormData();
       formData.append("postId", action.params.post_id);
+      formData.append("completed", action.type === "mark_complete" ? "true" : "false");
       await togglePostComplete(formData);
       setPendingActions((prev) =>
         prev.map((p) => ({ ...p, actions: p.actions.filter((a) => !(a.type === action.type && a.params.post_id === action.params.post_id)) }))

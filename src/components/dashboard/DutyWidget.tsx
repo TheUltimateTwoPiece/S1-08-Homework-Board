@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { parseISO } from "date-fns";
 import { markDutyCompleted } from "@/actions/schedule";
 import { Avatar } from "@/components/Avatar";
 import { PendingButton } from "@/components/PendingButton";
 import type { AdminSchedule } from "@/lib/types";
-import { formatAppDate } from "@/lib/time";
+import { formatAppDateOnly } from "@/lib/time";
 
 type DutyWidgetProps = {
   todaySchedules: (AdminSchedule & { profiles: { full_name: string } | null })[];
@@ -39,7 +38,7 @@ export function DutyWidget({ todaySchedules, completedToday, todayStr, currentAd
           </div>
           <div className="min-w-0">
             <h2 className="hb-card-section truncate text-sm tracking-tight">
-              Today's duty · {formatAppDate(parseISO(todayStr), { weekday: "short" })}
+              Today's duty · {formatAppDateOnly(todayStr, { weekday: "short" })}
             </h2>
             <p className="hb-card-body text-xs font-semibold">
               {completedSet.size}/{todaySchedules.length} completed

@@ -279,7 +279,7 @@ export default async function YourProgressPage() {
               const daysUntil =
                 due === null
                   ? null
-                  : differenceInCalendarDays(parseISO(due), new Date());
+                  : differenceInCalendarDays(parseISO(due), parseISO(todayStr));
               return (
                 <li key={post.id}>
                   <Link

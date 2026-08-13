@@ -14,7 +14,7 @@ import {
   parseConfirmActions,
 } from "@/lib/pip-context";
 import { DAILY_LIMIT } from "@/lib/pip-types";
-import { getTodayString } from "@/lib/time";
+import { getPromptDateString } from "@/lib/time";
 
 function sseEvent(data: Record<string, unknown>): string {
   return `data: ${JSON.stringify(data)}\n\n`;
@@ -31,9 +31,9 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  let body: { question?: string; chatId?: string; systemInstructions?: string };
+  let rawBody: unknown;
   try {
-    body = await request.json();
+    rawBody = await request.json();
   } catch {
     return new Response(sseEvent({ type: "error", message: "Invalid request body" }), {
       status: 400,
@@ -41,9 +41,21 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const { question, chatId, systemInstructions } = body;
+  if (!rawBody || typeof rawBody !== "object" || Array.isArray(rawBody)) {
+    return new Response(sseEvent({ type: "error", message: "Invalid request body" }), {
+      status: 400,
+      headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache", Connection: "keep-alive" },
+    });
+  }
 
-  const trimmed = (question ?? "").trim();
+  const body = rawBody as { question?: unknown; chatId?: unknown; systemInstructions?: unknown };
+  const question = typeof body.question === "string" ? body.question : "";
+  const chatId = typeof body.chatId === "string" ? body.chatId.trim() || undefined : undefined;
+  const systemInstructions = typeof body.systemInstructions === "string"
+    ? body.systemInstructions
+    : undefined;
+
+  const trimmed = question.trim();
   if (!trimmed) {
     return new Response(sseEvent({ type: "error", message: "Ask Pip something!" }), {
       headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache", Connection: "keep-alive" },
@@ -55,6 +67,19 @@ export async function POST(request: NextRequest) {
     });
   }
 
+  const instructions = typeof systemInstructions === "string" ? systemInstructions.trim() : "";
+  if (instructions.length > 300) {
+    return new Response(sseEvent({ type: "error", message: "Instructions are too long (max 300 characters)." }), {
+      headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache", Connection: "keep-alive" },
+    });
+  }
+  const instructionProfanity = tripProfanity({ userId: user.id }, instructions);
+  if (instructionProfanity.triggered) {
+    return new Response(sseEvent({ type: "error", message: "Profanity detected", redirect: instructionProfanity.redirectUrl }), {
+      headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache", Connection: "keep-alive" },
+    });
+  }
+
   const profanity = tripProfanity({ userId: user.id }, trimmed);
   if (profanity.triggered) {
     return new Response(sseEvent({ type: "error", message: "Profanity detected", redirect: profanity.redirectUrl }), {
@@ -62,7 +87,7 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const todayStr = getTodayString();
+  const todayStr = getPromptDateString();
 
   const [rpcResult, contextPromise] = await Promise.allSettled([
     supabase.rpc("pip_try_increment", { p_date: todayStr, p_limit: DAILY_LIMIT }),
@@ -100,8 +125,18 @@ export async function POST(request: NextRequest) {
 
   remaining = DAILY_LIMIT - (newCount as number);
 
-  const userContext = contextPromise.status === "fulfilled" ? contextPromise.value : "User context unavailable.";
+  if (contextPromise.status !== "fulfilled") {
+    return new Response(
+      sseEvent({
+        type: "error",
+        message: "Pip couldn't load your current homework data. Please try again.",
+        remaining,
+      }),
+      { headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache", Connection: "keep-alive" } },
+    );
+  }
 
+  const userContext = contextPromise.value;
   const apiKey = process.env.GOOGLE_GEMINI_API_KEY;
   if (!apiKey) {
     return new Response(sseEvent({ type: "error", message: "Gemini API key not configured.", remaining }), {
@@ -124,7 +159,7 @@ export async function POST(request: NextRequest) {
     } catch { /* proceed without history */ }
   }
 
-  const effectiveInstructions = systemInstructions?.trim() || dbInstructions?.trim() || null;
+  const effectiveInstructions = instructions || dbInstructions?.trim() || null;
 
   const systemPrompt = buildSystemPrompt(userContext, effectiveInstructions);
 
@@ -135,11 +170,12 @@ export async function POST(request: NextRequest) {
 
       try {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite" });
+        const model = genAI.getGenerativeModel({
+          model: "gemini-3.1-flash-lite",
+          systemInstruction: systemPrompt,
+        });
 
         const contents = [
-          { role: "user" as const, parts: [{ text: systemPrompt }] },
-          { role: "model" as const, parts: [{ text: "Got it! I'm Pip, your homework assistant. I have all your homework data loaded. What can I help with?" }] },
           ...historyContents,
           { role: "user" as const, parts: [{ text: trimmed }] },
         ];
@@ -177,7 +213,13 @@ export async function POST(request: NextRequest) {
       } catch (error: unknown) {
         const msg = error instanceof Error ? error.message : String(error);
         console.error("Pip stream error:", msg);
-        controller.enqueue(encoder.encode(sseEvent({ type: "error", message: `Pip error: ${msg}`, remaining })));
+        const lower = msg.toLowerCase();
+        const message = lower.includes("quota") || lower.includes("429") || lower.includes("resource exhausted")
+          ? "Gemini quota exceeded. Try again later."
+          : lower.includes("api key") || lower.includes("unauthorized") || lower.includes("forbidden")
+            ? "Pip is not configured correctly. Please contact an admin."
+            : "Pip ran into a problem. Try again.";
+        controller.enqueue(encoder.encode(sseEvent({ type: "error", message, remaining })));
       } finally {
         controller.close();
       }

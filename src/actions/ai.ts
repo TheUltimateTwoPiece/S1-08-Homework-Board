@@ -1,8 +1,33 @@
 "use server";
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { createClient } from "@/lib/supabase/server";
+import { tripProfanity } from "@/lib/profanity";
+import { redirect } from "next/navigation";
+
+const MAX_AI_CONTENT_LENGTH = 20000;
 
 export async function enhanceContentWithAI(content: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "You must be signed in." };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+  if (profile?.role !== "admin") return { error: "Only admins can use post enhancement." };
+
+  const normalizedContent = typeof content === "string" ? content.trim() : "";
+  if (!normalizedContent) return { error: "Enter some content first." };
+  if (normalizedContent.length > MAX_AI_CONTENT_LENGTH) {
+    return { error: `Content is too long (max ${MAX_AI_CONTENT_LENGTH} characters).` };
+  }
+
+  const profanity = tripProfanity({ userId: user.id }, normalizedContent);
+  if (profanity.triggered) redirect(profanity.redirectUrl);
+
   const apiKey = process.env.GOOGLE_GEMINI_API_KEY;
 
   if (!apiKey) {
@@ -21,7 +46,7 @@ Make it clearer, more organized, and student-friendly. Keep the core information
 - Structure (add sections if needed)
 
 Original content:
-${content}
+${normalizedContent}
 
 Return only the improved content, no additional commentary.`;
 
@@ -34,6 +59,12 @@ Return only the improved content, no additional commentary.`;
 
     console.error("AI enhancement error:", message);
 
-    return { error: `AI error: ${message}` };
+    const lower = message.toLowerCase();
+    const userMessage = lower.includes("quota") || lower.includes("429")
+      ? "Gemini quota exceeded. Try again later."
+      : lower.includes("api key") || lower.includes("unauthorized") || lower.includes("forbidden")
+        ? "Gemini is not configured correctly. Check the server API key."
+        : "AI enhancement failed. Try again.";
+    return { error: userMessage };
   }
 }
