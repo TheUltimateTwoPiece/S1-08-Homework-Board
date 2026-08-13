@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { format, isPast, parseISO } from "date-fns";
 import { PostCompleteButton } from "@/components/PostCompleteButton";
 import { togglePostComplete } from "@/actions/completions";
+import { getDueBadge } from "@/lib/due";
 import type { Post } from "@/lib/types";
 import { getTodayString } from "@/lib/time";
 
@@ -10,17 +10,6 @@ type PostsWidgetProps = {
   completedSet: Set<string>;
   firstName: string;
 };
-
-function formatDueLabel(due: string | null) {
-  if (!due) return null;
-  const date = parseISO(due);
-  const today = getTodayString();
-  if (isPast(date) && due < today) {
-    return { text: "Overdue", className: "text-rose-700" };
-  }
-  if (due === today) return { text: "Due today", className: "text-amber-700" };
-  return { text: "Due " + format(date, "MMM d"), className: "hb-card-meta" };
-}
 
 export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps) {
   const top = posts.slice(0, 7);
@@ -65,7 +54,7 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
         <ul className="hb-list-scroll -mx-2 space-y-1 pb-6">
           {top.map((post, i) => {
             const done = completedSet.has(post.id);
-            const due = formatDueLabel(post.due_at);
+            const due = getDueBadge(post.due_at);
             const rowClass = done ? "hb-posts-widget-row--done" : post.pinned ? "hb-posts-widget-row--pinned" : "hb-posts-widget-row--todo";
             // Cap the subject tag at two subjects + an overflow count instead of
             // letting a long list stretch or clip awkwardly inside the row.
@@ -87,7 +76,7 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
                     <span className={"hb-card-section hb-truncate text-sm " + (done ? "hb-card-faded line-through" : "")}>{post.title}</span>
                     <span className="hb-badge-subject hb-truncate max-w-[72px] shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold">{subjectLabel}</span>
                   </div>
-                  {due && <div className={"mt-0.5 text-[11px] font-bold " + due.className}>{due.text}</div>}
+                  {due && <div className={"mt-0.5 text-[11px] font-bold " + due.className}>{due.label}</div>}
                 </Link>
               </li>
             );

@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { differenceInCalendarDays, parseISO } from "date-fns";
-import { formatAppDateOnly, getTodayString } from "@/lib/time";
+import { format, parseISO } from "date-fns";
+import { getDueState } from "@/lib/due";
 import type { Post } from "@/lib/types";
 
 type UpcomingWidgetProps = { posts: Post[]; };
@@ -41,10 +41,12 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
       ) : (
         <ul className="hb-list-scroll -mx-1 space-y-1 pb-1">
           {upcoming.map((post, i) => {
-            const dueAt = post.due_at as string;
-            const due = parseISO(dueAt);
-            const daysUntil = differenceInCalendarDays(due, parseISO(todayStr));
-            const today = daysUntil === 0;
+            const due = parseISO(post.due_at as string);
+            // Calendar-day countdown, not elapsed-time: a date-only due_at
+            // is "any time that day", so it reads "Tomorrow" all day instead
+            // of "in about 14 hours" at 10 AM.
+            const state = getDueState(post.due_at);
+            const today = state?.kind === "today";
             return (
               <li key={post.id} className="hb-snippet relative z-[3]" style={{ animationDelay: (200 + i * 28) + "ms" }}>
                 <div className={"flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-lg text-[10px] font-bold " + (today ? "bg-amber-200 text-amber-900" : "hb-card-meta bg-zinc-100")}>
@@ -54,7 +56,13 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
                 <Link href={"/posts/" + post.id} className="min-w-0 flex-1 relative z-[3]">
                   <div className="hb-card-section hb-truncate text-sm">{post.title}</div>
                   <div className={"text-[11px] font-bold " + (today ? "text-amber-800" : "hb-card-meta")}>
-                    {today ? "Today" : daysUntil === 1 ? "Tomorrow" : `In ${daysUntil} days`}
+                    {today
+                      ? "Today"
+                      : state?.kind === "tomorrow"
+                        ? "Tomorrow"
+                        : state
+                          ? `In ${state.diffDays} days`
+                          : ""}
                   </div>
                 </Link>
               </li>
