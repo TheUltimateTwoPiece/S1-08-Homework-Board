@@ -1,14 +1,10 @@
 import Link from "next/link";
-import {
-  differenceInCalendarDays,
-  format,
-  formatDistanceToNow,
-  parseISO,
-} from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageTopBar } from "@/components/PageTopBar";
 import { DEFAULT_SUBJECT } from "@/lib/subjects";
+import { getDueState } from "@/lib/due";
 import { normalizePost, type Post } from "@/lib/types";
 
 export const revalidate = 30;
@@ -277,12 +273,10 @@ export default async function YourProgressPage() {
         ) : (
           <ul className="divide-y divide-slate-100 dark:divide-slate-700">
             {upNext.map((post) => {
-              const due = post.due_at;
-              const overdue = due && due < todayStr;
-              const daysUntil =
-                due === null
-                  ? null
-                  : differenceInCalendarDays(parseISO(due), new Date());
+              // Same calendar-day source of truth as the dashboard and post
+              // cards — this list can never drift out of sync with them.
+              const state = getDueState(post.due_at);
+              const overdue = state?.kind === "overdue";
               return (
                 <li key={post.id}>
                   <Link
@@ -298,18 +292,20 @@ export default async function YourProgressPage() {
                     <div
                       className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-bold ${
                         overdue
-                          ? "bg-rose-100 text-rose-800"
-                          : daysUntil === 0
-                          ? "bg-amber-100 text-amber-800"
+                          ? "bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-200"
+                          : state?.kind === "today"
+                          ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200"
                           : "hb-card-meta bg-slate-100"
                       }`}
                     >
-                      {overdue
-                        ? `Overdue ${Math.abs(daysUntil ?? 0)}d`
-                        : daysUntil === 0
-                        ? "Today"
-                        : due
-                        ? `In ${daysUntil}d`
+                      {state
+                        ? overdue
+                          ? `Overdue ${Math.abs(state.diffDays)}d`
+                          : state.kind === "today"
+                          ? "Today"
+                          : state.kind === "tomorrow"
+                          ? "Tomorrow"
+                          : `In ${state.diffDays} days`
                         : "No due date"}
                     </div>
                   </Link>
