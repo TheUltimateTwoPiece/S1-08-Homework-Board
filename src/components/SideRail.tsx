@@ -181,6 +181,20 @@ const ADMIN_NAV_ITEMS: RailItem[] = [
     adminOnly: true,
   },
   {
+    href: "/admin/analytics",
+    label: "Analytics",
+    icon: (
+      <Icon>
+        <path d="M4 19V5" />
+        <path d="M4 19h17" />
+        <rect x="7" y="12" width="2.5" height="4" rx="0.5" />
+        <rect x="11.5" y="9" width="2.5" height="7" rx="0.5" />
+        <rect x="16" y="5" width="2.5" height="11" rx="0.5" />
+      </Icon>
+    ),
+    adminOnly: true,
+  },
+  {
     href: "/admin/pip-stats",
     label: "Pip Stats",
     icon: (

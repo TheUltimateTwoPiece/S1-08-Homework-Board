@@ -30,6 +30,7 @@ export default async function PostPage({ params }: PageProps) {
     { data: comments },
     { data: completion },
     { data: checklistProgress },
+    { data: views },
   ] = await Promise.all([
     supabase
       .from("posts")
@@ -52,9 +53,22 @@ export default async function PostPage({ params }: PageProps) {
       .select("item_id")
       .eq("post_id", id)
       .eq("user_id", profile.id),
+    supabase
+      .from("post_views")
+      .select("id")
+      .eq("post_id", id),
   ]);
 
   if (!post) notFound();
+
+  // Fire-and-forget view tracking. The RPC is idempotent and ignores the
+  // current user's own repeated opens; failures must never break the page.
+  try {
+    await supabase.rpc("record_post_view", { p_post_id: id });
+  } catch {
+    // Migration not applied yet — view tracking is non-critical.
+  }
+  const viewCount = (views ?? []).length;
 
   const typedPost = normalizePost(post as Post);
   const isCompleted = Boolean(completion);
@@ -313,6 +327,14 @@ export default async function PostPage({ params }: PageProps) {
             {wasEdited && (
               <span className="hb-card-meta inline-flex items-center rounded-md px-2 py-0.5 text-[10px]">Edited</span>
             )}
+            <span className="hb-card-meta mx-0.5">·</span>
+            <div className="hb-card-meta flex items-center gap-1.5 text-xs">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
+                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              {viewCount} view{viewCount === 1 ? "" : "s"}
+            </div>
             <span className="hb-card-meta mx-0.5">·</span>
             <div className="hb-card-meta flex items-center gap-1.5 text-xs">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">

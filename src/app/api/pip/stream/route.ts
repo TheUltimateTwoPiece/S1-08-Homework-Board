@@ -15,6 +15,15 @@ import {
 } from "@/lib/pip-context";
 import { DAILY_LIMIT } from "@/lib/pip-types";
 import { getPromptDateString } from "@/lib/time";
+import {
+  acquireInFlight,
+  cooldownRemainingSeconds,
+  getCachedReply,
+  isCoolingDown,
+  markQuotaExhausted,
+  putCachedReply,
+  releaseInFlight,
+} from "@/lib/pip-cost-guard";
 
 function sseEvent(data: Record<string, unknown>): string {
   return `data: ${JSON.stringify(data)}\n\n`;
@@ -125,6 +134,13 @@ export async function POST(request: NextRequest) {
 
   remaining = DAILY_LIMIT - (newCount as number);
 
+  if (isCoolingDown()) {
+    return new Response(
+      sseEvent({ type: "error", message: `Gemini is busy recovering. Try again in ${cooldownRemainingSeconds()}s.`, remaining }),
+      { headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache", Connection: "keep-alive" } },
+    );
+  }
+
   if (contextPromise.status !== "fulfilled") {
     return new Response(
       sseEvent({
@@ -161,14 +177,29 @@ export async function POST(request: NextRequest) {
 
   const effectiveInstructions = instructions || dbInstructions?.trim() || null;
 
+  const cachedReply = getCachedReply(user.id, trimmed);
+  if (cachedReply !== null) {
+    return new Response(
+      sseEvent({ type: "token", text: cachedReply }) + sseEvent({ type: "done", remaining }),
+      { headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache", Connection: "keep-alive" } },
+    );
+  }
+
   const systemPrompt = buildSystemPrompt(userContext, effectiveInstructions);
 
   const stream = new ReadableStream({
     async start(controller) {
       const encoder = new TextEncoder();
       let fullReply = "";
+      let lockHeld = false;
 
       try {
+        if (!acquireInFlight(user.id)) {
+          controller.enqueue(encoder.encode(sseEvent({ type: "error", message: "You already have a reply on the way. Wait for it to finish.", remaining })));
+          return;
+        }
+        lockHeld = true;
+
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
           model: "gemini-3.1-flash-lite",
@@ -191,6 +222,7 @@ export async function POST(request: NextRequest) {
         }
 
         const { cleanReply, actions } = parseConfirmActions(fullReply);
+        if (actions.length === 0) putCachedReply(user.id, trimmed, cleanReply);
 
         if (chatId) {
           try {
@@ -214,6 +246,9 @@ export async function POST(request: NextRequest) {
         const msg = error instanceof Error ? error.message : String(error);
         console.error("Pip stream error:", msg);
         const lower = msg.toLowerCase();
+        if (lower.includes("quota") || lower.includes("429") || lower.includes("resource exhausted")) {
+          markQuotaExhausted();
+        }
         const message = lower.includes("quota") || lower.includes("429") || lower.includes("resource exhausted")
           ? "Gemini quota exceeded. Try again later."
           : lower.includes("api key") || lower.includes("unauthorized") || lower.includes("forbidden")
@@ -221,6 +256,7 @@ export async function POST(request: NextRequest) {
             : "Pip ran into a problem. Try again.";
         controller.enqueue(encoder.encode(sseEvent({ type: "error", message, remaining })));
       } finally {
+        if (lockHeld) releaseInFlight(user.id);
         controller.close();
       }
     },
