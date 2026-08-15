@@ -247,7 +247,7 @@ export function PipBubble({ remaining: initialRemaining }: { remaining: number }
                   {streamingText ? (
                     <MarkdownRenderer text={streamingText} />
                   ) : (
-                    <span className="text-slate-400 dark:text-slate-500 italic">Thinking...</span>
+                    <span className="text-slate-300 dark:text-slate-300 italic">Thinking...</span>
                   )}
                   {streamingText && <span className="inline-block w-1 h-3 ml-0.5 bg-blue-500 animate-pulse rounded-sm align-middle" />}
                 </div>
