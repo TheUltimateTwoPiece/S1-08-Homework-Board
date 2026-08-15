@@ -81,6 +81,93 @@
     --hb-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
   }
 
+  /* ── Multi-Theme Presets (data-theme attribute) ──────────────────────────
+     The theme engine sets `data-theme` on <html>. Light/dark reuse the
+     :root/.dark token sets above; emerald/sunset add full palettes; custom
+     maps the dynamic vars (--bg/--card-bg/--border/--primary/--text) that the
+     engine injects inline on <html> after sampling an uploaded image. */
+
+  [data-theme="emerald"] {
+    --hb-blue: #047857;
+    --hb-blue-light: #059669;
+    --hb-red: #dc2626;
+    --hb-danger: var(--hb-red);
+    --hb-success: #059669;
+    --hb-success-light: #10b981;
+    --hb-warning: #b45309;
+    --hb-warning-light: #d97706;
+    --hb-surface: #ffffff;
+    --hb-surface-muted: #ecfdf5;
+    --hb-surface-hover: #d1fae5;
+    --hb-border: #a7f3d0;
+    --hb-border-hover: #6ee7b7;
+    --hb-text-page: #022c22;
+    --hb-text-section: #064e3b;
+    --hb-text-body: #065f46;
+    --hb-text-muted: #047857;
+    --hb-text-faded: #059669;
+    --hb-text: var(--hb-text-body);
+    --hb-text-subtle: var(--hb-text-muted);
+    --hb-overlay: rgba(0, 0, 0, 0.04);
+    --hb-bg-grad-1: rgba(16, 185, 129, 0.12);
+    --hb-bg-grad-2: rgba(5, 150, 105, 0.10);
+    --hb-bg-grad-3: rgba(52, 211, 153, 0.06);
+    --background: var(--hb-surface-muted);
+    --foreground: var(--hb-text);
+  }
+
+  [data-theme="sunset"] {
+    --hb-blue: #c2410c;
+    --hb-blue-light: #ea580c;
+    --hb-red: #dc2626;
+    --hb-danger: var(--hb-red);
+    --hb-success: #16a34a;
+    --hb-success-light: #22c55e;
+    --hb-warning: #b45309;
+    --hb-warning-light: #d97706;
+    --hb-surface: #ffffff;
+    --hb-surface-muted: #fff7ed;
+    --hb-surface-hover: #ffedd5;
+    --hb-border: #fed7aa;
+    --hb-border-hover: #fdba74;
+    --hb-text-page: #431407;
+    --hb-text-section: #7c2d12;
+    --hb-text-body: #9a3412;
+    --hb-text-muted: #c2410c;
+    --hb-text-faded: #ea580c;
+    --hb-text: var(--hb-text-body);
+    --hb-text-subtle: var(--hb-text-muted);
+    --hb-overlay: rgba(0, 0, 0, 0.04);
+    --hb-bg-grad-1: rgba(249, 115, 22, 0.12);
+    --hb-bg-grad-2: rgba(234, 88, 12, 0.10);
+    --hb-bg-grad-3: rgba(251, 146, 60, 0.06);
+    --background: var(--hb-surface-muted);
+    --foreground: var(--hb-text);
+  }
+
+  [data-theme="custom"] {
+    --hb-blue: var(--primary);
+    --hb-blue-light: var(--primary);
+    --hb-surface: var(--card-bg);
+    --hb-surface-muted: var(--bg);
+    --hb-surface-hover: color-mix(in srgb, var(--card-bg) 88%, var(--text) 12%);
+    --hb-border: var(--border);
+    --hb-border-hover: color-mix(in srgb, var(--border) 55%, var(--text) 45%);
+    --hb-text-page: var(--text);
+    --hb-text-section: var(--text);
+    --hb-text-body: var(--text);
+    --hb-text-muted: color-mix(in srgb, var(--text) 68%, transparent);
+    --hb-text-faded: color-mix(in srgb, var(--text) 52%, transparent);
+    --hb-text: var(--text);
+    --hb-text-subtle: color-mix(in srgb, var(--text) 68%, transparent);
+    --hb-overlay: color-mix(in srgb, var(--text) 6%, transparent);
+    --hb-bg-grad-1: color-mix(in srgb, var(--primary) 10%, transparent);
+    --hb-bg-grad-2: color-mix(in srgb, var(--primary) 8%, transparent);
+    --hb-bg-grad-3: color-mix(in srgb, var(--primary) 4%, transparent);
+    --background: var(--bg);
+    --foreground: var(--text);
+  }
+
   body {
     background:
       radial-gradient(
@@ -1797,5 +1884,32 @@
     .hb-skeleton {
       background: rgba(100, 116, 139, 0.12);
     }
+  }
+}
+
+/* ── Multi-Theme System: backdrop blur on surfaces ──────────────────────────
+   Cards/containers get a 12px backdrop blur so dynamic image backgrounds stay
+   smooth and legible under their semi-transparent surfaces. Presets keep
+   opaque surfaces (blur is a no-op visually); custom themes use translucent
+   overlays that let the frosted blur read through. */
+
+@layer components {
+  .hb-card,
+  .hb-card-surface,
+  .hb-card-surface-strong,
+  .hb-bento-card,
+  .hb-input,
+  .hb-siderail {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* Frosted-glass content surfaces under a custom image theme: stay mostly
+     white so the hardcoded dark in-card text remains AA-readable, while a
+     hint of the themed background bleeds through the blur. */
+  [data-theme="custom"] .hb-card-surface,
+  [data-theme="custom"] .hb-card-surface-strong,
+  [data-theme="custom"] .hb-bento-card {
+    background: rgba(255, 255, 255, 0.88);
   }
 }
