@@ -25,12 +25,7 @@ export function StatsWidget({
 
   return (
     <section
-      className="hb-bento-card hb-bento-card--clickable group relative overflow-hidden"
-      style={{
-        gridColumn: "span 4",
-        gridRow: "span 2",
-        animationDelay: "120ms",
-      }}
+      className="hb-dashboard-card hb-dashboard-card--clickable hb-dashboard-progress-card group relative overflow-hidden"
     >
       <div className="hb-bento-head relative z-[1]">
         <div className="flex min-w-0 items-center gap-3">
@@ -51,7 +46,7 @@ export function StatsWidget({
           </h2>
         </div>
         <span className="hb-bento-action">
-          View →
+          <span className="hidden sm:inline">Details</span> →
         </span>
       </div>
 

@@ -1,7 +1,6 @@
-import { getAppDayOfWeek, getTodayString, getPromptDateString, formatAppDate } from "@/lib/time";
+import { getAppDayOfWeek, getDateAfterDaysString, getTodayString, getPromptDateString } from "@/lib/time";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
-import { PageTopBar } from "@/components/PageTopBar";
 import { PostsWidget } from "@/components/dashboard/PostsWidget";
 import { CalendarWidget } from "@/components/dashboard/CalendarWidget";
 import { StatsWidget } from "@/components/dashboard/StatsWidget";
@@ -9,6 +8,8 @@ import { UpcomingWidget } from "@/components/dashboard/UpcomingWidget";
 import { NotificationsWidget } from "@/components/dashboard/NotificationsWidget";
 import { DutyWidget } from "@/components/dashboard/DutyWidget";
 import { FeedbackWidget } from "@/components/dashboard/FeedbackWidget";
+import { DashboardHero } from "@/components/dashboard/DashboardHero";
+import { DashboardMetrics } from "@/components/dashboard/DashboardMetrics";
 import { PipBubble } from "@/components/PipBubble";
 import { normalizePost, type AdminSchedule, type Feedback, type Notification, type Post } from "@/lib/types";
 
@@ -21,6 +22,7 @@ export default async function DashboardPage() {
   const profile = await requireProfile();
   const supabase = await createClient();
   const todayStr = getTodayString();
+  const tomorrowStr = getDateAfterDaysString(1);
   const dayOfWeek = getAppDayOfWeek();
   const isAdmin = profile.role === "admin";
 
@@ -94,6 +96,13 @@ export default async function DashboardPage() {
 
   const totalPosts = typedPosts.length;
   const completedCount = typedPosts.filter((p) => completedSet.has(p.id)).length;
+  const remainingCount = Math.max(0, totalPosts - completedCount);
+  const todayDueCount = typedPosts.filter(
+    (p) => p.due_at === todayStr && !completedSet.has(p.id),
+  ).length;
+  const dueTomorrowCount = typedPosts.filter(
+    (p) => p.due_at === tomorrowStr && !completedSet.has(p.id),
+  ).length;
   // "Upcoming" / "Overdue" should reflect work the student still owes. If
   // the post is already completed, it's neither — otherwise the widget
   // double-counts finished work as pressure.
@@ -132,31 +141,47 @@ export default async function DashboardPage() {
   const pipRemaining = Math.max(0, 100 - pipUsed);
 
   return (
-    <div className="mx-auto w-full max-w-[1400px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-      <PageTopBar
-        profile={profile}
-        greetingName={firstName}
-        subtitle={`It's ${formatAppDate(new Date())}. Here's your homework dashboard.`}
-        showAdminCta
+    <div className="hb-dashboard mx-auto w-full max-w-[1480px] px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
+      <DashboardHero
+        firstName={firstName}
+        todayDueCount={todayDueCount}
+        overdueCount={overdueCount}
+        pipRemaining={pipRemaining}
+        isAdmin={isAdmin}
       />
 
-      <div className="hb-bento">
-        <PostsWidget
-          posts={sortedPosts}
-          completedSet={completedSet}
-          firstName={firstName}
-        />
+      <DashboardMetrics
+        dueTomorrowCount={dueTomorrowCount}
+        remainingCount={remainingCount}
+        overdueCount={overdueCount}
+        completedCount={completedCount}
+      />
+
+      <div className="hb-dashboard-workspace">
+        <section className="hb-dashboard-primary" aria-label="Homework focus queue">
+          <PostsWidget
+            posts={sortedPosts}
+            completedSet={completedSet}
+            firstName={firstName}
+          />
+        </section>
+
+        <aside className="hb-dashboard-sidebar" aria-label="Your dashboard details">
+          <StatsWidget
+            totalPosts={totalPosts}
+            completedCount={completedCount}
+            upcomingCount={upcomingCount}
+            overdueCount={overdueCount}
+          />
+          <UpcomingWidget posts={sortedPosts} />
+          <NotificationsWidget
+            notifications={(notifications as Notification[]) ?? []}
+          />
+        </aside>
+      </div>
+
+      <section className={`hb-dashboard-lower-grid ${isAdmin ? "hb-dashboard-lower-grid--admin" : ""}`}>
         <CalendarWidget posts={typedPosts} />
-        <StatsWidget
-          totalPosts={totalPosts}
-          completedCount={completedCount}
-          upcomingCount={upcomingCount}
-          overdueCount={overdueCount}
-        />
-        <UpcomingWidget posts={sortedPosts} />
-        <NotificationsWidget
-          notifications={(notifications as Notification[]) ?? []}
-        />
         {isAdmin && (
           <>
             <DutyWidget
@@ -168,7 +193,7 @@ export default async function DashboardPage() {
             <FeedbackWidget feedback={feedback} />
           </>
         )}
-      </div>
+      </section>
 
       <PipBubble remaining={pipRemaining} />
     </div>

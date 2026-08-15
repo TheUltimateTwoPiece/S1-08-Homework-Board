@@ -28,8 +28,7 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
 
   return (
     <section
-      className="hb-bento-card hb-bento-card--clickable group relative "
-      style={{ gridColumn: "span 7", gridRow: "span 2", animationDelay: "40ms" }}
+      className="hb-dashboard-card hb-dashboard-card--clickable hb-dashboard-homework-card group relative"
     >
       <div className="hb-bento-head relative z-[1]">
         <div className="flex min-w-0 items-center gap-3">
@@ -42,11 +41,13 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
           </div>
           <div className="min-w-0">
             <h2 className="hb-card-section hb-truncate text-base tracking-tight">{firstName}'s homework</h2>
-            <p className="hb-card-body hb-truncate text-xs font-semibold">{totalDone} of {top.length} done · tap to open</p>
+            <p className="hb-card-body hb-truncate text-xs font-semibold">
+              {totalDone} of {top.length} visible complete · your focus queue
+            </p>
           </div>
         </div>
         <span className="hb-bento-action">
-          View all →
+          <span className="hidden sm:inline">View all</span> →
         </span>
       </div>
 
@@ -62,7 +63,7 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
           <p className="hb-card-meta text-xs">No homework waiting for you.</p>
         </div>
       ) : (
-        <ul className="hb-list-scroll -mx-2 space-y-1 pb-6">
+        <ul className="hb-list-scroll hb-dashboard-homework-list -mx-2 space-y-1 pb-6">
           {top.map((post, i) => {
             const done = completedSet.has(post.id);
             const due = formatDueLabel(post.due_at);
@@ -85,7 +86,7 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
                   <div className="flex items-center gap-2 min-w-0">
                     {post.pinned && <span aria-hidden="true" className="text-amber-600 shrink-0">📌</span>}
                     <span className={"hb-card-section hb-truncate text-sm " + (done ? "hb-card-faded line-through" : "")}>{post.title}</span>
-                    <span className="hb-badge-subject hb-truncate max-w-[72px] shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold">{subjectLabel}</span>
+                    <span className="hb-badge-subject hb-truncate max-w-[112px] shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold">{subjectLabel}</span>
                   </div>
                   {due && <div className={"mt-0.5 text-[11px] font-bold " + due.className}>{due.text}</div>}
                 </Link>

@@ -22,8 +22,7 @@ export function DutyWidget({ todaySchedules, completedToday, todayStr, currentAd
 
   return (
     <section
-      className="hb-bento-card hb-bento-card--clickable group relative "
-      style={{ gridColumn: "span 6", gridRow: "span 2", animationDelay: "200ms" }}
+      className="hb-dashboard-card hb-dashboard-card--clickable hb-dashboard-duty-card group relative"
     >
       <div className="hb-bento-head relative z-[1]">
         <div className="flex min-w-0 items-center gap-3">
@@ -46,7 +45,7 @@ export function DutyWidget({ todaySchedules, completedToday, todayStr, currentAd
           </div>
         </div>
         <span className="hb-bento-action">
-          Schedule →
+          <span className="hidden sm:inline">Schedule</span> →
         </span>
       </div>
 
