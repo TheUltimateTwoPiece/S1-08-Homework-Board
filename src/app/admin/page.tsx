@@ -76,19 +76,6 @@ export default async function AdminPage() {
             Bug report inbox
           </Link>
           <Link
-            href="/admin/analytics"
-            className="hb-card-section inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
-              <path d="M4 19V5" />
-              <path d="M4 19h17" />
-              <rect x="7" y="12" width="2.5" height="4" rx="0.5" />
-              <rect x="11.5" y="9" width="2.5" height="7" rx="0.5" />
-              <rect x="16" y="5" width="2.5" height="11" rx="0.5" />
-            </svg>
-            Analytics
-          </Link>
-          <Link
             href="/admin/pip-stats"
             className="hb-card-section inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm shadow-sm transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700"
           >

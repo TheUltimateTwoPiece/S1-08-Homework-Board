@@ -20,15 +20,6 @@ import {
   DAILY_LIMIT,
   type PipResult,
 } from "@/lib/pip-types";
-import {
-  acquireInFlight,
-  cooldownRemainingSeconds,
-  getCachedReply,
-  isCoolingDown,
-  markQuotaExhausted,
-  putCachedReply,
-  releaseInFlight,
-} from "@/lib/pip-cost-guard";
 
 export async function askPip(
   question: string,
@@ -93,18 +84,6 @@ export async function askPip(
 
   const remaining = DAILY_LIMIT - (newCount as number);
 
-  if (isCoolingDown()) {
-    return {
-      error: `Gemini is busy recovering. Try again in ${cooldownRemainingSeconds()}s.`,
-      remaining,
-    };
-  }
-
-  const cachedReply = getCachedReply(user.id, trimmed);
-  if (cachedReply !== null) {
-    return { reply: cachedReply, remaining };
-  }
-
   if (contextPromise.status !== "fulfilled") {
     return {
       error: "Pip couldn't load your current homework data. Please try again.",
@@ -116,10 +95,6 @@ export async function askPip(
   const apiKey = process.env.GOOGLE_GEMINI_API_KEY;
   if (!apiKey) {
     return { error: "Gemini API key is not configured. Set GOOGLE_GEMINI_API_KEY.", remaining };
-  }
-
-  if (!acquireInFlight(user.id)) {
-    return { error: "You already have a reply on the way. Wait for it to finish.", remaining };
   }
 
   const historyContents: Array<{ role: "user" | "model"; parts: { text: string }[] }> = [];
@@ -160,9 +135,6 @@ export async function askPip(
     const result = await model.generateContent({ contents });
     const rawReply = result.response.text();
     const { cleanReply, actions } = parseConfirmActions(rawReply);
-    // Only cache replies without confirmation actions — a cached reply would
-    // otherwise drop the [CONFIRM:...] button on a repeated question.
-    if (actions.length === 0) putCachedReply(user.id, trimmed, cleanReply);
 
     if (chatId) {
       try {
@@ -190,11 +162,8 @@ export async function askPip(
       return { error: "Gemini is not configured correctly. Please contact an admin.", remaining };
     }
     if (lower.includes("quota") || lower.includes("429") || lower.includes("resource exhausted")) {
-      markQuotaExhausted();
       return { error: "Gemini quota exceeded. Try again later.", remaining };
     }
     return { error: "Pip ran into a problem. Try again.", remaining };
-  } finally {
-    releaseInFlight(user.id);
   }
 }
