@@ -894,6 +894,62 @@
   .hb-text-success { color: var(--hb-success); }
   .hb-text-warning { color: var(--hb-warning); }
 
+  /* ── Pip Chat (theme-aware surfaces) ─────────── */
+  /* Pip bubbles, the chat panel and its sidebar follow the theme surface +
+     text tokens so uploaded-image themes (which flip --hb-surface and
+     --hb-text-*) keep readable text while matching the rest of the UI.
+     The --hb-text-* classes above are the WCAG-AA hierarchy tokens. */
+
+  .hb-chat-panel {
+    background: var(--hb-surface);
+    border: 1px solid var(--hb-border);
+  }
+
+  .hb-chat-sidebar {
+    background: var(--hb-surface-muted);
+    border-right: 1px solid var(--hb-border);
+  }
+
+  .hb-chat-bubble {
+    background: var(--hb-surface);
+    border: 1px solid var(--hb-border);
+    color: var(--hb-text-body);
+  }
+
+  .hb-bg-surface { background: var(--hb-surface); }
+  .hb-bg-surface-hover { background: var(--hb-surface-hover); }
+  .hb-hover-surface:hover { background: var(--hb-surface-hover); }
+  .hb-bg-overlay { background: var(--hb-overlay); }
+  .hb-bg-accent { background: var(--hb-bg-grad-1); }
+  .hb-border-theme { border-color: var(--hb-border); }
+  .hb-text-accent { color: var(--hb-blue); }
+
+  /* Pip markdown accents — theme-aware code/quote/table surfaces */
+  .hb-pip-code {
+    background: var(--hb-surface-hover);
+    color: var(--hb-text-body);
+  }
+
+  .hb-pip-code-block {
+    background: var(--hb-surface-hover);
+    border: 1px solid var(--hb-border);
+    color: var(--hb-text-body);
+  }
+
+  .hb-pip-quote {
+    border-left: 2px solid var(--hb-blue);
+    color: var(--hb-text-muted);
+  }
+
+  .hb-pip-rule {
+    border-color: var(--hb-border);
+  }
+
+  .hb-pip-cell {
+    border: 1px solid var(--hb-border);
+    color: var(--hb-text-body);
+  }
+
   /* ── Check Button (Complete) ─────────────────── */
 
   .hb-check-btn--done {
