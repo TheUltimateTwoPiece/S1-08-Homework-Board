@@ -3,7 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { isBugReportStatus, isFeedbackStatus } from "@/lib/inbox-status";
+
+const FEEDBACK_STATUSES = new Set(["unread", "read", "resolved"]);
+const BUG_REPORT_STATUSES = new Set(["unread", "in_progress", "resolved"]);
 
 type InboxActionResult = { success?: boolean; error?: string };
 
@@ -30,7 +32,7 @@ export async function setFeedbackStatus(formData: FormData): Promise<InboxAction
   if (typeof feedbackId !== "string" || !feedbackId.trim()) {
     return { error: "Missing feedback item." };
   }
-  if (typeof status !== "string" || !isFeedbackStatus(status)) {
+  if (typeof status !== "string" || !FEEDBACK_STATUSES.has(status)) {
     return { error: "Invalid feedback status." };
   }
 
@@ -55,7 +57,7 @@ export async function setBugReportStatus(formData: FormData): Promise<InboxActio
   if (typeof reportId !== "string" || !reportId.trim()) {
     return { error: "Missing bug report." };
   }
-  if (typeof status !== "string" || !isBugReportStatus(status)) {
+  if (typeof status !== "string" || !BUG_REPORT_STATUSES.has(status)) {
     return { error: "Invalid bug report status." };
   }
 

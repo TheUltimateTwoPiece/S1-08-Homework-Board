@@ -238,7 +238,6 @@ export async function createPost(formData: FormData) {
   revalidatePath("/admin");
   revalidatePath("/notifications");
   revalidatePath("/your-progress");
-  revalidatePath("/due-soon");
   revalidatePath(`/posts/${post.id}`);
   return { success: true };
 }
@@ -375,7 +374,6 @@ export async function updatePost(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/calendar");
   revalidatePath("/your-progress");
-  revalidatePath("/due-soon");
   revalidatePath(`/posts/${postId}`);
   revalidatePath("/admin");
   return { success: true };
@@ -444,7 +442,6 @@ export async function deletePost(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/your-progress");
-  revalidatePath("/due-soon");
   redirect("/");
 }
 

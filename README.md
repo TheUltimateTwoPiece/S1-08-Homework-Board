@@ -130,25 +130,6 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Testing & CI
-
-Unit tests cover the pure date, subject, completion, and inbox-status logic that backs the due-soon page, the mark-complete action, and the admin inboxes:
-
-```bash
-npm test          # run once (used by CI)
-npm test:watch    # watch mode during development
-```
-
-A GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push to
-`main`/`Hemanth` and every pull request into `main`. It executes, in order:
-
-```text
-typecheck → lint → HTML-entity check → unit tests → production build
-```
-
-If any step fails, the deploy is blocked, which prevents conflict- or
-regression-generated build errors from reaching Vercel.
-
 ## Usage
 
 | Role    | Can do |

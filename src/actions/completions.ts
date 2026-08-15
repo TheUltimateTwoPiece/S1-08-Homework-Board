@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { resolveCompletionAction } from "@/lib/completions";
 
 export async function togglePostComplete(formData: FormData) {
   const supabase = await createClient();
@@ -40,9 +39,9 @@ export async function togglePostComplete(formData: FormData) {
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const decision = resolveCompletionAction(Boolean(existing), desiredCompleted);
+  const shouldComplete = desiredCompleted ?? !existing;
 
-  if (decision.action === "complete") {
+  if (shouldComplete) {
     if (!existing) {
       const { error } = await supabase.from("post_completions").insert({
         post_id: postId,
@@ -56,7 +55,7 @@ export async function togglePostComplete(formData: FormData) {
         throw new Error(error.message);
       }
     }
-  } else if (decision.action === "uncomplete" && existing) {
+  } else if (existing) {
     const { error } = await supabase
       .from("post_completions")
       .delete()
@@ -70,5 +69,4 @@ export async function togglePostComplete(formData: FormData) {
   revalidatePath("/");
   revalidatePath(`/posts/${postId}`);
   revalidatePath("/your-progress");
-  revalidatePath("/due-soon");
 }
