@@ -2,6 +2,8 @@
   :root {
     --hb-blue: #2563eb;
     --hb-blue-light: #3b82f6;
+    --hb-btn-bg: #2563eb;
+    --hb-btn-bg-hover: #1d4ed8;
     --hb-red: #dc2626;
     --hb-grey: #475569;
     --hb-danger: var(--hb-red);
@@ -44,6 +46,8 @@
   .dark {
     --hb-blue: #60a5fa;
     --hb-blue-light: #93c5fd;
+    --hb-btn-bg: #2563eb;
+    --hb-btn-bg-hover: #1d4ed8;
     --hb-red: #f87171;
     --hb-grey: #cbd5e1;
     --hb-danger: var(--hb-red);
@@ -90,6 +94,8 @@
   [data-theme="emerald"] {
     --hb-blue: #047857;
     --hb-blue-light: #059669;
+    --hb-btn-bg: #047857;
+    --hb-btn-bg-hover: #065f46;
     --hb-red: #dc2626;
     --hb-danger: var(--hb-red);
     --hb-success: #059669;
@@ -119,6 +125,8 @@
   [data-theme="sunset"] {
     --hb-blue: #c2410c;
     --hb-blue-light: #ea580c;
+    --hb-btn-bg: #c2410c;
+    --hb-btn-bg-hover: #9a3412;
     --hb-red: #dc2626;
     --hb-danger: var(--hb-red);
     --hb-success: #16a34a;
@@ -147,7 +155,12 @@
 
   [data-theme="custom"] {
     --hb-blue: var(--primary);
-    --hb-blue-light: var(--primary);
+    --hb-blue-light: color-mix(in srgb, var(--primary) 70%, #ffffff);
+    --hb-blue-dark: color-mix(in srgb, var(--primary) 55%, #000000);
+    /* Primary buttons: a deepened variation of the main colour so white
+       text keeps AA contrast for both light and dark uploaded images. */
+    --hb-btn-bg: color-mix(in srgb, var(--primary) 45%, #000000);
+    --hb-btn-bg-hover: color-mix(in srgb, var(--primary) 35%, #000000);
     --hb-surface: var(--card-bg);
     --hb-surface-muted: var(--bg);
     --hb-surface-hover: color-mix(in srgb, var(--card-bg) 88%, var(--text) 12%);
@@ -201,6 +214,47 @@
   .dark *:focus-visible {
     box-shadow: 0 0 0 2px var(--hb-surface), 0 0 0 4px rgba(96, 165, 250, 0.35);
   }
+}
+
+/* ── Custom (uploaded-image) themes: make the palette obvious ─────────
+   Primary buttons and blue accent text adopt deepened / lightened
+   variations of the image's main colour instead of the default blue.
+   These rules are UNLAYERED so they beat Tailwind's utility classes (which
+   live in the utilities layer) — and only for [data-theme="custom"]. */
+
+[data-theme="custom"] .bg-blue-600,
+[data-theme="custom"] .dark\:bg-blue-500 {
+  background-color: var(--hb-btn-bg);
+}
+
+/* Light accent chips (sit on always-white card surfaces) take on a soft
+   primary tint so badges/icon boxes stop clashing with the theme. */
+[data-theme="custom"] .bg-blue-50 {
+  background-color: color-mix(in srgb, var(--hb-blue) 8%, #ffffff);
+}
+
+[data-theme="custom"] .bg-blue-100 {
+  background-color: color-mix(in srgb, var(--hb-blue) 16%, #ffffff);
+}
+
+[data-theme="custom"] .hover\:bg-blue-700:hover {
+  background-color: var(--hb-btn-bg-hover);
+}
+
+[data-theme="custom"] .text-blue-600,
+[data-theme="custom"] .hover\:text-blue-600:hover {
+  color: var(--hb-blue);
+}
+
+[data-theme="custom"] .text-blue-700,
+[data-theme="custom"] .hover\:text-blue-700:hover {
+  color: var(--hb-blue-dark);
+}
+
+[data-theme="custom"] .dark\:text-blue-200,
+[data-theme="custom"] .dark\:text-blue-300,
+[data-theme="custom"] .dark\:text-blue-400 {
+  color: var(--hb-blue-light);
 }
 
 /* ── Animations ───────────────────────────────────── */

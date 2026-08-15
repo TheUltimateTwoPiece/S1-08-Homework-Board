@@ -37,7 +37,8 @@ export interface CustomThemePayload {
   border: string;
   /** Vivid accent color used for links/actions (hex). */
   primary: string;
-  /** Chosen readable text color — "#ffffff" or "#000000". */
+  /** Chosen readable text color — "#ffffff" or a very dark shade of the
+      image's main colour (kept WCAG-AA safe against `bg`). */
   text: string;
   /** Exact contrast ratio between `text` and `bg`. Always >= 4.5 (AA). */
   contrast: number;
@@ -246,8 +247,30 @@ export async function extractPaletteFromImage(
   const avg = { r: rSum / count, g: gSum / count, b: bSum / count };
   const bg = rgbToHex(avg.r, avg.g, avg.b);
 
-  const { color: text, ratio } = pickTextColor(avg);
-  const isDark = text === WHITE;
+  const { color: baseText } = pickTextColor(avg);
+  const isDark = baseText === WHITE;
+
+  // Light themes: tint the normally-black text with a very dark shade of the
+  // image's main colour so the uploaded theme reads clearly everywhere text
+  // appears (instead of plain black). Falls back to pure black if the tint
+  // can't hold WCAG-AA contrast against the background.
+  let text = baseText;
+  if (!isDark) {
+    const { h, s } = rgbToHsl(avg.r, avg.g, avg.b);
+    const hue = s < 0.05 ? 222 : h;
+    const tinted = hslToRgb(hue, Math.max(s, 0.55), 0.12);
+    const candidate = rgbToHex(tinted.r, tinted.g, tinted.b);
+    const candidateRatio = contrastRatio(
+      relativeLuminance(tinted.r, tinted.g, tinted.b),
+      relativeLuminance(avg.r, avg.g, avg.b),
+    );
+    if (candidateRatio >= 4.5) text = candidate;
+  }
+  const textRgb = hexToRgb(text)!; // always parses: "#ffffff", "#000000", or a candidate hex
+  const contrast = contrastRatio(
+    relativeLuminance(textRgb.r, textRgb.g, textRgb.b),
+    relativeLuminance(avg.r, avg.g, avg.b),
+  );
 
   // Semi-transparent overlays scale naturally over any background while
   // keeping separation between surfaces. Direction follows the text color so
@@ -276,7 +299,7 @@ export async function extractPaletteFromImage(
     thumbnail = undefined;
   }
 
-  return { bg, cardBg, border, primary, text, contrast: ratio, thumbnail };
+  return { bg, cardBg, border, primary, text, contrast, thumbnail };
 }
 
 /* ────────────────────────────────────────────────────────────────────────────

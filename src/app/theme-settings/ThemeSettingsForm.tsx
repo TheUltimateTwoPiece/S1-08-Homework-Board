@@ -390,7 +390,7 @@ export function ThemeSettingsForm() {
               </p>
               <span
                 className="mt-3 inline-flex rounded-lg px-3 py-1.5 text-xs font-semibold text-white"
-                style={{ background: "var(--hb-blue)" }}
+                style={{ background: "var(--hb-btn-bg)" }}
               >
                 Mark complete
               </span>
