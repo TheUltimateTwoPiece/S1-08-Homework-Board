@@ -152,7 +152,7 @@ export function AdminScheduleClient({
         <form action={scheduleAction} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label htmlFor="adminId" className="hb-card-section mb-1.5 block text-xs">Admin</label>
+              <label htmlFor="adminId" className="hb-card-meta mb-1.5 block text-xs">Admin</label>
               <select
                 id="adminId"
                 name="adminId"
@@ -168,7 +168,7 @@ export function AdminScheduleClient({
               </select>
             </div>
             <div>
-              <label htmlFor="dayOfWeek" className="hb-card-section mb-1.5 block text-xs">Day of week</label>
+              <label htmlFor="dayOfWeek" className="hb-card-meta mb-1.5 block text-xs">Day of week</label>
               <select
                 id="dayOfWeek"
                 name="dayOfWeek"

@@ -95,7 +95,7 @@ export default async function AdminBugReportsPage() {
                           <PendingButton
                             type="submit"
                             pendingContent="Saving..."
-                            className="hb-card-section rounded-md px-2 py-1 text-[10px] transition hover:bg-slate-100 dark:hover:bg-stone-700/50"
+                            className="hb-card-meta rounded-md px-2 py-1 text-[10px] transition hover:bg-slate-100 dark:hover:bg-stone-700/50"
                           >
                             {nextLabel}
                           </PendingButton>
@@ -108,7 +108,7 @@ export default async function AdminBugReportsPage() {
                 </div>
               </div>
               <p className="hb-card-body mt-4 whitespace-pre-line text-sm leading-relaxed">{report.description}</p>
-              {report.steps_to_reproduce && <div className="mt-4 rounded-xl bg-slate-50 p-4 dark:bg-slate-800"><h3 className="hb-card-section text-xs font-bold uppercase tracking-wide">Steps to reproduce</h3><p className="hb-card-body mt-2 whitespace-pre-line text-sm">{report.steps_to_reproduce}</p></div>}
+              {report.steps_to_reproduce && <div className="mt-4 rounded-xl bg-slate-50 p-4 dark:bg-slate-800"><h3 className="hb-card-meta text-xs font-bold uppercase tracking-wide">Steps to reproduce</h3><p className="hb-card-body mt-2 whitespace-pre-line text-sm">{report.steps_to_reproduce}</p></div>}
               <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {report.screenshotUrls.map((url, index) => <a key={url} href={url} target="_blank" rel="noreferrer" className="group overflow-hidden rounded-xl border bg-slate-50 dark:bg-slate-800"><img src={url} alt={`${report.title} screenshot ${index + 1}`} className="aspect-video w-full object-cover transition group-hover:scale-105" /></a>)}
               </div>

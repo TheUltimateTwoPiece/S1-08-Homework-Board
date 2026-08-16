@@ -262,7 +262,7 @@ export default async function YourProgressPage() {
           </div>
           <Link
             href="/posts"
-            className="hb-card-section rounded-md px-3 py-1.5 text-xs transition hover:bg-slate-100 dark:hover:bg-stone-700/50"
+            className="hb-card-meta rounded-md px-3 py-1.5 text-xs transition hover:bg-slate-100 dark:hover:bg-stone-700/50"
           >
             View all →
           </Link>

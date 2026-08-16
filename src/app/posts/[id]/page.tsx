@@ -261,7 +261,7 @@ export default async function PostPage({ params }: PageProps) {
                   <PendingButton
                     type="submit"
                     pendingContent="Saving..."
-                    className="hb-card-section flex items-center gap-1 rounded-lg px-2 py-1 text-xs transition hover:bg-slate-100 dark:hover:bg-stone-700/50"
+                    className="hb-card-meta flex items-center gap-1 rounded-lg px-2 py-1 text-xs transition hover:bg-slate-100 dark:hover:bg-stone-700/50"
                   >
                     {typedPost.pinned ? "Unpin" : "Pin"}
                   </PendingButton>
@@ -272,7 +272,7 @@ export default async function PostPage({ params }: PageProps) {
                   <PendingButton
                     type="submit"
                     pendingContent="Saving..."
-                    className="hb-card-section flex items-center gap-1 rounded-lg px-2 py-1 text-xs transition hover:bg-slate-100 dark:hover:bg-stone-700/50"
+                    className="hb-card-meta flex items-center gap-1 rounded-lg px-2 py-1 text-xs transition hover:bg-slate-100 dark:hover:bg-stone-700/50"
                   >
                     {commentsLocked ? "Unlock" : "Lock"} comments
                   </PendingButton>

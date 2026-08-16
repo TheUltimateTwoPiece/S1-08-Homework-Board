@@ -38,7 +38,7 @@ function Icon({ children }: { children: React.ReactNode }) {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="h-[18px] w-[18px]"
+      className="h-5 w-5"
       aria-hidden="true"
     >
       {children}
@@ -334,7 +334,7 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          strokeWidth="2.2"
+          strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
           className="h-5 w-5"

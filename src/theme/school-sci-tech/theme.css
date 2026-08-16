@@ -1,4 +1,9 @@
 @layer base {
+  html {
+    /* Lift the whole rem scale ~6% so body copy stops reading as cramped. */
+    font-size: 17px;
+  }
+
   :root {
     --hb-blue: #1d4ed8;
     --hb-blue-light: #2563eb;
@@ -212,6 +217,28 @@
   .dark *:focus-visible {
     box-shadow: 0 0 0 2px var(--hb-surface), 0 0 0 4px rgba(96, 165, 250, 0.35);
   }
+}
+
+/* ── Type hierarchy ────────────────────────────────────────────────────────
+   The board read flat: section titles and body copy shared ~14px while
+   metadata dropped to 10–11px. These three tiers separate them again.
+   UNLAYERED so they beat the inline `text-sm` / `text-xs` utilities. */
+.hb-card-section,
+.hb-section-title {
+  font-size: 1.0625rem;   /* ~18px */
+  line-height: 1.4;
+}
+
+.hb-card-body,
+.hb-body-text {
+  font-size: 0.9375rem;   /* ~16px */
+  line-height: 1.6;
+}
+
+.hb-card-meta,
+.hb-muted-text {
+  font-size: 0.8125rem;   /* ~14px */
+  line-height: 1.5;
 }
 
 /* ── Custom (uploaded-image) themes: make the palette obvious ────────────
@@ -1301,6 +1328,11 @@
     background: linear-gradient(135deg, rgba(37, 99, 235, 0.13), rgba(37, 99, 235, 0.06));
     color: var(--hb-blue);
     box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.18);
+  }
+
+  /* Bolden the selected nav icon so the active state reads at a glance. */
+  .hb-siderail-btn--active svg {
+    stroke-width: 2.4;
   }
 
   .hb-siderail-btn--active::before {

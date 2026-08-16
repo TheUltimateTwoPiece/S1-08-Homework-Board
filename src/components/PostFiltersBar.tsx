@@ -68,7 +68,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
         }}
       >
         <div className="flex-1">
-          <label className="hb-card-section mb-1.5 block text-[10px] font-semibold uppercase tracking-widest">
+          <label className="hb-card-meta mb-1.5 block text-[10px] font-semibold uppercase tracking-widest">
             Search
           </label>
           <div className="relative">
@@ -100,7 +100,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
         </div>
 
         <div className="sm:w-44">
-          <label className="hb-card-section mb-1.5 block text-[10px] font-semibold uppercase tracking-widest">
+          <label className="hb-card-meta mb-1.5 block text-[10px] font-semibold uppercase tracking-widest">
             Subject
           </label>
           <select
@@ -119,7 +119,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
         </div>
 
         <div className="sm:w-40">
-          <label className="hb-card-section mb-1.5 block text-[10px] font-semibold uppercase tracking-widest">
+          <label className="hb-card-meta mb-1.5 block text-[10px] font-semibold uppercase tracking-widest">
             Due
           </label>
           <select

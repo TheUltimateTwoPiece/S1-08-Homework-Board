@@ -87,7 +87,7 @@ export default async function AdminFeedbackPage() {
                         <PendingButton
                           type="submit"
                           pendingContent="Saving..."
-                          className="hb-card-section rounded-md px-2 py-1 text-[10px] transition hover:bg-slate-100 dark:hover:bg-stone-700/50"
+                          className="hb-card-meta rounded-md px-2 py-1 text-[10px] transition hover:bg-slate-100 dark:hover:bg-stone-700/50"
                         >
                           {nextLabel}
                         </PendingButton>
