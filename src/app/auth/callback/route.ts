@@ -29,6 +29,22 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get("code");
   const type = searchParams.get("type");
 
+  // ── TEMP DEBUG (remove after diagnosing password-reset → /login) ────────
+  const debugCookieNames = request.cookies.getAll().map((c) => c.name);
+  console.log("[auth/callback TEMP DEBUG] request", {
+    origin,
+    pathname: new URL(request.url).pathname,
+    hasCode: Boolean(code),
+    codePrefix: code ? `${code.slice(0, 6)}…` : null,
+    type,
+    rawNext: searchParams.get("next"),
+    hasCodeVerifierCookie: debugCookieNames.some((n) =>
+      n.endsWith("-code-verifier"),
+    ),
+    cookieNames: debugCookieNames,
+  });
+  // ─────────────────────────────────────────────────────────────────────────
+
   // Default to /update-password for recovery flows if no explicit next is given
   const defaultNext = type === "recovery" ? "/update-password" : "/";
   const next = safeNext(searchParams.get("next") ?? defaultNext);
@@ -59,9 +75,20 @@ export async function GET(request: NextRequest) {
 
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
+      console.log("[auth/callback TEMP DEBUG] exchange OK →", next);
       return response;
     }
+
+    console.error("[auth/callback TEMP DEBUG] exchange FAILED", {
+      name: error.name,
+      message: error.message,
+      status: error.status,
+      stringified: String(error),
+    });
+  } else {
+    console.log("[auth/callback TEMP DEBUG] no `code` param → skipping exchange");
   }
 
+  console.log("[auth/callback TEMP DEBUG] redirecting to /login");
   return NextResponse.redirect(`${origin}/login`);
 }

@@ -35,11 +35,18 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // NOTE: /update-password is intentionally NOT in this list. Unlike /login and
+  // /signup (which a logged-in user should be bounced away from), the reset page
+  // is the *destination* of the password-recovery flow. By the time the user
+  // reaches it, the callback route has already exchanged the recovery code for a
+  // session, so they ARE authenticated — and the `user && isAuthPage` redirect
+  // below must not bounce them off the form. Treat it like any protected page:
+  // unauthenticated visitors get redirected to /login, authenticated ones pass
+  // straight through.
   const isAuthPage =
     request.nextUrl.pathname.startsWith("/login") ||
     request.nextUrl.pathname.startsWith("/signup") ||
-    request.nextUrl.pathname.startsWith("/auth/callback") ||
-    request.nextUrl.pathname.startsWith("/update-password");
+    request.nextUrl.pathname.startsWith("/auth/callback");
 
   if (!user && !isAuthPage) {
     const url = request.nextUrl.clone();
