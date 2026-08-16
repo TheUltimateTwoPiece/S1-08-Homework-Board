@@ -10,6 +10,23 @@ import type { ChecklistItem } from "@/lib/types";
 
 const MAX_CHECKLIST_ITEMS = 12;
 const MAX_CHECKLIST_ITEM_LENGTH = 160;
+const MAX_POST_TITLE_LENGTH = 160;
+const MAX_POST_CONTENT_LENGTH = 20000;
+
+function normalizeDueDate(value: string): string | null | undefined {
+  if (!value) return null;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return undefined;
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) {
+    return undefined;
+  }
+  return value;
+}
 
 function normalizeMultilineText(value: string): string {
   return value.replace(/\r\n/g, "\n").replace(/\r/g, "\n").trim();
@@ -89,12 +106,23 @@ export async function createPost(formData: FormData) {
   const content = typeof contentValue === "string" ? normalizeMultilineText(contentValue) : "";
   const subjects = normalizeSubjects(formData.getAll("subject"));
   const checklist = parseChecklist(formData.get("checklist"));
-  const dueAtRaw = ((formData.get("dueAt") as string | null) ?? "").trim();
+  const dueAtValue = formData.get("dueAt");
+  const dueAtRaw = typeof dueAtValue === "string" ? dueAtValue.trim() : "";
+  const dueAt = normalizeDueDate(dueAtRaw);
   const pinned = formData.get("pinned") === "on";
   const files = (formData.getAll("files") as File[]).filter((file) => file.size > 0);
 
   if (!title || !content) {
     return { error: "Title and content are required." };
+  }
+  if (title.length > MAX_POST_TITLE_LENGTH) {
+    return { error: `Title is too long (max ${MAX_POST_TITLE_LENGTH} characters).` };
+  }
+  if (content.length > MAX_POST_CONTENT_LENGTH) {
+    return { error: `Content is too long (max ${MAX_POST_CONTENT_LENGTH} characters).` };
+  }
+  if (dueAt === undefined) {
+    return { error: "Enter a valid due date." };
   }
 
   // Validate attachments before inserting the post. Otherwise a rejected
@@ -129,7 +157,7 @@ export async function createPost(formData: FormData) {
       content,
       checklist,
       subject: subjects,
-      due_at: dueAtRaw ? dueAtRaw : null,
+      due_at: dueAt,
       pinned,
       author_id: user.id,
     })
@@ -254,12 +282,20 @@ export async function updatePost(formData: FormData) {
   const content = typeof contentValue === "string" ? normalizeMultilineText(contentValue) : "";
   const subjects = normalizeSubjects(formData.getAll("subject"));
   const checklist = parseChecklist(formData.get("checklist"));
-  const dueAtRaw = ((formData.get("dueAt") as string | null) ?? "").trim();
-  const dueAt = dueAtRaw ? dueAtRaw : null;
+  const dueAtValue = formData.get("dueAt");
+  const dueAtRaw = typeof dueAtValue === "string" ? dueAtValue.trim() : "";
+  const dueAt = normalizeDueDate(dueAtRaw);
   const pinned = formData.get("pinned") === "on";
 
   if (!postId) return { error: "Missing post id." };
   if (!title || !content) return { error: "Title and content are required." };
+  if (title.length > MAX_POST_TITLE_LENGTH) {
+    return { error: `Title is too long (max ${MAX_POST_TITLE_LENGTH} characters).` };
+  }
+  if (content.length > MAX_POST_CONTENT_LENGTH) {
+    return { error: `Content is too long (max ${MAX_POST_CONTENT_LENGTH} characters).` };
+  }
+  if (dueAt === undefined) return { error: "Enter a valid due date." };
 
   // Same profanity gate as createPost — admins shouldn't sneak past the
   // filter by editing an existing post or checklist step.
@@ -329,7 +365,10 @@ export async function updatePost(formData: FormData) {
   });
 
   if (editError) {
-    return { error: editError.message };
+    // The post update already succeeded. Do not tell the admin that saving
+    // failed and invite a duplicate retry just because edit-history storage
+    // is unavailable or its migration is missing.
+    console.error("[updatePost] edit history insert failed", editError);
   }
 
   revalidatePath("/");

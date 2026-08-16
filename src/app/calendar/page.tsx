@@ -11,6 +11,7 @@ import {
   startOfWeek,
 } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
+import { getTodayString } from "@/lib/time";
 import { requireProfile } from "@/lib/auth";
 import { normalizePost } from "@/lib/types";
 
@@ -32,7 +33,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
   const monthDate =
     monthParam && /^\d{4}-\d{2}$/.test(monthParam)
       ? parseISO(`${monthParam}-01`)
-      : new Date();
+      : parseISO(getTodayString());
 
   const monthStart = startOfMonth(monthDate);
   const monthEnd = endOfMonth(monthDate);
@@ -42,7 +43,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
 
   const startStr = format(monthStart, "yyyy-MM-dd");
   const endStr = format(monthEnd, "yyyy-MM-dd");
-  const todayStr = format(new Date(), "yyyy-MM-dd");
+  const todayStr = getTodayString();
 
   const supabase = await createClient();
   const { data: posts } = await supabase

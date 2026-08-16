@@ -61,7 +61,19 @@ export default async function AdminPage() {
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
-            View Feedback
+            Feedback inbox
+          </Link>
+          <Link
+            href="/admin/bug-reports"
+            className="hb-card-section inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm shadow-sm transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
+              <path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" />
+              <path d="M8 8h8" />
+              <path d="M8 12h8" />
+              <path d="M8 16h5" />
+            </svg>
+            Bug report inbox
           </Link>
           <Link
             href="/admin/pip-stats"

@@ -1,14 +1,15 @@
 import Link from "next/link";
-import { format, isSameMonth, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays } from "date-fns";
+import { format, isSameMonth, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, parseISO } from "date-fns";
 import type { Post } from "@/lib/types";
+import { getTodayString } from "@/lib/time";
 
 type CalendarWidgetProps = {
   posts: Post[];
 };
 
 export function CalendarWidget({ posts }: CalendarWidgetProps) {
-  const today = new Date();
-  const todayStr = format(today, "yyyy-MM-dd");
+  const todayStr = getTodayString();
+  const today = parseISO(todayStr);
   const monthStart = startOfMonth(today);
   const monthEnd = endOfMonth(today);
   const rangeStart = startOfWeek(monthStart, { weekStartsOn: 1 });
@@ -25,7 +26,7 @@ export function CalendarWidget({ posts }: CalendarWidgetProps) {
     days.push(day);
   }
 
-  const totalThisMonth = posts.filter((p) => p.due_at && p.due_at.startsWith(format(today, "yyyy-MM"))).length;
+  const totalThisMonth = posts.filter((p) => p.due_at && p.due_at.startsWith(todayStr.slice(0, 7))).length;
 
   return (
     <section

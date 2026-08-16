@@ -61,10 +61,15 @@ export function PipBubble({ remaining: initialRemaining }: { remaining: number }
 
     let cid = chatId;
     if (!cid) {
-      const id = await createChat();
-      if (!id) { sendingRef.current = false; return; }
-      cid = id;
-      setChatId(id);
+      try {
+        const id = await createChat();
+        if (!id) { sendingRef.current = false; return; }
+        cid = id;
+        setChatId(id);
+      } catch {
+        sendingRef.current = false;
+        return;
+      }
     }
 
     setMessages((prev) => [...prev, { role: "user", text: question }]);
@@ -89,7 +94,10 @@ export function PipBubble({ remaining: initialRemaining }: { remaining: number }
         signal: controller.signal,
       });
 
-      if (!res.ok) throw new Error("Stream failed");
+      const contentType = res.headers.get("content-type") ?? "";
+      if (!res.ok || !contentType.includes("text/event-stream")) {
+        throw new Error("Stream failed");
+      }
 
       const reader = res.body?.getReader();
       if (!reader) throw new Error("No stream body");
@@ -171,6 +179,7 @@ export function PipBubble({ remaining: initialRemaining }: { remaining: number }
     try {
       const formData = new FormData();
       formData.append("postId", action.params.post_id);
+      formData.append("completed", action.type === "mark_complete" ? "true" : "false");
       await togglePostComplete(formData);
       setPendingActions((prev) => prev.filter((a) => !(a.type === action.type && a.params.post_id === action.params.post_id)));
       setMessages((prev) => [...prev, { role: "pip", text: action.type === "mark_complete" ? "Post marked as complete \u2705" : "Post unmarked \u21a9" }]);

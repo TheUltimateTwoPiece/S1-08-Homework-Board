@@ -2,9 +2,17 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
 import { Avatar } from "@/components/Avatar";
+import { PendingButton } from "@/components/PendingButton";
+import { setFeedbackStatus } from "@/actions/inbox";
 import type { Feedback } from "@/lib/types";
+import { formatAppDateTime } from "@/lib/time";
 
 export const revalidate = 30;
+
+async function applyFeedbackStatus(formData: FormData) {
+  "use server";
+  await setFeedbackStatus(formData);
+}
 
 export default async function AdminFeedbackPage() {
   const profile = await requireProfile();
@@ -56,9 +64,41 @@ export default async function AdminFeedbackPage() {
                   <div className="hb-card-meta mt-0.5 pl-9 text-xs">{item.profiles.email}</div>
                 )}
               </div>
-              <time className="hb-card-meta shrink-0 text-xs" dateTime={item.created_at}>
-                {new Date(item.created_at).toLocaleString()}
-              </time>
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                {(() => {
+                  const status = item.status ?? "unread";
+                  const nextStatus = status === "unread" ? "read" : status === "read" ? "resolved" : "unread";
+                  const nextLabel = status === "unread" ? "Mark read" : status === "read" ? "Resolve" : "Reopen";
+                  const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
+                  return (
+                    <>
+                      <span className={`rounded-full px-2 py-1 text-[10px] font-bold ${
+                        status === "unread"
+                          ? "bg-amber-100 text-amber-800"
+                          : status === "resolved"
+                            ? "bg-emerald-100 text-emerald-800"
+                            : "bg-blue-100 text-blue-800"
+                      }`}>
+                        {statusLabel}
+                      </span>
+                      <form action={applyFeedbackStatus} className="flex items-center">
+                        <input type="hidden" name="feedbackId" value={item.id} />
+                        <input type="hidden" name="status" value={nextStatus} />
+                        <PendingButton
+                          type="submit"
+                          pendingContent="Saving..."
+                          className="hb-card-section rounded-md px-2 py-1 text-[10px] transition hover:bg-slate-100"
+                        >
+                          {nextLabel}
+                        </PendingButton>
+                      </form>
+                    </>
+                  );
+                })()}
+                <time className="hb-card-meta shrink-0 text-xs" dateTime={item.created_at}>
+                  {formatAppDateTime(item.created_at)}
+                </time>
+              </div>
             </div>
             <p className="hb-card-body whitespace-pre-line text-sm leading-relaxed">
               {item.message}
@@ -79,9 +119,9 @@ export default async function AdminFeedbackPage() {
             </svg>
           </div>
           <div>
-            <h1 className="hb-page-title text-2xl tracking-tight">Feedback</h1>
+            <h1 className="hb-page-title text-2xl tracking-tight">Feedback inbox</h1>
             <p className="hb-body-text mt-0.5 text-sm">
-              Messages submitted from the homepage feedback button.
+              Review feedback and move items from unread to resolved.
             </p>
           </div>
         </div>

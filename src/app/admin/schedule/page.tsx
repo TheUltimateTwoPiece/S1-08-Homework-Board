@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { format } from "date-fns";
+import { getAppDayOfWeek, getTodayString } from "@/lib/time";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
 import { AdminScheduleClient } from "./AdminScheduleClient";
@@ -12,8 +12,8 @@ export default async function AdminSchedulePage() {
   if (profile.role !== "admin") redirect("/");
 
   const supabase = await createClient();
-  const todayStr = format(new Date(), "yyyy-MM-dd");
-  const dayOfWeek = new Date().getDay();
+  const todayStr = getTodayString();
+  const dayOfWeek = getAppDayOfWeek();
 
   // Fetch all admin schedules with admin profile info
   const { data: schedules } = await supabase

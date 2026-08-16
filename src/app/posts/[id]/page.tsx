@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { format } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
 import { getDueBadge } from "@/lib/due";
@@ -13,6 +12,7 @@ import { PostCompleteCheckbox } from "@/components/PostCompleteCheckbox";
 import { PostChecklist } from "@/components/PostChecklist";
 import { deletePost, setPostCommentsLocked, setPostPinned } from "@/actions/posts";
 import { normalizePost, type Attachment, type Comment, type Post, type PostEdit, type Profile } from "@/lib/types";
+import { formatAppDateTime } from "@/lib/time";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -323,7 +323,7 @@ export default async function PostPage({ params }: PageProps) {
             </div>
             <span className="hb-card-meta">·</span>
             <time className="hb-card-meta text-xs" dateTime={typedPost.created_at}>
-              {format(new Date(typedPost.created_at), "MMMM d, yyyy 'at' h:mm a")}
+              {formatAppDateTime(typedPost.created_at)}
             </time>
           </div>
 
@@ -442,7 +442,7 @@ export default async function PostPage({ params }: PageProps) {
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden="true">
                       <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
                     </svg>
-                    {format(new Date(edit.created_at), "MMM d, yyyy 'at' h:mm a")}
+                    {formatAppDateTime(edit.created_at)}
                   </div>
                   <div className="hb-card-section text-sm">
                     {keys.length > 0 ? keys.join(", ") : "Updated"}

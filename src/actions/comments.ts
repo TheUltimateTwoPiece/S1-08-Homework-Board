@@ -5,6 +5,9 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { tripProfanity } from "@/lib/profanity";
 
+const MAX_COMMENT_LENGTH = 5000;
+const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
+
 function normalizeFileName(name: string): string {
   return name.replace(/[^a-zA-Z0-9._-]+/g, "-");
 }
@@ -45,6 +48,22 @@ export async function addComment(formData: FormData) {
   if (!content) {
     return { error: "Comment cannot be empty." };
   }
+  if (content.length > MAX_COMMENT_LENGTH) {
+    return { error: `Comment is too long (max ${MAX_COMMENT_LENGTH} characters).` };
+  }
+
+  // Validate attachment metadata before inserting the comment. Otherwise an
+  // invalid file would return an error while leaving an orphaned comment.
+  for (const file of files) {
+    if (file.size > MAX_ATTACHMENT_BYTES) {
+      return { error: `File "${file.name}" is too large.` };
+    }
+    const isAllowed =
+      file.type === "application/pdf" || file.type.startsWith("image/");
+    if (!isAllowed) {
+      return { error: `File type not allowed: "${file.name}".` };
+    }
+  }
 
   // Profanity gate. Redirect happens BEFORE the post-fetch and the
   // insert, so we never touch the database when the user trips it.
@@ -73,6 +92,18 @@ export async function addComment(formData: FormData) {
     }
   }
 
+  if (parentCommentId) {
+    const { data: parentComment } = await supabase
+      .from("comments")
+      .select("post_id")
+      .eq("id", parentCommentId)
+      .maybeSingle();
+
+    if (!parentComment || parentComment.post_id !== postId) {
+      return { error: "That reply target is not on this post." };
+    }
+  }
+
   const { data: comment, error } = await supabase
     .from("comments")
     .insert({
@@ -89,21 +120,6 @@ export async function addComment(formData: FormData) {
   }
 
   if (comment && files.length > 0) {
-    const maxBytes = 10 * 1024 * 1024;
-
-    // Validate every file up front so we don't half-upload and have to
-    // roll back on a single bad file later in the loop.
-    for (const file of files) {
-      if (file.size > maxBytes) {
-        return { error: `File "${file.name}" is too large.` };
-      }
-      const isAllowed =
-        file.type === "application/pdf" || file.type.startsWith("image/");
-      if (!isAllowed) {
-        return { error: `File type not allowed: "${file.name}".` };
-      }
-    }
-
     const bucket = "attachments";
     const paths = files.map(
       (file) =>

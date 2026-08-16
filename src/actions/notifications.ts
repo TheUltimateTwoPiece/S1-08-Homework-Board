@@ -34,6 +34,9 @@ type NotificationRow = {
   user_id: string;
 };
 
+const MAX_REMINDER_TITLE_LENGTH = 160;
+const MAX_REMINDER_MESSAGE_LENGTH = 5000;
+
 /**
  * Fans out new-post notifications + emails to every opted-in profile (both
  * students and admins), excluding the post author themselves.
@@ -368,6 +371,12 @@ export async function sendReminder(formData: FormData) {
 
   if (!title || !message) {
     return { success: false, error: "Title and message are required." };
+  }
+  if (title.length > MAX_REMINDER_TITLE_LENGTH) {
+    return { success: false, error: `Title is too long (max ${MAX_REMINDER_TITLE_LENGTH} characters).` };
+  }
+  if (message.length > MAX_REMINDER_MESSAGE_LENGTH) {
+    return { success: false, error: `Message is too long (max ${MAX_REMINDER_MESSAGE_LENGTH} characters).` };
   }
 
   // Profanity gate: reminder titles and bodies go through the same filter

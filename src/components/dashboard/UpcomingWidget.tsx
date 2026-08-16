@@ -1,13 +1,14 @@
 import Link from "next/link";
-import { format, parseISO } from "date-fns";
 import { getDueState } from "@/lib/due";
+import { formatAppDateOnly, getTodayString } from "@/lib/time";
 import type { Post } from "@/lib/types";
 
 type UpcomingWidgetProps = { posts: Post[]; };
 
 export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
+  const todayStr = getTodayString();
   const upcoming = posts
-    .filter((p) => p.due_at && p.due_at >= format(new Date(), "yyyy-MM-dd"))
+    .filter((p) => p.due_at && p.due_at >= todayStr)
     .slice(0, 3);
 
   return (
@@ -40,7 +41,7 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
       ) : (
         <ul className="hb-list-scroll -mx-1 space-y-1 pb-1">
           {upcoming.map((post, i) => {
-            const due = parseISO(post.due_at as string);
+            const dueAt = post.due_at as string;
             // Calendar-day countdown, not elapsed-time: a date-only due_at
             // is "any time that day", so it reads "Tomorrow" all day instead
             // of "in about 14 hours" at 10 AM.
@@ -49,8 +50,8 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
             return (
               <li key={post.id} className="hb-snippet relative z-[3]" style={{ animationDelay: (200 + i * 28) + "ms" }}>
                 <div className={"flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-lg text-[10px] font-bold " + (today ? "bg-amber-200 text-amber-900" : "hb-card-meta bg-zinc-100")}>
-                  <span className="leading-none">{format(due, "MMM")}</span>
-                  <span className="text-sm font-bold leading-tight">{format(due, "d")}</span>
+                  <span className="leading-none">{formatAppDateOnly(dueAt, { month: "short" })}</span>
+                  <span className="text-sm font-bold leading-tight">{formatAppDateOnly(dueAt, { day: "numeric" })}</span>
                 </div>
                 <Link href={"/posts/" + post.id} className="min-w-0 flex-1 relative z-[3]">
                   <div className="hb-card-section hb-truncate text-sm">{post.title}</div>
