@@ -50,6 +50,16 @@ export default async function AdminPage() {
         {/* Admin sub-navigation */}
         <div className="mt-6 flex flex-wrap gap-2">
           <Link
+            href="/admin/announcements"
+            className="hb-page-action"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
+              <path d="M3 11v3a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z" />
+              <path d="M15 8a4 4 0 0 1 0 8" />
+            </svg>
+            Announcements
+          </Link>
+          <Link
             href="/admin/feedback"
             className="hb-page-action"
           >

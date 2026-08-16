@@ -205,19 +205,20 @@ export default async function PostPage({ params }: PageProps) {
     : [null, null];
 
   const allProfiles = (allProfilesResult?.data ?? []) as (Pick<Profile, "id" | "full_name" | "email"> & { role: string })[];
-  // Restrict the completion widget to students only — admins appearing as
-  // "Pending" in the roster inflates the remaining-count and confuses the
-  // class-completion metric. Admins can still see the widget but are
-  // filtered out of the numerator/denominator.
-  const studentProfiles = allProfiles.filter((p) => p.role === "student");
-  const studentIds = new Set(studentProfiles.map((p) => p.id));
+  // Completion tracking now covers students AND admins (admins mark their own
+  // homework complete like everyone else, and their progress shows up in the
+  // analytics). Admins are badged in the roster so they stay distinguishable.
+  const trackedProfiles = allProfiles.filter(
+    (p) => p.role === "student" || p.role === "admin",
+  );
+  const trackedIds = new Set(trackedProfiles.map((p) => p.id));
   const completedUserIds = new Set(
     (postCompletionsResult?.data ?? [])
       .map((row) => row.user_id as string)
-      .filter((id) => studentIds.has(id)),
+      .filter((id) => trackedIds.has(id)),
   );
   const completedCount = completedUserIds.size;
-  const remainingCount = Math.max(0, studentProfiles.length - completedCount);
+  const remainingCount = Math.max(0, trackedProfiles.length - completedCount);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
@@ -344,25 +345,25 @@ export default async function PostPage({ params }: PageProps) {
           <AttachmentList attachments={signedPostAttachments} />
         </article>
 
-        {isAdmin && studentProfiles.length > 0 ? (
+        {isAdmin && trackedProfiles.length > 0 ? (
           <aside className="hb-card-surface h-fit p-5">
             <details className="group">
               <summary className="hb-card-section flex cursor-pointer items-center gap-2 text-sm transition hover:text-blue-600 dark:hover:text-blue-300">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="hb-card-meta h-4 w-4 transition group-open:rotate-90" aria-hidden="true">
                   <polyline points="9 18 15 12 9 6" />
                 </svg>
-                Class completion ({completedCount}/{studentProfiles.length})
+                Class completion ({completedCount}/{trackedProfiles.length})
               </summary>
               <div className="mt-3 space-y-1">
                 <div className="flex items-center gap-3">
                   <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-stone-700/40">
                     <div
                       className="h-full rounded-full bg-green-500 transition-all duration-500"
-                      style={{ width: `${(completedCount / studentProfiles.length) * 100}%` }}
+                      style={{ width: `${(completedCount / trackedProfiles.length) * 100}%` }}
                     />
                   </div>
                   <span className="hb-card-section text-xs tabular-nums">
-                    {Math.round((completedCount / studentProfiles.length) * 100)}%
+                    {Math.round((completedCount / trackedProfiles.length) * 100)}%
                   </span>
                 </div>
                 <p className="hb-card-meta text-xs">
@@ -370,7 +371,7 @@ export default async function PostPage({ params }: PageProps) {
                 </p>
               </div>
               <ul className="mt-4 space-y-1.5">
-                {studentProfiles.map((person) => {
+                {trackedProfiles.map((person) => {
                   const done = completedUserIds.has(person.id);
                   const isAdminProfile = person.role === "admin";
                   return (

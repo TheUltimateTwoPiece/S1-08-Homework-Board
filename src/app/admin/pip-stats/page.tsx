@@ -164,8 +164,8 @@ export default async function AdminPipStatsPage() {
   // Sort: most active this week first
   userStats.sort((a, b) => b.promptsWeek - a.promptsWeek);
 
-  // Aggregate stats
-  const studentStats = userStats.filter((u) => u.role === "student");
+  // Aggregate stats — completion tracking includes admins, so the cohort
+  // average is computed over every Pip user (students + admins).
   // Overview totals come directly from the same raw prompt rows as the chart.
   // This keeps the card correct even if a prompt's profile is missing or has
   // a role outside the normal student/admin set.
@@ -184,8 +184,8 @@ export default async function AdminPipStatsPage() {
   const avgPromptsPerUser = activeUsersWeek > 0
     ? Math.round(totalPromptsWeek / activeUsersWeek)
     : 0;
-  const avgStudentCompletion = studentStats.length > 0
-    ? Math.round(studentStats.reduce((sum, u) => sum + u.completionRate, 0) / studentStats.length)
+  const avgCompletion = userStats.length > 0
+    ? Math.round(userStats.reduce((sum, u) => sum + u.completionRate, 0) / userStats.length)
     : 0;
 
   // 7-day chart data: day-by-day prompt counts for the bar chart
@@ -254,8 +254,8 @@ export default async function AdminPipStatsPage() {
         />
         <StatCard
           label="Avg completion"
-          value={`${avgStudentCompletion}%`}
-          sub="avg across students"
+          value={`${avgCompletion}%`}
+          sub="across all Pip users"
           color="rose"
           icon={
             <>

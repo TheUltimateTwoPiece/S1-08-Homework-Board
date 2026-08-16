@@ -1,6 +1,7 @@
 import { requireProfile } from "@/lib/auth";
 import { PageTopBar } from "@/components/PageTopBar";
 import { SettingsForm } from "./SettingsForm";
+import { ThemeSettingsForm } from "@/components/ThemeSettingsForm";
 
 export const dynamic = "force-dynamic";
 
@@ -12,11 +13,28 @@ export default async function SettingsPage() {
       <PageTopBar
         profile={profile}
         greetingName={profile.full_name}
-        subtitle="Update how you appear across the homework board."
+        subtitle="Profile, email preferences, and appearance."
         showAdminCta={false}
       />
 
-      <SettingsForm profile={profile} />
+      <div className="space-y-8">
+        <SettingsForm profile={profile} />
+
+        <section aria-labelledby="appearance-heading">
+          <div className="mb-4 border-b pb-2">
+            <h2
+              id="appearance-heading"
+              className="hb-card-title text-lg leading-snug"
+            >
+              Appearance
+            </h2>
+            <p className="hb-card-meta mt-0.5 text-sm">
+              Pick a preset theme or generate one from any image.
+            </p>
+          </div>
+          <ThemeSettingsForm />
+        </section>
+      </div>
     </div>
   );
 }

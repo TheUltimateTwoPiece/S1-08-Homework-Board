@@ -394,7 +394,7 @@ export async function sendReminder(formData: FormData) {
   let labelPrefix = "to send the reminder to";
   // Populated only by the "incomplete" branch; consumed in the empty-
   // candidates error path below to render a diagnostic message.
-  let incompleteStudentCount = 0;
+  let incompleteTrackedCount = 0;
   let incompleteCompletedCount = 0;
 
   if (target === "all") {
@@ -415,28 +415,30 @@ export async function sendReminder(formData: FormData) {
     if (!postId) {
       return {
         success: false,
-        error: "Please select a post to filter by incomplete students.",
+        error: "Please select a post to filter by incomplete users.",
       };
     }
 
-    const [{ data: students }, { data: completions }] = await Promise.all([
+    // Completion tracking covers students AND admins, so the "incomplete"
+    // reminder also reaches any admin who hasn't marked the post complete.
+    const [{ data: tracked }, { data: completions }] = await Promise.all([
       supabase
         .from("profiles")
         .select("id, email, full_name")
-        .eq("role", "student"),
+        .in("role", ["student", "admin"]),
       supabase
         .from("post_completions")
         .select("user_id")
         .eq("post_id", postId),
     ]);
 
-    const studentRows = (students as Recipient[] | null) ?? [];
+    const trackedRows = (tracked as Recipient[] | null) ?? [];
     const completedIds = new Set(
       (completions as { user_id: string }[] | null)?.map((c) => c.user_id) ?? [],
     );
-    candidates = studentRows.filter((s) => !completedIds.has(s.id));
+    candidates = trackedRows.filter((s) => !completedIds.has(s.id));
     labelPrefix = "that still needs to be completed";
-    incompleteStudentCount = studentRows.length;
+    incompleteTrackedCount = trackedRows.length;
     incompleteCompletedCount = completedIds.size;
   } else {
     // Single recipient by id — admin or student
@@ -462,17 +464,16 @@ export async function sendReminder(formData: FormData) {
       label = "No other admins found to remind.";
     } else if (target === "incomplete") {
       // Tell the admin exactly why the candidates list is empty so they
-      // can tell "no student accounts" apart from "every student already
-      // completed this post". Without this the empty list reads as a
-      // silent refusal.
-      if (incompleteStudentCount === 0) {
+      // can tell "no accounts" apart from "everyone already completed this
+      // post". Without this the empty list reads as a silent refusal.
+      if (incompleteTrackedCount === 0) {
         label =
-          "No student accounts found. Sign students up first, then send your reminder.";
-      } else if (incompleteCompletedCount === incompleteStudentCount) {
-        const n = incompleteStudentCount;
-        label = `All ${n} student${n === 1 ? "" : "s"} already completed this post — nothing left to remind.`;
+          "No student or admin accounts found. Sign users up first, then send your reminder.";
+      } else if (incompleteCompletedCount === incompleteTrackedCount) {
+        const n = incompleteTrackedCount;
+        label = `All ${n} user${n === 1 ? "" : "s"} already completed this post — nothing left to remind.`;
       } else {
-        label = `No incomplete students found for this post.`;
+        label = `No incomplete users found for this post.`;
       }
     } else if (target === "all") {
       label = "No student accounts found. Sign students up first.";
