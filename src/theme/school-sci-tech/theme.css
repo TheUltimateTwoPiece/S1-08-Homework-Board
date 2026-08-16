@@ -2,6 +2,8 @@
   :root {
     --hb-blue: #2563eb;
     --hb-blue-light: #3b82f6;
+    --hb-btn-bg: #2563eb;
+    --hb-btn-bg-hover: #1d4ed8;
     --hb-red: #dc2626;
     --hb-grey: #475569;
     --hb-danger: var(--hb-red);
@@ -44,6 +46,8 @@
   .dark {
     --hb-blue: #60a5fa;
     --hb-blue-light: #93c5fd;
+    --hb-btn-bg: #2563eb;
+    --hb-btn-bg-hover: #1d4ed8;
     --hb-red: #f87171;
     --hb-grey: #cbd5e1;
     --hb-danger: var(--hb-red);
@@ -81,6 +85,102 @@
     --hb-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
   }
 
+  /* ── Multi-Theme Presets (data-theme attribute) ──────────────────────────
+     The theme engine sets `data-theme` on <html>. Light/dark reuse the
+     :root/.dark token sets above; emerald/sunset add full palettes; custom
+     maps the dynamic vars (--bg/--card-bg/--border/--primary/--text) that the
+     engine injects inline on <html> after sampling an uploaded image. */
+
+  [data-theme="emerald"] {
+    --hb-blue: #047857;
+    --hb-blue-light: #059669;
+    --hb-btn-bg: #047857;
+    --hb-btn-bg-hover: #065f46;
+    --hb-red: #dc2626;
+    --hb-danger: var(--hb-red);
+    --hb-success: #059669;
+    --hb-success-light: #10b981;
+    --hb-warning: #b45309;
+    --hb-warning-light: #d97706;
+    --hb-surface: #ffffff;
+    --hb-surface-muted: #ecfdf5;
+    --hb-surface-hover: #d1fae5;
+    --hb-border: #a7f3d0;
+    --hb-border-hover: #6ee7b7;
+    --hb-text-page: #022c22;
+    --hb-text-section: #064e3b;
+    --hb-text-body: #065f46;
+    --hb-text-muted: #047857;
+    --hb-text-faded: #059669;
+    --hb-text: var(--hb-text-body);
+    --hb-text-subtle: var(--hb-text-muted);
+    --hb-overlay: rgba(0, 0, 0, 0.04);
+    --hb-bg-grad-1: rgba(16, 185, 129, 0.12);
+    --hb-bg-grad-2: rgba(5, 150, 105, 0.10);
+    --hb-bg-grad-3: rgba(52, 211, 153, 0.06);
+    --background: var(--hb-surface-muted);
+    --foreground: var(--hb-text);
+  }
+
+  [data-theme="sunset"] {
+    --hb-blue: #c2410c;
+    --hb-blue-light: #ea580c;
+    --hb-btn-bg: #c2410c;
+    --hb-btn-bg-hover: #9a3412;
+    --hb-red: #dc2626;
+    --hb-danger: var(--hb-red);
+    --hb-success: #16a34a;
+    --hb-success-light: #22c55e;
+    --hb-warning: #b45309;
+    --hb-warning-light: #d97706;
+    --hb-surface: #ffffff;
+    --hb-surface-muted: #fff7ed;
+    --hb-surface-hover: #ffedd5;
+    --hb-border: #fed7aa;
+    --hb-border-hover: #fdba74;
+    --hb-text-page: #431407;
+    --hb-text-section: #7c2d12;
+    --hb-text-body: #9a3412;
+    --hb-text-muted: #c2410c;
+    --hb-text-faded: #ea580c;
+    --hb-text: var(--hb-text-body);
+    --hb-text-subtle: var(--hb-text-muted);
+    --hb-overlay: rgba(0, 0, 0, 0.04);
+    --hb-bg-grad-1: rgba(249, 115, 22, 0.12);
+    --hb-bg-grad-2: rgba(234, 88, 12, 0.10);
+    --hb-bg-grad-3: rgba(251, 146, 60, 0.06);
+    --background: var(--hb-surface-muted);
+    --foreground: var(--hb-text);
+  }
+
+  [data-theme="custom"] {
+    --hb-blue: var(--primary);
+    --hb-blue-light: color-mix(in srgb, var(--primary) 70%, #ffffff);
+    --hb-blue-dark: color-mix(in srgb, var(--primary) 55%, #000000);
+    /* Primary buttons: a deepened variation of the main colour so white
+       text keeps AA contrast for both light and dark uploaded images. */
+    --hb-btn-bg: color-mix(in srgb, var(--primary) 45%, #000000);
+    --hb-btn-bg-hover: color-mix(in srgb, var(--primary) 35%, #000000);
+    --hb-surface: var(--card-bg);
+    --hb-surface-muted: var(--bg);
+    --hb-surface-hover: color-mix(in srgb, var(--card-bg) 88%, var(--text) 12%);
+    --hb-border: var(--border);
+    --hb-border-hover: color-mix(in srgb, var(--border) 55%, var(--text) 45%);
+    --hb-text-page: var(--text);
+    --hb-text-section: var(--text);
+    --hb-text-body: var(--text);
+    --hb-text-muted: color-mix(in srgb, var(--text) 68%, transparent);
+    --hb-text-faded: color-mix(in srgb, var(--text) 52%, transparent);
+    --hb-text: var(--text);
+    --hb-text-subtle: color-mix(in srgb, var(--text) 68%, transparent);
+    --hb-overlay: color-mix(in srgb, var(--text) 6%, transparent);
+    --hb-bg-grad-1: color-mix(in srgb, var(--primary) 10%, transparent);
+    --hb-bg-grad-2: color-mix(in srgb, var(--primary) 8%, transparent);
+    --hb-bg-grad-3: color-mix(in srgb, var(--primary) 4%, transparent);
+    --background: var(--bg);
+    --foreground: var(--text);
+  }
+
   body {
     background:
       radial-gradient(
@@ -114,6 +214,47 @@
   .dark *:focus-visible {
     box-shadow: 0 0 0 2px var(--hb-surface), 0 0 0 4px rgba(96, 165, 250, 0.35);
   }
+}
+
+/* ── Custom (uploaded-image) themes: make the palette obvious ─────────
+   Primary buttons and blue accent text adopt deepened / lightened
+   variations of the image's main colour instead of the default blue.
+   These rules are UNLAYERED so they beat Tailwind's utility classes (which
+   live in the utilities layer) — and only for [data-theme="custom"]. */
+
+[data-theme="custom"] .bg-blue-600,
+[data-theme="custom"] .dark\:bg-blue-500 {
+  background-color: var(--hb-btn-bg);
+}
+
+/* Light accent chips (sit on always-white card surfaces) take on a soft
+   primary tint so badges/icon boxes stop clashing with the theme. */
+[data-theme="custom"] .bg-blue-50 {
+  background-color: color-mix(in srgb, var(--hb-blue) 8%, #ffffff);
+}
+
+[data-theme="custom"] .bg-blue-100 {
+  background-color: color-mix(in srgb, var(--hb-blue) 16%, #ffffff);
+}
+
+[data-theme="custom"] .hover\:bg-blue-700:hover {
+  background-color: var(--hb-btn-bg-hover);
+}
+
+[data-theme="custom"] .text-blue-600,
+[data-theme="custom"] .hover\:text-blue-600:hover {
+  color: var(--hb-blue);
+}
+
+[data-theme="custom"] .text-blue-700,
+[data-theme="custom"] .hover\:text-blue-700:hover {
+  color: var(--hb-blue-dark);
+}
+
+[data-theme="custom"] .dark\:text-blue-200,
+[data-theme="custom"] .dark\:text-blue-300,
+[data-theme="custom"] .dark\:text-blue-400 {
+  color: var(--hb-blue-light);
 }
 
 /* ── Animations ───────────────────────────────────── */
@@ -806,6 +947,62 @@
   .hb-text-error { color: var(--hb-danger); }
   .hb-text-success { color: var(--hb-success); }
   .hb-text-warning { color: var(--hb-warning); }
+
+  /* ── Pip Chat (theme-aware surfaces) ─────────── */
+  /* Pip bubbles, the chat panel and its sidebar follow the theme surface +
+     text tokens so uploaded-image themes (which flip --hb-surface and
+     --hb-text-*) keep readable text while matching the rest of the UI.
+     The --hb-text-* classes above are the WCAG-AA hierarchy tokens. */
+
+  .hb-chat-panel {
+    background: var(--hb-surface);
+    border: 1px solid var(--hb-border);
+  }
+
+  .hb-chat-sidebar {
+    background: var(--hb-surface-muted);
+    border-right: 1px solid var(--hb-border);
+  }
+
+  .hb-chat-bubble {
+    background: var(--hb-surface);
+    border: 1px solid var(--hb-border);
+    color: var(--hb-text-body);
+  }
+
+  .hb-bg-surface { background: var(--hb-surface); }
+  .hb-bg-surface-hover { background: var(--hb-surface-hover); }
+  .hb-hover-surface:hover { background: var(--hb-surface-hover); }
+  .hb-bg-overlay { background: var(--hb-overlay); }
+  .hb-bg-accent { background: var(--hb-bg-grad-1); }
+  .hb-border-theme { border-color: var(--hb-border); }
+  .hb-text-accent { color: var(--hb-blue); }
+
+  /* Pip markdown accents — theme-aware code/quote/table surfaces */
+  .hb-pip-code {
+    background: var(--hb-surface-hover);
+    color: var(--hb-text-body);
+  }
+
+  .hb-pip-code-block {
+    background: var(--hb-surface-hover);
+    border: 1px solid var(--hb-border);
+    color: var(--hb-text-body);
+  }
+
+  .hb-pip-quote {
+    border-left: 2px solid var(--hb-blue);
+    color: var(--hb-text-muted);
+  }
+
+  .hb-pip-rule {
+    border-color: var(--hb-border);
+  }
+
+  .hb-pip-cell {
+    border: 1px solid var(--hb-border);
+    color: var(--hb-text-body);
+  }
 
   /* ── Check Button (Complete) ─────────────────── */
 
@@ -1931,5 +2128,32 @@
     .hb-skeleton {
       background: rgba(100, 116, 139, 0.12);
     }
+  }
+}
+
+/* ── Multi-Theme System: backdrop blur on surfaces ──────────────────────────
+   Cards/containers get a 12px backdrop blur so dynamic image backgrounds stay
+   smooth and legible under their semi-transparent surfaces. Presets keep
+   opaque surfaces (blur is a no-op visually); custom themes use translucent
+   overlays that let the frosted blur read through. */
+
+@layer components {
+  .hb-card,
+  .hb-card-surface,
+  .hb-card-surface-strong,
+  .hb-bento-card,
+  .hb-input,
+  .hb-siderail {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* Frosted-glass content surfaces under a custom image theme: stay mostly
+     white so the hardcoded dark in-card text remains AA-readable, while a
+     hint of the themed background bleeds through the blur. */
+  [data-theme="custom"] .hb-card-surface,
+  [data-theme="custom"] .hb-card-surface-strong,
+  [data-theme="custom"] .hb-bento-card {
+    background: rgba(255, 255, 255, 0.88);
   }
 }

@@ -1,30 +1,45 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import {
+  applyPreset,
+  applyTheme,
+  isDarkMode,
+  loadTheme,
+  THEME_CHANGE_EVENT,
+} from "@/lib/theme-engine";
 
 export function ThemeToggle() {
   const [dark, setDark] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const initialSet = useRef(false);
 
   useEffect(() => {
-    if (initialSet.current) return;
-    initialSet.current = true;
-    const stored = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const isDark = stored === "dark" || (!stored && prefersDark);
-    document.documentElement.classList.toggle("dark", isDark);
-    setDark(isDark);
+    const prefs = loadTheme();
+    // Re-apply on mount so the DOM matches the persisted preference even if the
+    // FOUC script already did (and to sync the icon state).
+    applyTheme(prefs);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setDark(isDarkMode(prefs));
     setMounted(true);
   }, []);
 
+  // Keep the icon in sync with theme changes made elsewhere (e.g. the
+  // Appearance & Themes page, or another open tab).
   useEffect(() => {
-    if (!mounted) return;
-    document.documentElement.classList.toggle("dark", dark);
-    localStorage.setItem("theme", dark ? "dark" : "light");
-  }, [dark, mounted]);
+    const sync = () => setDark(isDarkMode(loadTheme()));
+    window.addEventListener(THEME_CHANGE_EVENT, sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener(THEME_CHANGE_EVENT, sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, []);
 
-  const toggle = useCallback(() => setDark((prev) => !prev), []);
+  const toggle = useCallback(() => {
+    const next = dark ? "light" : "dark";
+    applyPreset(next);
+    setDark(next === "dark");
+  }, [dark]);
 
   if (!mounted) {
     return (
