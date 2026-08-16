@@ -10,7 +10,8 @@ export function NotificationsWidget({ notifications }: NotificationsWidgetProps)
 
   return (
     <section
-      className="hb-dashboard-card hb-dashboard-card--clickable hb-dashboard-notifications-card group relative"
+      className="hb-bento-card hb-bento-card--clickable group relative "
+      style={{ gridColumn: "span 4", gridRow: "span 2", animationDelay: "160ms" }}
     >
       <div className="hb-bento-head relative z-[1]">
         <div className="flex min-w-0 items-center gap-3">
@@ -28,7 +29,7 @@ export function NotificationsWidget({ notifications }: NotificationsWidgetProps)
           )}
         </div>
         <span className="hb-bento-action">
-          <span className="hidden sm:inline">View all</span> →
+          View all →
         </span>
       </div>
 

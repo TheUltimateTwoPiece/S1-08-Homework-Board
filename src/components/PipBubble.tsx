@@ -193,7 +193,7 @@ export function PipBubble({ remaining: initialRemaining }: { remaining: number }
   }
 
   return (
-    <div className={`hb-pip-bubble fixed bottom-6 right-6 z-50 flex flex-col rounded-2xl border bg-white dark:border-slate-700 dark:bg-slate-900 shadow-2xl transition-all duration-300 ${
+    <div className={`fixed bottom-6 right-6 z-50 flex flex-col rounded-2xl border bg-white dark:border-slate-700 dark:bg-slate-900 shadow-2xl transition-all duration-300 ${
       open ? EXPANDED_HEIGHT + " w-[360px] max-sm:w-[calc(100vw-3rem)]" : MINIMIZED_HEIGHT + " w-14"
     }`}>
       {/* Header */}

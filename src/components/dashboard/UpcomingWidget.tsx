@@ -13,7 +13,8 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
 
   return (
     <section
-      className="hb-dashboard-card hb-dashboard-card--clickable hb-dashboard-upcoming-card group relative"
+      className="hb-bento-card hb-bento-card--clickable group relative "
+      style={{ gridColumn: "span 4", gridRow: "span 2", animationDelay: "160ms" }}
     >
       <div className="hb-bento-head relative z-[1]">
         <div className="flex min-w-0 items-center gap-3">
@@ -26,7 +27,7 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
           <h2 className="hb-card-section truncate text-sm tracking-tight">Upcoming deadlines</h2>
         </div>
         <span className="hb-bento-action">
-          <span className="hidden sm:inline">Calendar</span> →
+          Calendar →
         </span>
       </div>
 

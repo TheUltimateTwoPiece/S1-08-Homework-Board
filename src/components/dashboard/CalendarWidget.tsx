@@ -30,7 +30,8 @@ export function CalendarWidget({ posts }: CalendarWidgetProps) {
 
   return (
     <section
-      className="hb-dashboard-card hb-dashboard-card--clickable hb-dashboard-calendar-card group relative"
+      className="hb-bento-card hb-bento-card--clickable group relative "
+      style={{ gridColumn: "span 5", gridRow: "span 2", animationDelay: "80ms" }}
     >
       <div className="hb-bento-head relative z-[1]">
         <div className="flex min-w-0 items-center gap-3">
@@ -48,7 +49,7 @@ export function CalendarWidget({ posts }: CalendarWidgetProps) {
           </div>
         </div>
         <span className="hb-bento-action">
-          <span className="hidden sm:inline">Open calendar</span> →
+          Expand →
         </span>
       </div>
 
