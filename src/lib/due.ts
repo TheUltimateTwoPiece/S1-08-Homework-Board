@@ -1,4 +1,5 @@
-import { differenceInCalendarDays, format, parseISO, startOfDay } from "date-fns";
+import { differenceInCalendarDays, format, parseISO } from "date-fns";
+import { getTodayString } from "@/lib/time";
 
 export type DueKind = "overdue" | "today" | "tomorrow" | "future";
 
@@ -19,8 +20,8 @@ export type DueState = {
 export function getDueState(dueAt: string | null): DueState | null {
   if (!dueAt) return null;
 
-  const dueDate = startOfDay(parseISO(dueAt));
-  const today = startOfDay(new Date());
+  const dueDate = parseISO(dueAt);
+  const today = parseISO(getTodayString());
   const diff = differenceInCalendarDays(dueDate, today);
 
   if (diff < 0) return { label: "Overdue", kind: "overdue", diffDays: diff };

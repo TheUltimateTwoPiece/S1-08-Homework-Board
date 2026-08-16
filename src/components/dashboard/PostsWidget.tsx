@@ -3,6 +3,7 @@ import { PostCompleteButton } from "@/components/PostCompleteButton";
 import { togglePostComplete } from "@/actions/completions";
 import { getDueBadge } from "@/lib/due";
 import type { Post } from "@/lib/types";
+import { getTodayString } from "@/lib/time";
 
 type PostsWidgetProps = {
   posts: Post[];
@@ -66,6 +67,7 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
               <li key={post.id} className={"hb-posts-widget-row " + rowClass} style={{ animationDelay: (60 + i * 28) + "ms" }}>
                 <form action={togglePostComplete} className="hb-posts-widget-check relative z-[3]">
                   <input type="hidden" name="postId" value={post.id} />
+                  <input type="hidden" name="completed" value={done ? "false" : "true"} />
                   <PostCompleteButton completed={done} compact />
                 </form>
                 <Link href={"/posts/" + post.id} className="min-w-0 flex-1 relative z-[3]">

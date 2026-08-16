@@ -50,3 +50,30 @@ export const getUnreadNotificationCount = cache(
     return count ?? 0;
   },
 );
+
+export type AdminInboxCounts = {
+  feedback: number;
+  bugReports: number;
+};
+
+/** Counts items that still need an admin's attention in the two admin inboxes. */
+export const getAdminInboxCounts = cache(
+  async (): Promise<AdminInboxCounts> => {
+    const supabase = await createClient();
+    const [{ count: feedback }, { count: bugReports }] = await Promise.all([
+      supabase
+        .from("feedback")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "unread"),
+      supabase
+        .from("bug_reports")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "unread"),
+    ]);
+
+    return {
+      feedback: feedback ?? 0,
+      bugReports: bugReports ?? 0,
+    };
+  },
+);

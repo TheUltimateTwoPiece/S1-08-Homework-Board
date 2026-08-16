@@ -1,11 +1,17 @@
 import Link from "next/link";
 import { format, formatDistanceToNow } from "date-fns";
+import {
+  differenceInCalendarDays,
+  formatDistanceToNow,
+  parseISO,
+} from "date-fns";
 import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageTopBar } from "@/components/PageTopBar";
 import { DEFAULT_SUBJECT } from "@/lib/subjects";
 import { getDueState } from "@/lib/due";
 import { normalizePost, type Post } from "@/lib/types";
+import { getDateAfterDaysString, getTodayString } from "@/lib/time";
 
 export const revalidate = 30;
 
@@ -17,7 +23,7 @@ type CompletionRow = {
 export default async function YourProgressPage() {
   const profile = await requireProfile();
   const supabase = await createClient();
-  const todayStr = format(new Date(), "yyyy-MM-dd");
+  const todayStr = getTodayString();
 
   const [{ data: posts }, { data: completions }] = await Promise.all([
     supabase
@@ -93,16 +99,13 @@ export default async function YourProgressPage() {
   const daysWithCompletion = new Set<string>();
   for (const c of typedCompletions) {
     if (!c.completed_at) continue;
-    daysWithCompletion.add(format(new Date(c.completed_at), "yyyy-MM-dd"));
+    daysWithCompletion.add(getTodayString(new Date(c.completed_at)));
   }
-  const todayYmd = format(now, "yyyy-MM-dd");
+  const todayYmd = getTodayString(now);
   const streakStartIdx = daysWithCompletion.has(todayYmd) ? 0 : 1;
   let streak = 0;
   for (let i = streakStartIdx; i < 60; i++) {
-    const day = format(
-      new Date(now.getTime() - i * 24 * 60 * 60 * 1000),
-      "yyyy-MM-dd",
-    );
+    const day = getDateAfterDaysString(-i, now);
     if (daysWithCompletion.has(day)) streak += 1;
     else break;
   }

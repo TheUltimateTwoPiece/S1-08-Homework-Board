@@ -63,6 +63,7 @@ export function CreatePostForm() {
             id="title"
             name="title"
             required
+            maxLength={160}
             placeholder="e.g. Math — Chapter 5 exercises"
             className="hb-input w-full rounded-lg px-3 py-2.5 text-sm"
           />
@@ -130,6 +131,7 @@ export function CreatePostForm() {
             onChange={(e) => setContent(e.target.value)}
             rows={6}
             required
+            maxLength={20000}
             placeholder="List the assignments, due dates, and any instructions..."
             className="hb-input w-full rounded-lg px-3 py-2.5 text-sm"
           />

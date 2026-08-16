@@ -41,6 +41,7 @@ export function CommentForm({
           name="content"
           rows={3}
           required
+          maxLength={5000}
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder={placeholder}

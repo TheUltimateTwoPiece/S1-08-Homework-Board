@@ -244,6 +244,7 @@ export function SendReminderForm({
             id="reminder-title"
             name="title"
             required
+            maxLength={160}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. Math homework due tomorrow"
@@ -260,6 +261,7 @@ export function SendReminderForm({
             name="message"
             rows={4}
             required
+            maxLength={5000}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Let students know what they need to complete..."

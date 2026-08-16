@@ -3,6 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { tripProfanity } from "@/lib/profanity";
+import { MAX_PIP_INSTRUCTIONS_LENGTH } from "@/lib/pip-types";
+
+const MAX_CHAT_INSTRUCTIONS_LENGTH = MAX_PIP_INSTRUCTIONS_LENGTH;
+const MAX_CHAT_TITLE_LENGTH = 80;
+const MAX_SAVED_MESSAGE_LENGTH = 12000;
 
 export interface PipChat {
   id: string;
@@ -66,6 +72,11 @@ export async function createChat(
   if (!user) redirect("/login");
 
   const instructions = systemInstructions?.trim() || null;
+  if (instructions && instructions.length > MAX_CHAT_INSTRUCTIONS_LENGTH) return null;
+  if (instructions) {
+    const profanity = tripProfanity({ userId: user.id }, instructions);
+    if (profanity.triggered) redirect(profanity.redirectUrl);
+  }
 
   const { data } = await supabase
     .from("pip_chats")
@@ -100,10 +111,13 @@ export async function renameChat(chatId: string, title: string): Promise<void> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  const normalizedTitle = title.trim().slice(0, MAX_CHAT_TITLE_LENGTH) || "New chat";
+  if (containsUnsafeChatText(normalizedTitle, user.id)) return;
+
   await supabase
     .from("pip_chats")
     .update({
-      title: title.trim().slice(0, 80) || "New chat",
+      title: normalizedTitle,
       updated_at: new Date().toISOString(),
     })
     .eq("id", chatId)
@@ -120,10 +134,14 @@ export async function updateInstructions(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  const normalizedInstructions = instructions.trim();
+  if (normalizedInstructions.length > MAX_CHAT_INSTRUCTIONS_LENGTH) return;
+  if (normalizedInstructions && containsUnsafeChatText(normalizedInstructions, user.id)) return;
+
   await supabase
     .from("pip_chats")
     .update({
-      system_instructions: instructions.trim() || null,
+      system_instructions: normalizedInstructions || null,
       updated_at: new Date().toISOString(),
     })
     .eq("id", chatId)
@@ -159,6 +177,11 @@ export async function saveMessage(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  const normalizedText = typeof text === "string" ? text.trim() : "";
+  if (!normalizedText || normalizedText.length > MAX_SAVED_MESSAGE_LENGTH) return;
+  if (role !== "user" && role !== "pip") return;
+  if (role === "user" && containsUnsafeChatText(normalizedText, user.id)) return;
+
   // Verify ownership
   const { data: chat } = await supabase
     .from("pip_chats")
@@ -169,11 +192,16 @@ export async function saveMessage(
 
   if (!chat) return;
 
-  await supabase.from("pip_messages").insert({ chat_id: chatId, role, text });
+  await supabase.from("pip_messages").insert({ chat_id: chatId, role, text: normalizedText });
 
   // Bump updated_at on the chat
   await supabase
     .from("pip_chats")
     .update({ updated_at: new Date().toISOString() })
-    .eq("id", chatId);
+    .eq("id", chatId)
+    .eq("user_id", user.id);
+}
+
+function containsUnsafeChatText(text: string, userId: string): boolean {
+  return tripProfanity({ userId }, text).triggered;
 }

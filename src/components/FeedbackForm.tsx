@@ -72,6 +72,7 @@ export function FeedbackForm() {
               name="message"
               rows={6}
               required
+              maxLength={5000}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Type your feedback here..."
