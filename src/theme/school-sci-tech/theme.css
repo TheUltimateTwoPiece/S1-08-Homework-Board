@@ -40,8 +40,8 @@
     --hb-bg-grad-3: rgba(120, 113, 108, 0.04);
     --background: var(--hb-surface-muted);
     --foreground: var(--hb-text);
-    --hb-radius: 0.75rem;
-    --hb-radius-sm: 0.5rem;
+    --hb-radius: 0.5rem;
+    --hb-radius-sm: 0.375rem;
     --hb-shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.05);
     --hb-shadow-md: 0 3px 6px -1px rgba(28, 25, 23, 0.07), 0 2px 4px -2px rgba(28, 25, 23, 0.04);
     --hb-shadow-lg: 0 8px 14px -3px rgba(28, 25, 23, 0.08), 0 4px 6px -4px rgba(28, 25, 23, 0.04);
@@ -185,25 +185,8 @@
   }
 
   body {
-    background:
-      radial-gradient(
-        1000px circle at 20% -5%,
-        var(--hb-bg-grad-1),
-        transparent 50%
-      ),
-      radial-gradient(
-        900px circle at 80% -5%,
-        var(--hb-bg-grad-2),
-        transparent 50%
-      ),
-      radial-gradient(
-        600px circle at 50% 100%,
-        var(--hb-bg-grad-3),
-        transparent 50%
-      ),
-      linear-gradient(to bottom, var(--hb-surface-muted), color-mix(in srgb, var(--hb-surface-muted) 95%, var(--hb-text) 5%));
+    background: var(--hb-surface-muted);
     color: var(--hb-text);
-    background-attachment: fixed;
     transition: background-color 300ms ease, color 300ms ease;
   }
 
@@ -350,15 +333,13 @@
   }
 
   @keyframes hb-page-enter {
-    0% {
+    from {
       opacity: 0;
-      transform: translateY(6px) scale(0.998);
-      filter: blur(2px);
+      transform: translateY(4px);
     }
-    100% {
+    to {
       opacity: 1;
-      transform: translateY(0) scale(1);
-      filter: blur(0);
+      transform: translateY(0);
     }
   }
 
@@ -434,7 +415,7 @@
   }
 
   .hb-page-enter {
-    animation: hb-page-enter 180ms cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+    animation: hb-page-enter 160ms ease-out backwards;
   }
 
   /* ── Header ─────────────────────────────────── */
@@ -478,9 +459,8 @@
   }
 
   .hb-card--interactive:hover {
-    border-color: rgba(37, 99, 235, 0.4);
-    box-shadow: var(--hb-shadow-lg);
-    transform: translateY(-2px);
+    border-color: var(--hb-border-hover);
+    box-shadow: var(--hb-shadow-sm);
   }
 
   .hb-card--interactive:active {
@@ -698,15 +678,9 @@
   }
 
   .hb-chip:hover {
-    border-color: rgba(37, 99, 235, 0.45);
-    background: rgba(37, 99, 235, 0.07);
-    color: var(--hb-blue);
-    transform: translateY(-1px) scale(1.02);
-    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.1);
-  }
-
-  .hb-chip:active {
-    transform: translateY(0px) scale(0.98);
+    border-color: var(--hb-border-hover);
+    background: var(--hb-surface-hover);
+    color: var(--hb-text);
   }
 
   .hb-chip:disabled {
@@ -734,12 +708,8 @@
     user-select: none;
   }
 
-  .hb-segmented button:hover:not(:disabled) {
-    transform: translateY(-1px);
-  }
-
   .hb-segmented button:active:not(:disabled) {
-    transform: translateY(0px) scale(0.98);
+    transform: translateY(0px);
   }
 
   .hb-segmented-btn--active {
@@ -761,8 +731,6 @@
     border-color: rgba(37, 99, 235, 0.8);
     background: rgba(37, 99, 235, 0.08);
     color: var(--hb-blue);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.1);
   }
 
   .hb-choice-btn--inactive {
@@ -774,12 +742,6 @@
 
   .hb-choice-btn--inactive:hover {
     border-color: rgba(100, 116, 139, 0.7);
-    transform: translateY(-1px);
-  }
-
-  .hb-choice-btn--inactive:active,
-  .hb-choice-btn--active:active {
-    transform: translateY(0px) scale(0.98);
   }
 
   /* ── Action Link ─────────────────────────────── */
@@ -799,11 +761,9 @@
 
   .hb-action-link:hover {
     background-size: 100% 2px;
-    transform: translateY(-1px);
   }
 
   .hb-action-link:active {
-    transform: translateY(0px);
     opacity: 0.8;
   }
 
@@ -875,11 +835,6 @@
   .hb-icon-btn:hover {
     background: rgba(100, 116, 139, 0.1);
     color: var(--hb-text);
-    transform: scale(1.05);
-  }
-
-  .hb-icon-btn:active {
-    transform: scale(0.95);
   }
 
   .hb-bell--shake {
@@ -913,13 +868,7 @@
 
   .hb-check-btn--done:hover {
     border-color: rgba(22, 163, 74, 0.65);
-    background: linear-gradient(135deg, rgba(22, 163, 74, 0.12), rgba(22, 163, 74, 0.06));
-    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.12);
-    transform: translateY(-1px);
-  }
-
-  .hb-check-btn--done:active {
-    transform: translateY(0px);
+    background: rgba(22, 163, 74, 0.08);
   }
 
   .hb-check-btn--todo {
@@ -937,12 +886,6 @@
     border-color: rgba(37, 99, 235, 0.55);
     background: rgba(37, 99, 235, 0.06);
     color: var(--hb-blue);
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
-    transform: translateY(-1px);
-  }
-
-  .hb-check-btn--todo:active {
-    transform: translateY(0px);
   }
 
   .hb-check-icon--done {
@@ -1072,8 +1015,7 @@
   }
 
   .hb-calendar-cell--has-items:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--hb-shadow-md);
+    box-shadow: var(--hb-shadow-sm);
     border-color: rgba(37, 99, 235, 0.35);
     cursor: pointer;
   }
@@ -1084,26 +1026,17 @@
   }
 
   .hb-calendar-nav {
-    transition: transform 150ms ease, color 150ms ease;
-  }
-
-  .hb-calendar-nav:hover {
-    transform: scale(1.05);
-  }
-
-  .hb-calendar-nav:active {
-    transform: scale(0.95);
+    transition: color 150ms ease;
   }
 
   /* ── Notification List ───────────────────────── */
 
   .hb-notification-item {
-    transition: transform 150ms ease, box-shadow 150ms ease;
+    transition: box-shadow 150ms ease;
   }
 
   .hb-notification-item:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--hb-shadow-md);
+    box-shadow: var(--hb-shadow-sm);
   }
 
   /* ── Form Section Divider ────────────────────── */
@@ -1141,7 +1074,6 @@
     padding: 14px 8px 12px;
     background: var(--hb-surface);
     border-right: 1px solid var(--hb-border);
-    box-shadow: 4px 0 16px rgba(15, 23, 42, 0.04);
     transition: background-color 300ms ease, border-color 300ms ease;
   }
 
@@ -1151,16 +1083,14 @@
     justify-content: center;
     width: 44px;
     height: 44px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.22), rgba(100, 116, 139, 0.22));
+    border-radius: 10px;
+    background: var(--hb-surface-hover);
     color: var(--hb-text);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-    transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 200ms ease;
+    transition: color 150ms ease;
   }
 
   .hb-siderail-brand:hover {
-    transform: scale(1.08) rotate(-3deg);
-    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.32);
+    color: var(--hb-blue);
   }
 
   .hb-siderail-divider {
@@ -1169,6 +1099,14 @@
     background: var(--hb-border);
     margin: 10px 0 6px;
     opacity: 0.8;
+  }
+
+  .hb-siderail-group-divider {
+    width: 28px;
+    height: 1px;
+    background: var(--hb-border);
+    margin: 8px 0;
+    flex: 0 0 auto;
   }
 
   .hb-siderail-nav {
@@ -1317,17 +1255,11 @@
   .hb-siderail-btn:hover {
     background: var(--hb-surface-hover);
     color: var(--hb-text);
-    transform: translateY(-2px) scale(1.05);
-  }
-
-  .hb-siderail-btn:active {
-    transform: translateY(0) scale(0.97);
   }
 
   .hb-siderail-btn--active {
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.13), rgba(37, 99, 235, 0.06));
+    background: var(--hb-surface-hover);
     color: var(--hb-blue);
-    box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.18);
   }
 
   /* Bolden the selected nav icon so the active state reads at a glance. */
@@ -1343,10 +1275,8 @@
     transform: translateY(-50%);
     width: 3px;
     height: 22px;
-    border-radius: 0 4px 4px 0;
-    background: linear-gradient(180deg, var(--hb-blue), var(--hb-blue-light));
-    box-shadow: 0 0 8px rgba(37, 99, 235, 0.4);
-    animation: hb-bubble-pop 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    border-radius: 0 2px 2px 0;
+    background: var(--hb-blue);
   }
 
   .hb-siderail-btn-badge {
@@ -1445,7 +1375,6 @@
   .hb-siderail-logout:hover {
     color: var(--hb-red);
     background: rgba(220, 38, 38, 0.08);
-    transform: scale(1.08);
   }
 
   /* ── App Shell (with SideRail) ────────────────── */
@@ -1475,6 +1404,7 @@
     }
     .hb-siderail-brand { display: none; }
     .hb-siderail-divider { display: none; }
+    .hb-siderail-group-divider { display: none; }
     .hb-siderail-nav {
       min-width: 0;
       flex-direction: row;
@@ -1534,26 +1464,14 @@
 
   .hb-bento-card {
     position: relative;
-    overflow: hidden;
     border-radius: var(--hb-radius);
     background: var(--hb-surface);
     border: 1px solid var(--hb-border);
-    box-shadow:
-      0 1px 2px rgba(15, 23, 42, 0.07),
-      0 4px 12px -2px rgba(15, 23, 42, 0.06);
     padding: 16px;
-    transition:
-      transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
-      box-shadow 220ms ease,
-      border-color 220ms ease;
-    animation: hb-bento-enter 260ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    transition: border-color 180ms ease;
   }
 
   .hb-bento-card:hover {
-    transform: translateY(-2px);
-    box-shadow:
-      0 10px 20px -8px rgba(28, 25, 23, 0.14),
-      0 4px 8px -4px rgba(28, 25, 23, 0.07);
     border-color: var(--hb-border-hover);
   }
 
@@ -1564,36 +1482,23 @@
   }
 
   .hb-bento-card--clickable:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--hb-shadow-lg);
-    border-color: var(--hb-blue);
-  }
-
-  .hb-bento-card--clickable:active {
-    transform: translateY(-1px);
-    transition-duration: 80ms;
+    border-color: var(--hb-border-hover);
   }
 
   /* ── SVG Progress Ring ───────────────────────── */
 
   .hb-progress-ring {
-    animation: hb-bubble-pop 700ms cubic-bezier(0.34, 1.56, 0.64, 1);
     transform: rotate(-90deg);
     transform-origin: center;
   }
 
   .hb-progress-stroke {
-    transition: stroke-dashoffset 1.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    filter: drop-shadow(0 0 4px rgba(34, 197, 94, 0.4));
+    transition: stroke-dashoffset 500ms ease;
   }
 
   @keyframes hb-progress-draw {
     from { stroke-dashoffset: var(--hb-circ, 276); }
     to { stroke-dashoffset: var(--hb-target-offset, 0); }
-  }
-
-  .dark .hb-progress-stroke {
-    filter: drop-shadow(0 0 6px rgba(74, 222, 128, 0.55));
   }
 
   /* ── Pulsing Notification Dot ────────────────── */
@@ -1621,8 +1526,7 @@
   }
 
   .hb-mini-cal-cell--link:hover .hb-mini-cal-num {
-    transform: scale(1.15);
-    box-shadow: 0 2px 10px rgba(37, 99, 235, 0.22);
+    background: var(--hb-surface-hover);
   }
 
   /* ── Bento Card Headers ──────────────────────── */
@@ -1640,17 +1544,15 @@
     display: inline-flex;
     align-items: center;
     flex: none;
-    border-radius: 6px;
-    padding: 4px 10px;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--hb-blue);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--hb-text-muted);
     white-space: nowrap;
-    transition: background-color 180ms ease, color 180ms ease;
+    transition: color 180ms ease;
   }
 
   .group:hover .hb-bento-action {
-    background: rgba(37, 99, 235, 0.08);
+    color: var(--hb-text);
   }
 
   .hb-bento-icon-box {
@@ -1659,16 +1561,12 @@
     justify-content: center;
     width: 36px;
     height: 36px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(37, 99, 235, 0.05));
-    color: var(--hb-blue);
+    color: var(--hb-text-muted);
     flex: none;
-    transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 220ms ease;
   }
 
   .hb-bento-card:hover .hb-bento-icon-box {
-    transform: scale(1.1) rotate(-4deg);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.18);
+    color: var(--hb-text);
   }
 
   /* ── Posts Card (PRIORITY) ───────────────────── */
@@ -1687,7 +1585,6 @@
 
   .hb-posts-widget-row:hover {
     background: var(--hb-surface-hover);
-    transform: translateX(2px);
   }
 
   .hb-posts-widget-row--todo { border-left-color: var(--hb-warning); }
@@ -1783,10 +1680,9 @@
 
   /* Today: solid filled pill */
   .hb-mini-cal-cell--today .hb-mini-cal-num {
-    background: #2563eb;
+    background: var(--hb-blue);
     color: #ffffff;
     font-weight: 700;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.38);
   }
 
   /* Days with homework: soft amber pill + indicator dot */
@@ -1807,7 +1703,7 @@
 
   /* When today also has homework, keep the filled-blue emphasis */
   .hb-mini-cal-cell--today.hb-mini-cal-cell--has-due .hb-mini-cal-num {
-    background: #2563eb;
+    background: var(--hb-blue);
     color: #ffffff;
   }
 
@@ -1913,12 +1809,11 @@
   .hb-snippet:hover {
     background: var(--hb-surface-hover);
     border-color: var(--hb-border-hover);
-    transform: translateX(2px);
   }
 
   .hb-snippet--unread {
-    background: linear-gradient(135deg, rgba(217, 119, 6, 0.06), rgba(217, 119, 6, 0.02));
-    border-color: rgba(217, 119, 6, 0.18);
+    background: color-mix(in srgb, var(--hb-warning) 7%, transparent);
+    border-color: color-mix(in srgb, var(--hb-warning) 25%, transparent);
   }
 
   /* ── Progress Bar ───────────────────────────── */
@@ -1934,14 +1829,13 @@
   .hb-bar-fill {
     height: 100%;
     border-radius: 9999px;
-    background: linear-gradient(90deg, var(--hb-success), var(--hb-success-light));
+    background: var(--hb-success);
     /* Base transform mirrors the animation target so the bar holds its true
        percentage after the entrance animation ends (without this, the fill
        reverts to transform:none = full width once the keyframes finish). */
     transform: scaleX(var(--hb-bar-target, 0));
     transform-origin: left center;
-    animation: hb-bar-fill 900ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
-    box-shadow: 0 0 8px rgba(22, 163, 74, 0.25);
+    animation: hb-bar-fill 500ms ease-out backwards;
   }
 
   /* ── Mobile Bento Reset ─────────────────────── */

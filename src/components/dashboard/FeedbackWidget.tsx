@@ -3,45 +3,38 @@ import { formatDistanceToNow } from "date-fns";
 import { Avatar } from "@/components/Avatar";
 import type { Feedback } from "@/lib/types";
 
-type FeedbackWidgetProps = { feedback: Feedback[]; };
+type FeedbackWidgetProps = { feedback: Feedback[] };
 
 export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
-  // Cap at two items — three feedback rows (name + message + timestamp)
-  // don't fit the fixed card height without a scrollbar.
-  const top = feedback.slice(0, 2);
+  const top = feedback.slice(0, 3);
 
   return (
-    <section
-      className="hb-bento-card hb-bento-card--clickable group relative "
-      style={{ gridColumn: "span 6", gridRow: "span 2", animationDelay: "80ms" }}
-    >
-      <div className="hb-bento-head relative z-[1]">
-        <div className="flex min-w-0 items-center gap-3">
-          <div className="hb-bento-icon-box" style={{ background: "linear-gradient(135deg, rgba(217,119,6,0.18), rgba(217,119,6,0.04))", color: "#b45309" }}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-          </div>
-          <h2 className="hb-card-section truncate text-sm tracking-tight">Feedback inbox</h2>
-          {feedback.length > 0 && (
-            <span className="shrink-0 rounded-full bg-amber-200 px-1.5 py-0.5 text-[10px] font-bold text-amber-900">
-              {feedback.length}
-            </span>
-          )}
+    <section aria-labelledby="feedback-heading" className="hb-card-surface p-5 sm:p-6">
+      <header className="mb-4 flex items-baseline justify-between gap-4 border-b pb-3">
+        <div>
+          <h2 id="feedback-heading" className="hb-card-section text-sm">
+            Feedback
+          </h2>
+          <p className="hb-card-meta mt-0.5 text-xs">
+            {feedback.length === 0
+              ? "Nothing submitted yet"
+              : `${feedback.length} total`}
+          </p>
         </div>
-        <span className="hb-bento-action">
-          View all →
-        </span>
-      </div>
+        <Link
+          href="/admin/feedback"
+          className="shrink-0 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+        >
+          Inbox
+        </Link>
+      </header>
 
       {top.length === 0 ? (
-        <div className="flex h-[calc(100%-56px)] items-center justify-center text-center">
-          <p className="hb-card-section text-sm">No feedback yet</p>
-        </div>
+        <p className="hb-card-meta text-sm">No feedback yet.</p>
       ) : (
-        <ul className="hb-list-scroll space-y-1.5 pb-1">
-          {top.map((f, i) => (
-            <li key={f.id} className="hb-snippet relative z-[3]" style={{ animationDelay: (120 + i * 28) + "ms" }}>
+        <ul className="divide-y">
+          {top.map((f) => (
+            <li key={f.id} className="flex items-start gap-3 py-2.5">
               <Avatar
                 id={f.author_id}
                 name={f.profiles?.full_name ?? "Student"}
@@ -49,25 +42,23 @@ export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
                 size="md"
               />
               <div className="min-w-0 flex-1">
-                <div className="flex min-w-0 items-center gap-1.5">
-                  <div className="hb-card-section hb-truncate text-sm">
+                <div className="flex min-w-0 items-baseline gap-2">
+                  <p className="hb-card-section truncate text-sm">
                     {f.profiles?.full_name ?? "Student"}
-                  </div>
-                  <span className="hb-card-meta hb-truncate max-w-[88px] shrink-0 rounded bg-zinc-200 px-1 py-0.5 text-[10px] font-bold">
+                  </p>
+                  <span className="hb-card-meta shrink-0 text-xs">
                     {f.category}
                   </span>
                 </div>
-                <div className="hb-card-body hb-truncate text-xs">{f.message}</div>
-                <div className="hb-card-meta hb-truncate text-[10px]">
+                <p className="hb-card-body truncate text-sm">{f.message}</p>
+                <p className="hb-card-meta mt-0.5 text-xs">
                   {formatDistanceToNow(new Date(f.created_at), { addSuffix: true })}
-                </div>
+                </p>
               </div>
             </li>
           ))}
         </ul>
       )}
-
-      <Link href="/admin/feedback" className="absolute inset-0 z-[1] rounded-[inherit]" tabIndex={-1} aria-hidden="true" aria-label="View all feedback" />
     </section>
   );
 }

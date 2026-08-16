@@ -46,7 +46,8 @@ function Icon({ children }: { children: React.ReactNode }) {
   );
 }
 
-const NAV_ITEMS: RailItem[] = [
+// Core navigation: the things students reach for every day.
+const MAIN_NAV: RailItem[] = [
   {
     href: "/",
     label: "Home",
@@ -70,6 +71,34 @@ const NAV_ITEMS: RailItem[] = [
     ),
   },
   {
+    href: "/posts",
+    label: "All posts",
+    icon: (
+      <Icon>
+        <line x1="8" y1="6" x2="21" y2="6" />
+        <line x1="8" y1="12" x2="21" y2="12" />
+        <line x1="8" y1="18" x2="21" y2="18" />
+        <line x1="3" y1="6" x2="3.01" y2="6" />
+        <line x1="3" y1="12" x2="3.01" y2="12" />
+        <line x1="3" y1="18" x2="3.01" y2="18" />
+      </Icon>
+    ),
+  },
+  {
+    href: "/pip",
+    label: "Pip",
+    icon: (
+      <Icon>
+        <rect x="4" y="4" width="16" height="16" rx="2" />
+        <rect x="9" y="9" width="6" height="6" rx="1" />
+        <path d="M9 2v2" /><path d="M15 2v2" />
+        <path d="M9 20v2" /><path d="M15 20v2" />
+        <path d="M20 9h2" /><path d="M2 9h2" />
+        <path d="M20 15h2" /><path d="M2 15h2" />
+      </Icon>
+    ),
+  },
+  {
     href: "/your-progress",
     label: "Your progress",
     icon: (
@@ -88,40 +117,16 @@ const NAV_ITEMS: RailItem[] = [
       </Icon>
     ),
   },
-  {
-    href: "/posts",
-    label: "All posts",
-    icon: (
-      <Icon>
-        <line x1="8" y1="6" x2="21" y2="6" />
-        <line x1="8" y1="12" x2="21" y2="12" />
-        <line x1="8" y1="18" x2="21" y2="18" />
-        <line x1="3" y1="6" x2="3.01" y2="6" />
-        <line x1="3" y1="12" x2="3.01" y2="12" />
-        <line x1="3" y1="18" x2="3.01" y2="18" />
-      </Icon>
-    ),
-  },
+];
+
+// Utility links students use occasionally, kept separate from the daily nav.
+const MORE_NAV: RailItem[] = [
   {
     href: "/feedback",
     label: "Feedback",
     icon: (
       <Icon>
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-      </Icon>
-    ),
-  },
-  {
-    href: "/pip",
-    label: "Pip",
-    icon: (
-      <Icon>
-        <rect x="4" y="4" width="16" height="16" rx="2" />
-        <rect x="9" y="9" width="6" height="6" rx="1" />
-        <path d="M9 2v2" /><path d="M15 2v2" />
-        <path d="M9 20v2" /><path d="M15 20v2" />
-        <path d="M20 9h2" /><path d="M2 9h2" />
-        <path d="M20 15h2" /><path d="M2 15h2" />
       </Icon>
     ),
   },
@@ -319,7 +324,25 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
     };
   }, [adminMenuOpen]);
 
-  const allItems = NAV_ITEMS;
+  const renderItem = (item: RailItem) => {
+    const isActive = activeFor(item.href, item.exactMatch);
+    const isPulsed = pulsedHref === item.href;
+    const eager = EAGER_PREFETCH.has(item.href);
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        prefetch={eager ? true : undefined}
+        className={`hb-siderail-btn ${isActive ? "hb-siderail-btn--active" : ""} ${isPulsed ? "hb-siderail-btn--pulse" : ""}`}
+        aria-current={isActive ? "page" : undefined}
+        aria-label={item.label}
+      >
+        {item.icon}
+        {item.href === "/notifications" && unreadBadgeSlot}
+        <span className="hb-siderail-tooltip">{item.label}</span>
+      </Link>
+    );
+  };
 
   return (
     <aside className="hb-siderail" aria-label="Primary navigation">
@@ -350,25 +373,9 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
       <div className="hb-siderail-divider" />
 
       <nav className="hb-siderail-nav" onClick={handleNavClick}>
-        {allItems.map((item) => {
-          const isActive = activeFor(item.href, item.exactMatch);
-          const isPulsed = pulsedHref === item.href;
-          const eager = EAGER_PREFETCH.has(item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              prefetch={eager ? true : undefined}
-              className={`hb-siderail-btn ${isActive ? "hb-siderail-btn--active" : ""} ${isPulsed ? "hb-siderail-btn--pulse" : ""}`}
-              aria-current={isActive ? "page" : undefined}
-              aria-label={item.label}
-            >
-              {item.icon}
-              {item.href === "/notifications" && unreadBadgeSlot}
-              <span className="hb-siderail-tooltip">{item.label}</span>
-            </Link>
-          );
-        })}
+        {MAIN_NAV.map(renderItem)}
+        <div className="hb-siderail-group-divider" aria-hidden="true" />
+        {MORE_NAV.map(renderItem)}
 
         {profile.role === "admin" && (
           <div className="hb-siderail-admin-group" ref={adminMenuRef}>

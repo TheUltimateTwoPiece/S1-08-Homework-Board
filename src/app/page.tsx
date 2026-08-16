@@ -94,9 +94,6 @@ export default async function DashboardPage() {
 
   const totalPosts = typedPosts.length;
   const completedCount = typedPosts.filter((p) => completedSet.has(p.id)).length;
-  // "Upcoming" / "Overdue" should reflect work the student still owes. If
-  // the post is already completed, it's neither — otherwise the widget
-  // double-counts finished work as pressure.
   const upcomingCount = typedPosts.filter(
     (p) =>
       p.due_at &&
@@ -108,6 +105,9 @@ export default async function DashboardPage() {
       p.due_at &&
       p.due_at < todayStr &&
       !completedSet.has(p.id),
+  ).length;
+  const dueTodayCount = typedPosts.filter(
+    (p) => p.due_at === todayStr && !completedSet.has(p.id),
   ).length;
 
   const allSchedules = (schedulesResult.data as ScheduleRow[]) ?? [];
@@ -131,44 +131,55 @@ export default async function DashboardPage() {
   const pipUsed = (pipUsage as { count?: number } | null)?.count ?? 0;
   const pipRemaining = Math.max(0, 100 - pipUsed);
 
+  const needsAttention = overdueCount + dueTodayCount;
+  const subtitle =
+    needsAttention > 0
+      ? `${formatAppDate(new Date())} · ${needsAttention} ${needsAttention === 1 ? "task" : "tasks"} need attention`
+      : `${formatAppDate(new Date())} · nothing overdue or due today`;
+
   return (
-    <div className="mx-auto w-full max-w-[1400px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+    <div className="mx-auto w-full max-w-[1180px] px-4 py-8 sm:px-6 lg:px-8">
       <PageTopBar
         profile={profile}
         greetingName={firstName}
-        subtitle={`It's ${formatAppDate(new Date())}. Here's your homework dashboard.`}
+        subtitle={subtitle}
         showAdminCta
       />
 
-      <div className="hb-bento">
-        <PostsWidget
-          posts={sortedPosts}
-          completedSet={completedSet}
-          firstName={firstName}
-        />
-        <CalendarWidget posts={typedPosts} />
-        <StatsWidget
-          totalPosts={totalPosts}
-          completedCount={completedCount}
-          upcomingCount={upcomingCount}
-          overdueCount={overdueCount}
-        />
-        <UpcomingWidget posts={sortedPosts} />
-        <NotificationsWidget
-          notifications={(notifications as Notification[]) ?? []}
-        />
-        {isAdmin && (
-          <>
-            <DutyWidget
-              todaySchedules={todaySchedules}
-              completedToday={completedToday}
-              todayStr={todayStr}
-              currentAdminId={profile.id}
-            />
-            <FeedbackWidget feedback={feedback} />
-          </>
-        )}
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <main className="min-w-0">
+          <PostsWidget
+            posts={sortedPosts}
+            completedSet={completedSet}
+          />
+        </main>
+
+        <aside className="min-w-0 space-y-6">
+          <UpcomingWidget posts={sortedPosts} />
+          <StatsWidget
+            totalPosts={totalPosts}
+            completedCount={completedCount}
+            upcomingCount={upcomingCount}
+            overdueCount={overdueCount}
+          />
+          <NotificationsWidget
+            notifications={(notifications as Notification[]) ?? []}
+          />
+          <CalendarWidget posts={typedPosts} />
+        </aside>
       </div>
+
+      {isAdmin && (
+        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <DutyWidget
+            todaySchedules={todaySchedules}
+            completedToday={completedToday}
+            todayStr={todayStr}
+            currentAdminId={profile.id}
+          />
+          <FeedbackWidget feedback={feedback} />
+        </div>
+      )}
 
       <PipBubble remaining={pipRemaining} />
     </div>

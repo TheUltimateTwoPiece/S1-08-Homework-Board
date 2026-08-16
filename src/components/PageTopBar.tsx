@@ -15,24 +15,16 @@ export function PageTopBar({
   showAdminCta = false,
 }: PageTopBarProps) {
   return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
       <div className="min-w-0 flex-1">
         <h1 className="hb-page-title text-2xl tracking-tight sm:text-[28px]">
-          Hi, <span className="text-blue-700 dark:text-blue-300">{greetingName}</span>!
-          <span className="ml-2 inline-block origin-[70%_70%] animate-[hb-wave_1800ms_ease-in-out_infinite]">
-            👋
-          </span>
+          Hi, {greetingName}
         </h1>
-        <p className="hb-body-text mt-1 text-sm">
-          {subtitle}
-        </p>
+        {subtitle && <p className="hb-body-text mt-1 text-sm">{subtitle}</p>}
       </div>
       <div className="flex shrink-0 items-center gap-2">
         {showAdminCta && profile.role === "admin" && (
-          <Link
-            href="/admin"
-            className="button gap-1.5"
-          >
+          <Link href="/admin" className="button gap-1.5">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
