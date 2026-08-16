@@ -1,10 +1,5 @@
 import Link from "next/link";
-import { format, formatDistanceToNow } from "date-fns";
-import {
-  differenceInCalendarDays,
-  formatDistanceToNow,
-  parseISO,
-} from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageTopBar } from "@/components/PageTopBar";
@@ -414,4 +409,3 @@ function StatTile({ label, value, variant, suffix, hint }: StatTileProps) {
     </div>
   );
 }
-
