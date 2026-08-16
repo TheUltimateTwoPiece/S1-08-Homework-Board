@@ -18,10 +18,10 @@ export function PostCard({ post, completed }: PostCardProps) {
 
   return (
     <div
-      className={`relative flex items-start gap-4 rounded-xl border bg-white p-5 transition-all duration-200 ${
+      className={`relative flex items-start gap-4 rounded-xl border p-5 transition-all duration-200 ${
         completed
-          ? "hb-card--completed"
-          : "border-slate-200 shadow-sm hover:border-blue-300/50 hover:shadow-lg hover:-translate-y-0.5"
+          ? "border-emerald-300/70 bg-emerald-50/70 dark:border-emerald-800 dark:bg-emerald-950/40"
+          : "border-slate-200 bg-white shadow-sm hover:border-blue-300/50 hover:shadow-lg hover:-translate-y-0.5 dark:border-stone-700 dark:bg-stone-800/70"
       }`}
     >
       <PostCompleteCheckbox postId={post.id} completed={completed} compact />
@@ -44,7 +44,7 @@ export function PostCard({ post, completed }: PostCardProps) {
                 </span>
               ))}
               {(post.checklist?.length ?? 0) > 0 && (
-                <span className="hb-card-meta inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold dark:bg-slate-800">
+                <span className="hb-card-meta inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold dark:bg-stone-700/40">
                   ✓ {post.checklist.length} step{post.checklist.length === 1 ? "" : "s"}
                 </span>
               )}

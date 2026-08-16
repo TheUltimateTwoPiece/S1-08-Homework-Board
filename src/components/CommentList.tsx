@@ -65,9 +65,9 @@ export function CommentList({
 
   if (comments.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-slate-200 py-12 text-center">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-slate-600" aria-hidden="true">
+      <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-slate-200 py-12 text-center dark:border-stone-700">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 dark:bg-stone-700/40">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-slate-600 dark:text-stone-300" aria-hidden="true">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
         </div>
@@ -94,10 +94,10 @@ export function CommentList({
           </>
         )}
 
-        <div className={`rounded-xl border bg-white p-4 shadow-sm transition hover:shadow-md ${
+        <div className={`rounded-xl border p-4 shadow-sm transition hover:shadow-md ${
           isReply
-            ? "border-slate-200/70 bg-slate-50/50"
-            : "border-slate-200"
+            ? "border-slate-200/70 bg-slate-50/50 dark:border-stone-700 dark:bg-stone-800/50"
+            : "border-slate-200 bg-white dark:border-stone-700 dark:bg-stone-800/70"
         }`}>
           {/* Author & timestamp */}
           <div className="mb-2 flex items-center justify-between gap-2">
@@ -112,7 +112,7 @@ export function CommentList({
                 {node.profiles?.full_name ?? "Student"}
               </span>
               {isReply && (
-                <span className="hb-card-meta rounded bg-slate-100 px-1.5 py-0.5 text-[10px]">
+                <span className="hb-card-meta rounded bg-slate-100 px-1.5 py-0.5 text-[10px] dark:bg-stone-700/40">
                   Reply
                 </span>
               )}
@@ -140,7 +140,7 @@ export function CommentList({
               {attachments.map((attachment) => {
                 const isImage = attachment.mime_type.startsWith("image/");
                 return (
-                  <li key={attachment.id} className="overflow-hidden rounded-lg border border-slate-200 transition hover:shadow-md">
+                  <li key={attachment.id} className="overflow-hidden rounded-lg border border-slate-200 transition hover:shadow-md dark:border-stone-700">
                     <a href={attachment.url} target="_blank" rel="noreferrer" className="block">
                       {isImage ? (
                         <img
@@ -149,7 +149,7 @@ export function CommentList({
                           className="h-28 w-full object-cover"
                         />
                       ) : (
-                        <div className="hb-card-section flex h-28 items-center justify-center bg-slate-50 text-xs font-semibold">
+                        <div className="hb-card-section flex h-28 items-center justify-center bg-slate-50 text-xs font-semibold dark:bg-stone-800">
                           <div className="flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden="true">
                               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -174,7 +174,7 @@ export function CommentList({
             {(!commentsLocked || isAdmin) && (
               <button
                 type="button"
-                className="flex items-center gap-1 text-xs font-medium text-blue-600 transition hover:text-blue-700"
+                className="flex items-center gap-1 text-xs font-medium text-blue-600 transition hover:text-blue-700 dark:text-blue-300 dark:hover:text-blue-200"
                 onClick={() => setReplyTo((prev) => (prev === node.id ? null : node.id))}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
@@ -191,7 +191,7 @@ export function CommentList({
                 <PendingButton
                   type="submit"
                   pendingContent="Deleting..."
-                  className="flex items-center gap-1 text-xs font-medium text-red-500 transition hover:text-red-600"
+                  className="flex items-center gap-1 text-xs font-medium text-red-500 transition hover:text-red-600 dark:text-red-400 dark:hover:text-red-300"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
                     <polyline points="3 6 5 6 21 6" />
@@ -205,7 +205,7 @@ export function CommentList({
 
           {/* Reply form */}
           {showReplyForm && (
-            <div className="mt-4 border-t border-slate-100 pt-4">
+            <div className="mt-4 border-t border-slate-100 pt-4 dark:border-stone-700">
               <CommentForm
                 postId={node.post_id}
                 parentCommentId={node.id}

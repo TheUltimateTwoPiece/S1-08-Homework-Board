@@ -126,7 +126,7 @@ export function SettingsForm({ profile }: SettingsFormProps) {
             name={profile.full_name}
             src={activeAvatarUrl}
             size="xl"
-            className="ring-1 ring-slate-200"
+            className="ring-1 ring-slate-200 dark:ring-stone-700"
           />
 
           <div className="flex-1 space-y-3">
@@ -140,7 +140,7 @@ export function SettingsForm({ profile }: SettingsFormProps) {
               accept="image/jpeg,image/png,image/webp,image/gif"
               onChange={handleFileChange}
               disabled={pending}
-              className="block w-full max-w-sm text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-60"
+              className="block w-full max-w-sm text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-60 dark:text-stone-300 dark:file:bg-stone-700 dark:file:text-stone-200 dark:hover:file:bg-stone-600"
             />
             <input
               type="hidden"
@@ -153,7 +153,7 @@ export function SettingsForm({ profile }: SettingsFormProps) {
                   type="button"
                   onClick={handleCancelRemove}
                   disabled={pending}
-                  className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+                  className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700/50"
                 >
                   Cancel remove
                 </button>
@@ -162,7 +162,7 @@ export function SettingsForm({ profile }: SettingsFormProps) {
                   type="button"
                   onClick={handleRemove}
                   disabled={pending}
-                  className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-sm font-medium text-rose-700 transition hover:bg-rose-100 disabled:opacity-60"
+                  className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-sm font-medium text-rose-700 transition hover:bg-rose-100 disabled:opacity-60 dark:border-rose-800 dark:bg-rose-900/30 dark:text-rose-300 dark:hover:bg-rose-900/50"
                 >
                   Remove picture
                 </button>
@@ -241,10 +241,10 @@ export function SettingsForm({ profile }: SettingsFormProps) {
         <div className="space-y-3">
           <label
             htmlFor="emailPostNotifications"
-            className={`flex items-start gap-3 rounded-lg border border-slate-200 bg-white p-3 transition ${
+            className={`flex items-start gap-3 rounded-lg border border-slate-200 bg-white p-3 transition dark:border-stone-700 dark:bg-stone-800/70 ${
               pending
                 ? "cursor-not-allowed opacity-60"
-                : "cursor-pointer hover:bg-slate-50"
+                : "cursor-pointer hover:bg-slate-50 dark:hover:bg-stone-700/40"
             }`}
           >
             <input
@@ -267,10 +267,10 @@ export function SettingsForm({ profile }: SettingsFormProps) {
 
           <label
             htmlFor="emailReminderNotifications"
-            className={`flex items-start gap-3 rounded-lg border border-slate-200 bg-white p-3 transition ${
+            className={`flex items-start gap-3 rounded-lg border border-slate-200 bg-white p-3 transition dark:border-stone-700 dark:bg-stone-800/70 ${
               pending
                 ? "cursor-not-allowed opacity-60"
-                : "cursor-pointer hover:bg-slate-50"
+                : "cursor-pointer hover:bg-slate-50 dark:hover:bg-stone-700/40"
             }`}
           >
             <input
@@ -336,7 +336,7 @@ export function SettingsForm({ profile }: SettingsFormProps) {
       {clientError && (
         <div
           role="alert"
-          className="rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-700"
+          className="rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:bg-rose-950/50 dark:text-rose-300"
         >
           {clientError}
         </div>
@@ -344,7 +344,7 @@ export function SettingsForm({ profile }: SettingsFormProps) {
       {error && (
         <div
           role="alert"
-          className="rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-700"
+          className="rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:bg-rose-950/50 dark:text-rose-300"
         >
           {error}
         </div>
@@ -352,17 +352,17 @@ export function SettingsForm({ profile }: SettingsFormProps) {
       {success && (
         <div
           role="status"
-          className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-700"
+          className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"
         >
           Profile saved. Your new picture and name are now visible everywhere
           you post, comment, or send feedback.
         </div>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-6 dark:border-stone-700">
         <Link
           href="/"
-          className="text-sm font-medium text-slate-700 transition hover:text-slate-900"
+          className="text-sm font-medium text-slate-700 transition hover:text-slate-900 dark:text-stone-300 dark:hover:text-stone-100"
         >
           ← Back to home
         </Link>

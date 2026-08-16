@@ -25,7 +25,7 @@ function SignInForm({
   return (
     <form action={action} className="space-y-4">
       <div>
-        <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-700">
+        <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-stone-300">
           Email
         </label>
         <input
@@ -39,7 +39,7 @@ function SignInForm({
         />
       </div>
       <div>
-        <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-slate-700">
+        <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-stone-300">
           Password
         </label>
         <input
@@ -53,7 +53,7 @@ function SignInForm({
         />
       </div>
       {error && (
-        <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>
+        <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-red-950/50 dark:text-red-300">{error}</div>
       )}
       <div className="flex flex-col gap-3">
         <button
@@ -69,7 +69,7 @@ function SignInForm({
         <button
           type="button"
           onClick={onResetClick}
-          className="text-center text-sm text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
+          className="text-center text-sm text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline dark:text-stone-400 dark:hover:text-stone-100"
         >
           Forgot password?
         </button>
@@ -91,7 +91,7 @@ function ResetPasswordForm({ onBack }: { onBack: () => void }) {
   return (
     <form action={action} className="space-y-4">
       <div>
-        <label htmlFor="reset-email" className="mb-1.5 block text-sm font-medium text-slate-700">
+        <label htmlFor="reset-email" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-stone-300">
           Email address
         </label>
         <input
@@ -105,13 +105,13 @@ function ResetPasswordForm({ onBack }: { onBack: () => void }) {
         />
       </div>
       {state?.error && (
-        <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600" role="alert">
+        <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-red-950/50 dark:text-red-300" role="alert">
           {state.error}
         </div>
       )}
       {state?.success ? (
         <>
-          <div className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-600">
+          <div className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-600 dark:bg-green-950/50 dark:text-green-300">
             <div className="flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
                 <polyline points="20 6 9 17 4 12" />
@@ -122,7 +122,7 @@ function ResetPasswordForm({ onBack }: { onBack: () => void }) {
           <button
             type="button"
             onClick={onBack}
-            className="w-full text-center text-sm text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
+            className="w-full text-center text-sm text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline dark:text-stone-400 dark:hover:text-stone-100"
           >
             Back to sign in
           </button>
@@ -142,7 +142,7 @@ function ResetPasswordForm({ onBack }: { onBack: () => void }) {
           <button
             type="button"
             onClick={onBack}
-            className="w-full text-center text-sm text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
+            className="w-full text-center text-sm text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline dark:text-stone-400 dark:hover:text-stone-100"
           >
             Back to sign in
           </button>
@@ -178,18 +178,18 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
 
   return (
     <div className="w-full max-w-md animate-[hb-fade-in_400ms_ease-out]">
-      <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-lg">
+      <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-lg dark:border-stone-700 dark:bg-stone-800/80">
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-blue-50 via-white to-red-50 shadow-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 text-slate-700">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-blue-50 via-white to-rose-50 shadow-sm dark:from-blue-900/40 dark:via-stone-800 dark:to-rose-900/30">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 text-slate-700 dark:text-stone-300">
               <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 19.5" />
               <path d="M9 10h6" />
               <path d="M9 14h6" />
               <path d="M9 6h6" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-zinc-950">S1-08 Homework Board</h1>
-          <p className="mt-1.5 text-sm text-slate-700">
+          <h1 className="text-2xl font-bold text-zinc-950 dark:text-stone-50">S1-08 Homework Board</h1>
+          <p className="mt-1.5 text-sm text-slate-700 dark:text-stone-300">
             {mode === "signin"
               ? "Sign in to view homework and notifications"
               : mode === "reset"
@@ -199,14 +199,14 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
         </div>
 
         {showTabBar && (
-          <div className="mb-6 flex rounded-lg bg-slate-100/70 p-1">
+          <div className="mb-6 flex rounded-lg bg-slate-100/70 p-1 dark:bg-stone-800">
             <button
               type="button"
               onClick={() => setMode("signin")}
               className={`flex-1 rounded-md py-2 text-sm font-medium transition ${
                 mode === "signin"
-                  ? "bg-white text-zinc-950 shadow-sm"
-                  : "text-slate-700 hover:text-slate-900"
+                  ? "bg-white text-zinc-950 shadow-sm dark:bg-stone-700 dark:text-stone-50"
+                  : "text-slate-700 hover:text-slate-900 dark:text-stone-300 dark:hover:text-stone-100"
               }`}
             >
               Sign in
@@ -216,8 +216,8 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
               onClick={() => setMode("signup")}
               className={`flex-1 rounded-md py-2 text-sm font-medium transition ${
                 mode === "signup"
-                  ? "bg-white text-zinc-950 shadow-sm"
-                  : "text-slate-700 hover:text-slate-900"
+                  ? "bg-white text-zinc-950 shadow-sm dark:bg-stone-700 dark:text-stone-50"
+                  : "text-slate-700 hover:text-slate-900 dark:text-stone-300 dark:hover:text-stone-100"
               }`}
             >
               Sign up
@@ -237,7 +237,7 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
         ) : (
           <form action={signUpAction} className="space-y-4">
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
+              <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-stone-300">
                 Account type
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -279,8 +279,8 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
             </div>
 
             {accountType === "admin" && (
-              <div className="rounded-lg border border-amber-200 bg-amber-50/50 p-4">
-                <label htmlFor="adminCode" className="mb-1.5 block text-sm font-medium text-amber-800">
+              <div className="rounded-lg border border-amber-200 bg-amber-50/50 p-4 dark:border-amber-700/50 dark:bg-amber-900/20">
+                <label htmlFor="adminCode" className="mb-1.5 block text-sm font-medium text-amber-800 dark:text-amber-200">
                   Admin access code
                 </label>
                 <input
@@ -294,7 +294,7 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
                   spellCheck={false}
                   className="hb-input w-full rounded-lg px-3 py-2.5 font-mono text-sm uppercase tracking-widest"
                 />
-                <p className="mt-1.5 flex items-center gap-1 text-xs text-amber-700">
+                <p className="mt-1.5 flex items-center gap-1 text-xs text-amber-700 dark:text-amber-300">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden="true">
                     <circle cx="12" cy="12" r="10" />
                     <path d="M12 16v-4" />
@@ -306,7 +306,7 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
             )}
 
             <div>
-              <label htmlFor="fullName" className="mb-1.5 block text-sm font-medium text-slate-700">
+              <label htmlFor="fullName" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-stone-300">
                 Full name
               </label>
               <input
@@ -320,7 +320,7 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
               />
             </div>
             <div>
-              <label htmlFor="signup-email" className="mb-1.5 block text-sm font-medium text-slate-700">
+              <label htmlFor="signup-email" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-stone-300">
                 Email
               </label>
               <input
@@ -334,7 +334,7 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
               />
             </div>
             <div>
-              <label htmlFor="signup-password" className="mb-1.5 block text-sm font-medium text-slate-700">
+              <label htmlFor="signup-password" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-stone-300">
                 Password
               </label>
               <input
@@ -350,10 +350,10 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
             </div>
 
             {error && (
-              <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>
+              <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-red-950/50 dark:text-red-300">{error}</div>
             )}
             {success && (
-              <div className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-600">
+              <div className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-600 dark:bg-green-950/50 dark:text-green-300">
                 <div className="flex items-center gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
                     <polyline points="20 6 9 17 4 12" />

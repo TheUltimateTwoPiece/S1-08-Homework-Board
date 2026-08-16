@@ -76,7 +76,7 @@ export function PostChecklist({ postId, items, initialCheckedIds }: PostChecklis
                   onChange={() => toggle(item.id)}
                   className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                 />
-                <span className={`text-sm leading-relaxed ${isChecked ? "text-slate-400 line-through" : "hb-card-body dark:text-slate-100"}`}>
+                <span className={`text-sm leading-relaxed ${isChecked ? "text-slate-400 line-through dark:text-stone-500" : "hb-card-body dark:text-slate-100"}`}>
                   {item.text}
                 </span>
               </label>

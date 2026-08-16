@@ -262,7 +262,7 @@ export default async function YourProgressPage() {
           </div>
           <Link
             href="/posts"
-            className="hb-card-section rounded-md px-3 py-1.5 text-xs transition hover:bg-slate-100"
+            className="hb-card-section rounded-md px-3 py-1.5 text-xs transition hover:bg-slate-100 dark:hover:bg-stone-700/50"
           >
             View all →
           </Link>
@@ -284,7 +284,7 @@ export default async function YourProgressPage() {
                 <li key={post.id}>
                   <Link
                     href={`/posts/${post.id}`}
-                    className="hb-snippet flex items-center justify-between gap-3 hover:bg-slate-50"
+                    className="hb-snippet flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-stone-700/40"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="hb-card-section line-clamp-1 text-sm">
@@ -295,10 +295,10 @@ export default async function YourProgressPage() {
                     <div
                       className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-bold ${
                         overdue
-                          ? "bg-rose-100 text-rose-800"
+                          ? "bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300"
                           : daysUntil === 0
-                          ? "bg-amber-100 text-amber-800"
-                          : "hb-card-meta bg-slate-100"
+                          ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
+                          : "hb-card-meta bg-slate-100 dark:bg-stone-700/40"
                       }`}
                     >
                       {overdue
@@ -325,7 +325,7 @@ export default async function YourProgressPage() {
             style={{
               background:
                 "linear-gradient(135deg, rgba(22,163,74,0.18), rgba(22,163,74,0.04))",
-              color: "#15803d",
+              color: "var(--hb-success)",
             }}
             aria-hidden="true"
           >

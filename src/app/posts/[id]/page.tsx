@@ -223,7 +223,7 @@ export default async function PostPage({ params }: PageProps) {
     <div className="mx-auto max-w-4xl px-4 py-8">
       <Link
         href="/"
-        className="mb-6 inline-flex items-center gap-1 text-sm font-medium text-blue-600 transition hover:text-blue-700"
+        className="mb-6 inline-flex items-center gap-1 text-sm font-medium text-blue-600 transition hover:text-blue-700 dark:text-blue-300 dark:hover:text-blue-200"
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
           <polyline points="15 18 9 12 15 6" />
@@ -233,8 +233,10 @@ export default async function PostPage({ params }: PageProps) {
 
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <article
-          className={`rounded-xl border bg-white p-6 shadow-sm ${
-            isCompleted ? "hb-card--completed" : "border-slate-200"
+          className={`rounded-xl border p-6 shadow-sm ${
+            isCompleted
+              ? "border-emerald-300/70 bg-emerald-50/70 dark:border-emerald-800 dark:bg-emerald-950/40"
+              : "border-slate-200 bg-white dark:border-stone-700 dark:bg-stone-800/70"
           }`}
         >
           <div className="mb-4 flex items-start justify-between gap-4">
@@ -259,7 +261,7 @@ export default async function PostPage({ params }: PageProps) {
                   <PendingButton
                     type="submit"
                     pendingContent="Saving..."
-                    className="hb-card-section flex items-center gap-1 rounded-lg px-2 py-1 text-xs transition hover:bg-slate-100"
+                    className="hb-card-section flex items-center gap-1 rounded-lg px-2 py-1 text-xs transition hover:bg-slate-100 dark:hover:bg-stone-700/50"
                   >
                     {typedPost.pinned ? "Unpin" : "Pin"}
                   </PendingButton>
@@ -270,7 +272,7 @@ export default async function PostPage({ params }: PageProps) {
                   <PendingButton
                     type="submit"
                     pendingContent="Saving..."
-                    className="hb-card-section flex items-center gap-1 rounded-lg px-2 py-1 text-xs transition hover:bg-slate-100"
+                    className="hb-card-section flex items-center gap-1 rounded-lg px-2 py-1 text-xs transition hover:bg-slate-100 dark:hover:bg-stone-700/50"
                   >
                     {commentsLocked ? "Unlock" : "Lock"} comments
                   </PendingButton>
@@ -280,7 +282,7 @@ export default async function PostPage({ params }: PageProps) {
                   <PendingButton
                     type="submit"
                     pendingContent="Deleting..."
-                    className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-red-500 transition hover:bg-red-50"
+                    className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-red-500 transition hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
                       <polyline points="3 6 5 6 21 6" />
@@ -345,7 +347,7 @@ export default async function PostPage({ params }: PageProps) {
         {isAdmin && studentProfiles.length > 0 ? (
           <aside className="hb-card-surface h-fit rounded-xl border p-5">
             <details className="group">
-              <summary className="hb-card-section flex cursor-pointer items-center gap-2 text-sm transition hover:text-blue-600">
+              <summary className="hb-card-section flex cursor-pointer items-center gap-2 text-sm transition hover:text-blue-600 dark:hover:text-blue-300">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="hb-card-meta h-4 w-4 transition group-open:rotate-90" aria-hidden="true">
                   <polyline points="9 18 15 12 9 6" />
                 </svg>
@@ -353,7 +355,7 @@ export default async function PostPage({ params }: PageProps) {
               </summary>
               <div className="mt-3 space-y-1">
                 <div className="flex items-center gap-3">
-                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
+                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-stone-700/40">
                     <div
                       className="h-full rounded-full bg-green-500 transition-all duration-500"
                       style={{ width: `${(completedCount / studentProfiles.length) * 100}%` }}
@@ -374,11 +376,11 @@ export default async function PostPage({ params }: PageProps) {
                   return (
                     <li
                       key={person.id}
-                      className="flex items-center justify-between gap-2 rounded-lg px-3 py-2 transition hover:bg-slate-50"
+                      className="flex items-center justify-between gap-2 rounded-lg px-3 py-2 transition hover:bg-slate-50 dark:hover:bg-stone-700/40"
                     >
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <span className={`hb-card-section text-sm ${done ? "text-green-700" : ""}`}>
+                          <span className={`hb-card-section text-sm ${done ? "text-green-700 dark:text-green-400" : ""}`}>
                             {person.full_name}
                           </span>
                           {isAdminProfile && (
@@ -387,7 +389,7 @@ export default async function PostPage({ params }: PageProps) {
                         </div>
                         <div className="hb-card-meta truncate text-xs">{person.email}</div>
                       </div>
-                      <span className={`flex items-center gap-1 text-xs font-semibold ${done ? "text-green-700" : "hb-card-meta"}`}>
+                      <span className={`flex items-center gap-1 text-xs font-semibold ${done ? "text-green-700 dark:text-green-400" : "hb-card-meta"}`}>
                         {done ? (
                           <>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
@@ -396,7 +398,7 @@ export default async function PostPage({ params }: PageProps) {
                             Done
                           </>
                         ) : (
-                          <span className="h-3.5 w-3.5 rounded-full border-2 border-slate-300" />
+                          <span className="h-3.5 w-3.5 rounded-full border-2 border-slate-300 dark:border-stone-600" />
                         )}
                       </span>
                     </li>
@@ -408,7 +410,7 @@ export default async function PostPage({ params }: PageProps) {
         ) : null}
       </div>        {isAdmin && (
         <details className="group mt-6">
-          <summary className="hb-section-title flex cursor-pointer items-center gap-2 text-sm transition hover:text-blue-600">
+          <summary className="hb-section-title flex cursor-pointer items-center gap-2 text-sm transition hover:text-blue-600 dark:hover:text-blue-300">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="hb-section-title h-4 w-4 transition group-open:rotate-90" aria-hidden="true">
               <polyline points="9 18 15 12 9 6" />
             </svg>
@@ -437,7 +439,7 @@ export default async function PostPage({ params }: PageProps) {
             {typedEdits.map((edit) => {
               const keys = Object.keys(edit.changes ?? {});
               return (
-                <li key={edit.id} className="rounded-lg border border-slate-100 bg-slate-50/50 p-4">
+                <li key={edit.id} className="rounded-lg border border-slate-100 bg-slate-50/50 p-4 dark:border-stone-700 dark:bg-stone-800/50">
                   <div className="hb-card-meta mb-1.5 flex items-center gap-2 text-xs">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden="true">
                       <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
@@ -465,7 +467,7 @@ export default async function PostPage({ params }: PageProps) {
           {canComment ? (
             <CommentForm postId={id} />
           ) : (
-            <div className="hb-card-body flex items-center gap-2 rounded-lg bg-slate-50 px-4 py-3 text-sm">
+            <div className="hb-card-body flex items-center gap-2 rounded-lg bg-slate-50 px-4 py-3 text-sm dark:bg-stone-800/60">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />

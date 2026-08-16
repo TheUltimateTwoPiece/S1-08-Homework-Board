@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @import "../theme/school-sci-tech/theme.css";
 
+/* Class-based dark mode: make every `dark:` utility follow the in-app
+   theme toggle (.dark on <html>) instead of the OS preference. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Pip's response bubbles are dark in both themes, so force every markdown
    text node to white. This scoped rule beats prose plugin defaults. */
 .pip-markdown,
