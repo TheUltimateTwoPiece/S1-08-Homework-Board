@@ -284,9 +284,9 @@
 }
 
 @keyframes hb-pulse-ring {
-  0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.22); }
-  70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--hb-blue) 24%, transparent); }
+  70% { box-shadow: 0 0 0 10px color-mix(in srgb, var(--hb-blue) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--hb-blue) 0%, transparent); }
 }
 
 @keyframes hb-gradient-pan {
@@ -607,7 +607,10 @@
     color: var(--hb-text);
   }
 
-  /* ── Primary Button (Uiverse.io by McHaXYT) ──── */
+  /* ── Primary Button (Uiverse.io by McHaXYT) ────
+     Big CTAs follow the theme's button tokens (--hb-btn-bg) so they match
+     the active theme — primary-coloured in custom/emerald/sunset themes,
+     blue in light/dark — while keeping white-text AA contrast. */
 
   .button {
     display: inline-flex;
@@ -618,8 +621,8 @@
     padding: 15px 20px;
     border: none;
     outline: none;
-    background-color: #151515;
-    color: #eee;
+    background-color: var(--hb-btn-bg);
+    color: #ffffff;
     border-radius: 7px;
     font-weight: 600;
     cursor: pointer;
@@ -630,6 +633,7 @@
 
   .button:hover {
     transform: translateY(-3px);
+    background-color: var(--hb-btn-bg-hover);
   }
 
   /* Keep the dark frame visible against dark surfaces (dark mode) */
@@ -647,9 +651,10 @@
     transform: none !important;
   }
 
-  /* Muted sub-label inside a button, e.g. "Get started ─ it's free" */
+  /* Muted sub-label inside a button, e.g. "Get started ─ it's free" —
+     lightened white so it stays readable on the themed button colour. */
   .button-span {
-    color: #aaa;
+    color: rgba(255, 255, 255, 0.78);
   }
 
   .hb-btn--pending {
