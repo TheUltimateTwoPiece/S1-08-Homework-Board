@@ -188,7 +188,7 @@ export function AuthForm({ initialMode = "signin" }: AuthFormProps) {
               <path d="M9 6h6" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-zinc-950 dark:text-stone-50">S1-08 Homework Board</h1>
+          <h1 className="hb-display-font text-2xl font-bold tracking-tight text-zinc-950 dark:text-stone-50">S1-08 Homework Board</h1>
           <p className="mt-1.5 text-sm text-slate-700 dark:text-stone-300">
             {mode === "signin"
               ? "Sign in to view homework and notifications"

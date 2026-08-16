@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { requireProfile } from "@/lib/auth";
 import { FeedbackForm } from "@/components/FeedbackForm";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default async function FeedbackPage() {
   await requireProfile();
@@ -12,7 +11,6 @@ export default async function FeedbackPage() {
         <Link href="/" className="hb-link inline-block text-sm">
           ← Back to home
         </Link>
-        <ThemeToggle />
       </div>
       <FeedbackForm />
     </div>

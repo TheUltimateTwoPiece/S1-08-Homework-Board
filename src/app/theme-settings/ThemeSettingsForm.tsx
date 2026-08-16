@@ -1,0 +1,475 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  applyCustomFromImage,
+  applyPreset,
+  applyTheme,
+  contrastRatio,
+  DEFAULT_PREFS,
+  hexToRgb,
+  loadTheme,
+  relativeLuminance,
+  resetTheme,
+  saveTheme,
+  THEME_OPTIONS,
+  type CustomThemePayload,
+  type ThemeMode,
+  type ThemePrefs,
+} from "@/lib/theme-engine";
+
+type Swatches = {
+  bg: string;
+  surface: string;
+  text: string;
+  primary: string;
+};
+
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+const ACCEPTED = "image/*";
+
+function readSwatches(): Swatches {
+  const cs = getComputedStyle(document.documentElement);
+  const read = (v: string) => cs.getPropertyValue(v).trim();
+  return {
+    bg: read("--hb-surface-muted"),
+    surface: read("--hb-surface"),
+    text: read("--hb-text"),
+    primary: read("--hb-blue"),
+  };
+}
+
+function contrastOf(swatches: Swatches): { ratio: number | null; aa: boolean } {
+  const bg = hexToRgb(swatches.bg);
+  const text = hexToRgb(swatches.text);
+  if (!bg || !text) return { ratio: null, aa: false };
+  const ratio = contrastRatio(
+    relativeLuminance(bg.r, bg.g, bg.b),
+    relativeLuminance(text.r, text.g, text.b),
+  );
+  return { ratio, aa: ratio >= 4.5 };
+}
+
+const SWATCH_LABELS: { key: keyof Swatches; label: string; hint: string }[] = [
+  { key: "bg", label: "Background", hint: "Page canvas" },
+  { key: "surface", label: "Surface", hint: "Cards & panels" },
+  { key: "text", label: "Text", hint: "Main text" },
+  { key: "primary", label: "Primary", hint: "Actions & links" },
+];
+
+export function ThemeSettingsForm() {
+  const [prefs, setPrefs] = useState<ThemePrefs>(DEFAULT_PREFS);
+  const [mounted, setMounted] = useState(false);
+  const [swatches, setSwatches] = useState<Swatches | null>(null);
+  const [dragActive, setDragActive] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const custom: CustomThemePayload | null = prefs.custom;
+
+  useEffect(() => {
+    const loaded = loadTheme();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPrefs(loaded);
+    setMounted(true);
+  }, []);
+
+  // Re-read resolved CSS vars whenever the active theme changes.
+  useEffect(() => {
+    if (!mounted) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSwatches(readSwatches());
+  }, [prefs, mounted]);
+
+  const handlePresetChange = useCallback((value: ThemeMode) => {
+    setError(null);
+    if (value === "custom") {
+      // Re-apply the retained custom palette generated from an image.
+      const stored = loadTheme();
+      if (stored.custom) {
+        const next: ThemePrefs = { mode: "custom", custom: stored.custom };
+        saveTheme(next);
+        applyTheme(next);
+        setPrefs(next);
+      }
+      return;
+    }
+    applyPreset(value);
+    // Re-read so any retained custom palette stays available in the dropdown.
+    setPrefs(loadTheme());
+  }, []);
+
+  const processFile = useCallback(async (file: File | undefined | null) => {
+    if (!file) return;
+    setError(null);
+    if (!file.type.startsWith("image/")) {
+      setError("That file isn't an image. Upload a JPG, PNG, WebP, or GIF.");
+      return;
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      setError(
+        `Image is too large (${Math.round(file.size / 1024)} KB). Max 10 MB.`,
+      );
+      return;
+    }
+    setBusy(true);
+    try {
+      const next = await applyCustomFromImage(file);
+      setPrefs(next);
+    } catch (e) {
+      setError(
+        e instanceof Error
+          ? e.message
+          : "Couldn't build a palette from that image. Try another one.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }, []);
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      setDragActive(false);
+      const file = e.dataTransfer.files?.[0];
+      void processFile(file);
+    },
+    [processFile],
+  );
+
+  const handleReset = useCallback(() => {
+    setError(null);
+    resetTheme();
+    setPrefs(DEFAULT_PREFS);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }, []);
+
+  const copyValue = useCallback((value: string) => {
+    if (navigator.clipboard) {
+      void navigator.clipboard.writeText(value);
+      setCopied(value);
+      window.setTimeout(() => setCopied(null), 1400);
+    }
+  }, []);
+
+  const contrast = swatches ? contrastOf(swatches) : { ratio: null, aa: false };
+
+  return (
+    <div className="hb-card-surface space-y-8 p-6 sm:p-8">
+      {/* ── Preset selector ─────────────────────── */}
+      <section>
+        <div className="mb-4 flex items-center gap-2">
+          <div className="hb-bento-icon-box" aria-hidden="true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-4 w-4"
+              aria-hidden="true"
+            >
+              <circle cx="13.5" cy="6.5" r="2.5" />
+              <circle cx="17.5" cy="10.5" r="2.5" />
+              <circle cx="8.5" cy="7.5" r="2.5" />
+              <circle cx="6.5" cy="12.5" r="2.5" />
+              <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" />
+            </svg>
+          </div>
+          <h2 className="hb-card-section text-base">Theme</h2>
+        </div>
+
+        <label
+          htmlFor="theme-preset"
+          className="hb-card-section mb-1.5 block text-sm"
+        >
+          Choose a theme
+        </label>
+        <select
+          id="theme-preset"
+          value={prefs.mode}
+          onChange={(e) => handlePresetChange(e.target.value as ThemeMode)}
+          className="hb-input w-full max-w-md rounded-lg px-3 py-2.5 text-sm"
+          disabled={!mounted || busy}
+        >
+          {THEME_OPTIONS.map((opt) =>
+            opt.value === "custom" && !custom ? null : (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ),
+          )}
+        </select>
+        <p className="hb-card-meta mt-2 text-xs">
+          System default follows your device's light/dark setting.
+        </p>
+      </section>
+
+      {/* ── Image → theme generator ─────────────── */}
+      <section>
+        <div className="mb-4 flex items-center gap-2">
+          <div className="hb-bento-icon-box" aria-hidden="true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-4 w-4"
+              aria-hidden="true"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <path d="M21 15l-5-5L5 21" />
+            </svg>
+          </div>
+          <h2 className="hb-card-section text-base">Generate Theme from Image</h2>
+        </div>
+
+        <div
+          role="button"
+          tabIndex={0}
+          aria-label="Generate theme from image — upload or drop an image"
+          aria-disabled={busy}
+          onClick={() => !busy && fileInputRef.current?.click()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              if (!busy) fileInputRef.current?.click();
+            }
+          }}
+          onDragOver={(e) => {
+            e.preventDefault();
+            if (!busy) setDragActive(true);
+          }}
+          onDragLeave={() => setDragActive(false)}
+          onDrop={handleDrop}
+          className={`flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 text-center transition ${
+            dragActive
+              ? "border-blue-500 bg-blue-50 dark:border-blue-500 dark:bg-blue-950/40"
+              : "border-slate-200 bg-slate-50/60 hover:border-blue-300 hover:bg-blue-50/40 dark:border-stone-700 dark:bg-stone-800/50 dark:hover:border-blue-500 dark:hover:bg-blue-950/30"
+          } ${busy ? "cursor-wait opacity-60" : "cursor-pointer"}`}
+        >
+          {busy ? (
+            <>
+              <span className="hb-spinner" aria-hidden="true" />
+              <p className="hb-card-body text-sm">Sampling your image…</p>
+            </>
+          ) : custom?.thumbnail ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={custom.thumbnail}
+                alt="Uploaded image used for the current theme"
+                className="h-16 w-16 rounded-lg object-cover ring-1 ring-slate-200 dark:ring-stone-700"
+              />
+              <div>
+                <p className="hb-card-section text-sm">
+                  Theme generated from your image
+                </p>
+                <p className="hb-card-meta mt-0.5 text-xs">
+                  Drop a new image to replace it, or click to browse.
+                </p>
+              </div>
+            </>
+          ) : (
+            <>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-8 w-8 text-slate-400 dark:text-stone-400"
+                aria-hidden="true"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+              <div>
+                <p className="hb-card-section text-sm">
+                  Drag & drop an image here
+                </p>
+                <p className="hb-card-meta mt-0.5 text-xs">
+                  or click to browse — we'll average its colors and build an
+                  accessible palette.
+                </p>
+              </div>
+            </>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept={ACCEPTED}
+            onChange={(e) => {
+              const file = e.target.files?.[0] ?? null;
+              void processFile(file);
+              e.target.value = "";
+            }}
+            className="hidden"
+            aria-hidden="true"
+            tabIndex={-1}
+          />
+        </div>
+      </section>
+
+      {/* ── Live preview + swatches ─────────────── */}
+      <section>
+        <div className="mb-4 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <div className="hb-bento-icon-box" aria-hidden="true">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4"
+                aria-hidden="true"
+              >
+                <path d="M12 3v18" />
+                <path d="M5 7h14" />
+                <path d="M5 12h14" />
+                <path d="M5 17h14" />
+              </svg>
+            </div>
+            <h2 className="hb-card-section text-base">Live preview</h2>
+          </div>
+
+          {contrast.ratio !== null && (
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                contrast.aa
+                  ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"
+                  : "bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300"
+              }`}
+              title="WCAG 2.1 AA contrast of text against the background"
+            >
+              {contrast.aa ? "✓" : "✕"} {contrast.ratio.toFixed(1)}:1{" "}
+              {contrast.aa ? "AA" : "AA"}
+            </span>
+          )}
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          {/* Mock dashboard surface rendered with the *live* CSS vars */}
+          <div
+            className="rounded-xl border p-4"
+            style={{
+              background: "var(--hb-surface-muted)",
+              borderColor: "var(--hb-border)",
+              color: "var(--hb-text)",
+            }}
+          >
+            <div
+              className="rounded-lg border p-4 shadow-sm"
+              style={{
+                background: "var(--hb-surface)",
+                borderColor: "var(--hb-border)",
+              }}
+            >
+              <p className="text-sm font-semibold" style={{ color: "var(--hb-text)" }}>
+                Homework board
+              </p>
+              <p
+                className="mt-1 text-xs"
+                style={{ color: "var(--hb-text-muted)" }}
+              >
+                Due Friday · Mathematics
+              </p>
+              <span
+                className="mt-3 inline-flex rounded-lg px-3 py-1.5 text-xs font-semibold text-white"
+                style={{ background: "var(--hb-btn-bg)" }}
+              >
+                Mark complete
+              </span>
+            </div>
+          </div>
+
+          {/* Swatch tiles */}
+          <div className="grid grid-cols-2 gap-3">
+            {SWATCH_LABELS.map(({ key, label, hint }) => {
+              const value = swatches?.[key] ?? "";
+              const copiedThis = copied === value && value !== "";
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => copyValue(value)}
+                  title={value ? `Copy ${label.toLowerCase()} color` : undefined}
+                  className="group flex flex-col gap-2 rounded-lg border border-slate-200 p-3 text-left transition hover:border-blue-300 hover:bg-slate-50 dark:border-stone-700 dark:hover:border-blue-500 dark:hover:bg-stone-800"
+                >
+                  <span className="flex items-center justify-between">
+                    <span className="hb-card-meta text-[11px] uppercase tracking-wider">
+                      {label}
+                    </span>
+                    {value && (
+                      <span className="text-[10px] text-slate-400 opacity-0 transition group-hover:opacity-100 dark:text-stone-400">
+                        {copiedThis ? "Copied!" : "Copy"}
+                      </span>
+                    )}
+                  </span>
+                  <span
+                    className="h-10 w-full rounded-md ring-1 ring-inset ring-black/10"
+                    style={{ background: value || "transparent" }}
+                    aria-hidden="true"
+                  />
+                  <span className="hb-card-body truncate font-mono text-[11px]">
+                    {value || "—"}
+                  </span>
+                  <span className="hb-card-meta text-[11px]">{hint}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Footer / reset ──────────────────────── */}
+      {error && (
+        <div role="alert" className="rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
+          {error}
+        </div>
+      )}
+
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-6 dark:border-stone-700">
+        <p className="hb-card-meta text-sm">
+          Your theme is saved to this browser and applied instantly.
+        </p>
+        <button
+          type="button"
+          onClick={handleReset}
+          disabled={busy}
+          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700/50"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-4 w-4"
+            aria-hidden="true"
+          >
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+            <path d="M3 3v5h5" />
+          </svg>
+          Reset to default
+        </button>
+      </div>
+    </div>
+  );
+}

@@ -25,7 +25,7 @@ export default async function UpdatePasswordPage() {
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
               </svg>
             </div>
-            <h1 className="text-2xl font-bold text-zinc-950 dark:text-stone-50">Reset your password</h1>
+            <h1 className="hb-display-font text-2xl font-bold tracking-tight text-zinc-950 dark:text-stone-50">Reset your password</h1>
             <p className="mt-1.5 text-sm text-slate-700 dark:text-stone-300">
               Enter a new password for your account.
             </p>

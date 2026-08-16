@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import type { Profile } from "@/lib/types";
 
 type PageTopBarProps = {
@@ -29,7 +28,6 @@ export function PageTopBar({
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-2">
-        <ThemeToggle />
         {showAdminCta && profile.role === "admin" && (
           <Link
             href="/admin"

@@ -7,6 +7,7 @@ import type { ReactNode, MouseEvent as ReactMouseEvent } from "react";
 import { signOut } from "@/actions/auth";
 import { Avatar } from "@/components/Avatar";
 import { PendingButton } from "@/components/PendingButton";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import type { Profile } from "@/lib/types";
 
 type SideRailProps = {
@@ -121,6 +122,19 @@ const NAV_ITEMS: RailItem[] = [
         <path d="M9 20v2" /><path d="M15 20v2" />
         <path d="M20 9h2" /><path d="M2 9h2" />
         <path d="M20 15h2" /><path d="M2 15h2" />
+      </Icon>
+    ),
+  },
+  {
+    href: "/theme-settings",
+    label: "Appearance",
+    icon: (
+      <Icon>
+        <circle cx="13.5" cy="6.5" r="2.5" />
+        <circle cx="17.5" cy="10.5" r="2.5" />
+        <circle cx="8.5" cy="7.5" r="2.5" />
+        <circle cx="6.5" cy="12.5" r="2.5" />
+        <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" />
       </Icon>
     ),
   },
@@ -412,6 +426,7 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
       </nav>
 
       <div className="hb-siderail-footer">
+        <ThemeToggle />
         <Link
           href="/settings"
           aria-label={`${profile.full_name} — open settings`}
