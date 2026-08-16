@@ -122,21 +122,14 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
         showAdminCta
       />
 
-      <div className="mb-4 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 shadow-sm dark:from-blue-900/40 dark:to-blue-900/20">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 text-blue-700 dark:text-blue-300" aria-hidden="true">
-            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 19.5" />
-            <path d="M9 10h6" />
-            <path d="M9 14h6" />
-          </svg>
-        </div>
+      <div className="mb-4 flex items-end justify-between gap-3 border-b pb-3">
         <h1 className="hb-page-title text-2xl tracking-tight">
-          Daily Homework
+          Daily homework
         </h1>
         <div className="ml-auto flex items-center gap-2">
           <Link
             href="/feedback"
-            className="hb-section-title flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition hover:bg-slate-100 dark:hover:bg-slate-700"
+            className="hb-section-title flex items-center gap-1.5 px-2 py-1 text-sm transition hover:text-blue-600 dark:hover:text-blue-300"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -160,8 +153,8 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
 
       <div className="mt-4 space-y-4">
         {filteredPosts.length === 0 ? (
-          <div className="hb-empty-state flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 py-16 text-center dark:border-stone-700">
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 dark:bg-stone-700/40">
+          <div className="hb-empty-state flex flex-col items-center justify-center border-y border-dashed border-[var(--hb-border)] py-16 text-center">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center border border-[var(--hb-border)] text-[var(--hb-text-muted)]">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="hb-muted-text h-7 w-7" aria-hidden="true">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                 <polyline points="14 2 14 8 20 8" />

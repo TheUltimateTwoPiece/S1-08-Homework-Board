@@ -16,17 +16,11 @@ export default async function UpdatePasswordPage() {
 
   return (
     <div className="flex flex-1 items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md animate-[hb-fade-in_400ms_ease-out]">
-        <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-lg dark:border-stone-700 dark:bg-stone-800/80">
-          <div className="mb-6 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-blue-50 via-white to-rose-50 shadow-sm dark:from-blue-900/40 dark:via-stone-800 dark:to-rose-900/30">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 text-slate-700 dark:text-stone-300">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-              </svg>
-            </div>
-            <h1 className="hb-display-font text-2xl font-bold tracking-tight text-zinc-950 dark:text-stone-50">Reset your password</h1>
-            <p className="mt-1.5 text-sm text-slate-700 dark:text-stone-300">
+      <div className="w-full max-w-md hb-page-enter">
+        <div className="hb-card-surface p-8">
+          <div className="mb-6">
+            <h1 className="hb-page-title text-2xl">Reset your password</h1>
+            <p className="hb-body-text mt-1 text-sm">
               Enter a new password for your account.
             </p>
           </div>

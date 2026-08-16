@@ -20,14 +20,9 @@ export function FeedbackForm() {
 
   return (
     <form action={formAction} className="mx-auto max-w-lg space-y-6">
-      <div className="text-center">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 shadow-sm dark:from-amber-900/40 dark:to-orange-900/30">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 text-amber-600 dark:text-amber-300" aria-hidden="true">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-          </svg>
-        </div>
-        <h1 className="hb-card-title text-2xl">Feedback</h1>
-        <p className="hb-card-body mt-1 text-sm">
+      <div>
+        <h1 className="hb-page-title text-2xl">Feedback</h1>
+        <p className="hb-body-text mt-1 text-sm">
           Share ideas, report issues, or suggest improvements.
         </p>
       </div>
@@ -42,8 +37,8 @@ export function FeedbackForm() {
                 onClick={() => setCategory("post")}
                 className={`flex-1 rounded-md px-3 py-2 text-xs transition ${
                   category === "post"
-                    ? "hb-card-section bg-white shadow-sm dark:bg-stone-700"
-                    : "hb-card-meta hover:text-slate-700 dark:hover:text-stone-200"
+                    ? "hb-segmented-btn--active"
+                    : "hb-segmented-btn--inactive"
                 }`}
               >
                 Posts
@@ -53,8 +48,8 @@ export function FeedbackForm() {
                 onClick={() => setCategory("website")}
                 className={`flex-1 rounded-md px-3 py-2 text-xs transition ${
                   category === "website"
-                    ? "hb-card-section bg-white shadow-sm dark:bg-stone-700"
-                    : "hb-card-meta hover:text-slate-700 dark:hover:text-stone-200"
+                    ? "hb-segmented-btn--active"
+                    : "hb-segmented-btn--inactive"
                 }`}
               >
                 Website

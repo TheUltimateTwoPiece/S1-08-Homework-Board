@@ -59,7 +59,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
   }
 
   return (
-    <div className="mb-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-stone-700 dark:bg-stone-800/80">
+    <div className="mb-6 hb-card-surface p-4">
       <form
         className="flex flex-col gap-3 sm:flex-row sm:items-end"
         onSubmit={(e) => {
@@ -148,7 +148,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
         </button>
       </form>
 
-      <div className="mt-3 flex items-center gap-1 rounded-lg bg-slate-100/70 p-1 dark:bg-stone-800">
+      <div className="mt-3 hb-segmented flex items-center gap-1 p-1">
         {[
           { value: "all", label: "All" },
           { value: "todo", label: "To do" },
@@ -160,8 +160,8 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
             onClick={() => setParams({ status: option.value })}
             disabled={isPending}              className={`flex-1 rounded-md px-3 py-1.5 text-xs transition ${
                 initial.status === option.value
-                  ? "hb-card-section bg-white shadow-sm dark:bg-stone-700"
-                  : "hb-card-meta hover:bg-white/60 dark:hover:bg-stone-700/40"
+                  ? "hb-segmented-btn--active"
+                  : "hb-segmented-btn--inactive"
               }`}
           >
             {option.label}

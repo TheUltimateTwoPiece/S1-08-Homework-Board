@@ -6,6 +6,7 @@ type PageTopBarProps = {
   greetingName: string;
   subtitle?: string;
   showAdminCta?: boolean;
+  showPipCta?: boolean;
 };
 
 export function PageTopBar({
@@ -13,6 +14,7 @@ export function PageTopBar({
   greetingName,
   subtitle,
   showAdminCta = false,
+  showPipCta = false,
 }: PageTopBarProps) {
   return (
     <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
@@ -22,7 +24,12 @@ export function PageTopBar({
         </h1>
         {subtitle && <p className="hb-body-text mt-1 text-sm">{subtitle}</p>}
       </div>
-      <div className="flex shrink-0 items-center gap-2">
+      <div className="hb-page-actions">
+        {showPipCta && (
+          <Link href="/pip" className="hb-page-action">
+            Pip
+          </Link>
+        )}
         {showAdminCta && profile.role === "admin" && (
           <Link href="/admin" className="button gap-1.5">
             <svg

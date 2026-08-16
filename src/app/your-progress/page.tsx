@@ -151,7 +151,7 @@ export default async function YourProgressPage() {
       />
 
       {/* ── Hero ───────────────────────────────── */}
-      <section className="hb-bento-card mb-6 flex flex-col items-center gap-6 p-8 sm:flex-row sm:gap-10">
+      <section className="hb-card-surface mb-6 flex flex-col items-center gap-6 p-8 sm:flex-row sm:gap-10">
         <div className="relative flex h-44 w-44 items-center justify-center">
           <svg viewBox="0 0 160 160" className="hb-progress-ring h-44 w-44" aria-hidden="true">
             <circle
@@ -212,10 +212,10 @@ export default async function YourProgressPage() {
       </section>
 
       {/* ── Subject breakdown ───────────────── */}
-      <section className="hb-bento-card mb-6 p-6">
+      <section className="hb-card-surface mb-6 p-6">
         <div className="mb-4 flex items-center gap-3">
-          <div className="hb-bento-icon-box" aria-hidden="true">📚</div>
           <div>
+            <div className="hb-card-meta mb-1 text-xs font-semibold uppercase tracking-wide">Subjects</div>
             <h3 className="hb-card-section text-base">By subject</h3>
             <p className="hb-card-meta text-xs">Completion percentage per subject</p>
           </div>
@@ -241,21 +241,11 @@ export default async function YourProgressPage() {
       </section>
 
       {/* ── Up Next ──────────────────────────── */}
-      <section className="hb-bento-card mb-6 p-6">
+      <section className="hb-card-surface mb-6 p-6">
         <div className="mb-4 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div
-              className="hb-bento-icon-box"
-              style={{
-                background:
-                  "linear-gradient(135deg, rgba(217,119,6,0.18), rgba(217,119,6,0.04))",
-                color: "#b45309",
-              }}
-              aria-hidden="true"
-            >
-              ⏳
-            </div>
             <div>
+              <div className="hb-card-meta mb-1 text-xs font-semibold uppercase tracking-wide">Next up</div>
               <h3 className="hb-card-section text-base">Up next</h3>
               <p className="hb-card-meta text-xs">Earliest assignments to knock out</p>
             </div>
@@ -269,7 +259,7 @@ export default async function YourProgressPage() {
         </div>
         {upNext.length === 0 ? (
           <p className="hb-card-meta py-8 text-center text-sm">
-            You're completely caught up. 🎉
+            You’re completely caught up.
           </p>
         ) : (
           <ul className="divide-y divide-slate-100 dark:divide-slate-700">
@@ -318,20 +308,9 @@ export default async function YourProgressPage() {
       </section>
 
       {/* ── Recent Completions ──────────────── */}
-      <section className="hb-bento-card mb-6 p-6">
-        <div className="mb-4 flex items-center gap-3">
-          <div
-            className="hb-bento-icon-box"
-            style={{
-              background:
-                "linear-gradient(135deg, rgba(22,163,74,0.18), rgba(22,163,74,0.04))",
-              color: "var(--hb-success)",
-            }}
-            aria-hidden="true"
-          >
-            ✓
-          </div>
-          <div>
+      <section className="hb-card-surface mb-6 p-6">
+        <div className="mb-4 flex items-center gap-3">          <div>
+            <div className="hb-card-meta mb-1 text-xs font-semibold uppercase tracking-wide">History</div>
             <h3 className="hb-card-section text-base">Recently completed</h3>
             <p className="hb-card-meta text-xs">Your last handful of wins</p>
           </div>
@@ -346,7 +325,7 @@ export default async function YourProgressPage() {
               <li key={post.id}>
                 <Link
                   href={`/posts/${post.id}`}
-                  className="hb-snippet flex items-center justify-between gap-3 hover:bg-slate-50"
+                  className="hb-snippet flex items-center justify-between gap-3 hover:bg-[var(--hb-surface-hover)]"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="hb-card-section line-clamp-1 text-sm">

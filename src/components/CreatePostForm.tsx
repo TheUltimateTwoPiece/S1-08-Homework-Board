@@ -41,17 +41,9 @@ export function CreatePostForm() {
 
   return (
     <form action={formAction} className="rounded-xl border hb-card-surface p-6" encType="multipart/form-data">
-      <div className="mb-5 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden="true">
-            <path d="M12 5v14" />
-            <path d="M5 12h14" />
-          </svg>
-        </div>
-        <div>
-          <h2 className="hb-card-section text-base">New homework post</h2>
-          <p className="hb-card-body text-xs">Create a new assignment for your class</p>
-        </div>
+      <div className="mb-5 border-b pb-4">
+        <h2 className="hb-card-title text-lg">New homework post</h2>
+        <p className="hb-card-body mt-0.5 text-sm">Create a new assignment for your class</p>
       </div>
 
       <div className="space-y-4">

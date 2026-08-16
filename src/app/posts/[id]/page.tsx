@@ -233,7 +233,7 @@ export default async function PostPage({ params }: PageProps) {
 
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <article
-          className={`rounded-xl border p-6 shadow-sm ${
+          className={`hb-card-surface border p-6 ${
             isCompleted
               ? "border-emerald-300/70 bg-emerald-50/70 dark:border-emerald-800 dark:bg-emerald-950/40"
               : "border-slate-200 bg-white dark:border-stone-700 dark:bg-stone-800/70"
@@ -297,7 +297,7 @@ export default async function PostPage({ params }: PageProps) {
 
           <div className="mb-6 flex flex-wrap items-center gap-2">
             {typedPost.pinned && (
-              <span className="hb-badge-new inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold">📌 Pinned</span>
+              <span className="hb-badge-new inline-flex items-center px-2 py-0.5 text-[10px] font-semibold">Pinned</span>
             )}
             {typedPost.subject.map((subject) => (
               <span
@@ -345,7 +345,7 @@ export default async function PostPage({ params }: PageProps) {
         </article>
 
         {isAdmin && studentProfiles.length > 0 ? (
-          <aside className="hb-card-surface h-fit rounded-xl border p-5">
+          <aside className="hb-card-surface h-fit p-5">
             <details className="group">
               <summary className="hb-card-section flex cursor-pointer items-center gap-2 text-sm transition hover:text-blue-600 dark:hover:text-blue-300">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="hb-card-meta h-4 w-4 transition group-open:rotate-90" aria-hidden="true">
@@ -439,7 +439,7 @@ export default async function PostPage({ params }: PageProps) {
             {typedEdits.map((edit) => {
               const keys = Object.keys(edit.changes ?? {});
               return (
-                <li key={edit.id} className="rounded-lg border border-slate-100 bg-slate-50/50 p-4 dark:border-stone-700 dark:bg-stone-800/50">
+                <li key={edit.id} className="border-b border-[var(--hb-border)] p-4">
                   <div className="hb-card-meta mb-1.5 flex items-center gap-2 text-xs">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden="true">
                       <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />

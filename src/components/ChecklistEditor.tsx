@@ -38,7 +38,7 @@ export function ChecklistEditor({ defaultItems = [] }: ChecklistEditorProps) {
   }
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-3 dark:border-stone-700 dark:bg-stone-800/50">
+    <div className="border border-[var(--hb-border)] bg-[var(--hb-surface-hover)] p-3">
       <input type="hidden" name="checklist" value={JSON.stringify(items)} />
       <div className="mb-2 flex items-center justify-between gap-2">
         <div>
@@ -52,7 +52,7 @@ export function ChecklistEditor({ defaultItems = [] }: ChecklistEditorProps) {
         <div className="mb-3 space-y-2">
           {items.map((item, index) => (
             <div key={item.id} className="flex items-center gap-2">
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded border border-slate-300 bg-white text-[10px] text-slate-400 dark:border-stone-600 dark:bg-stone-700 dark:text-stone-300">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center border border-[var(--hb-border)] bg-[var(--hb-surface)] text-[10px] hb-card-meta">
                 {index + 1}
               </span>
               <input
@@ -66,7 +66,7 @@ export function ChecklistEditor({ defaultItems = [] }: ChecklistEditorProps) {
                 type="button"
                 onClick={() => removeItem(item.id)}
                 aria-label={`Remove checklist step ${index + 1}`}
-                className="rounded-md px-2 py-1 text-xs text-slate-400 transition hover:bg-red-50 hover:text-red-600 dark:text-stone-300 dark:hover:bg-red-900/30 dark:hover:text-red-300"
+                className="rounded-md px-2 py-1 text-xs hb-card-meta transition hover:text-rose-700 dark:hover:text-rose-300"
               >
                 Remove
               </button>
@@ -93,8 +93,7 @@ export function ChecklistEditor({ defaultItems = [] }: ChecklistEditorProps) {
         <button
           type="button"
           onClick={addItem}
-          disabled={!draft.trim() || items.length >= MAX_ITEMS}
-          className="rounded-md bg-slate-800 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+          disabled={!draft.trim() || items.length >= MAX_ITEMS}            className="rounded-md bg-[var(--hb-text-page)] px-3 py-1.5 text-xs font-medium text-[var(--hb-surface)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
           Add step
         </button>

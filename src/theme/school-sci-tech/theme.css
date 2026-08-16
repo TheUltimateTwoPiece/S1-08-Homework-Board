@@ -1816,6 +1816,79 @@
     border-color: color-mix(in srgb, var(--hb-warning) 25%, transparent);
   }
 
+  /* ── Dashboard summary and top actions ───────── */
+
+  .hb-page-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .hb-page-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--hb-border);
+    border-radius: var(--hb-radius-sm);
+    background: var(--hb-surface);
+    color: var(--hb-text-section);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+  }
+
+  .hb-page-action:hover {
+    border-color: var(--hb-border-hover);
+    background: var(--hb-surface-hover);
+    color: var(--hb-blue);
+  }
+
+  .hb-dashboard-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .hb-dashboard-stat {
+    min-height: 104px;
+    padding: 1rem 1.125rem;
+    border: 1px solid var(--hb-border);
+    border-top: 3px solid var(--hb-stat-accent, var(--hb-border-hover));
+    border-radius: var(--hb-radius);
+    background: var(--hb-surface);
+  }
+
+  .hb-dashboard-stat--blue { --hb-stat-accent: var(--hb-blue); }
+  .hb-dashboard-stat--amber { --hb-stat-accent: var(--hb-warning); }
+  .hb-dashboard-stat--rose { --hb-stat-accent: var(--hb-danger); }
+  .hb-dashboard-stat--green { --hb-stat-accent: var(--hb-success); }
+
+  .hb-dashboard-stat-label {
+    color: var(--hb-text-muted);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  .hb-dashboard-stat-value {
+    margin-top: 0.5rem;
+    color: var(--hb-text-page);
+    font-size: 2.25rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hb-dashboard-list-head {
+    color: var(--hb-text-faded);
+    border-bottom: 1px solid var(--hb-border);
+  }
+
   /* ── Progress Bar ───────────────────────────── */
 
   .hb-bar-track {
@@ -1838,7 +1911,39 @@
     animation: hb-bar-fill 500ms ease-out backwards;
   }
 
-  /* ── Mobile Bento Reset ─────────────────────── */
+  /* ── Mobile dashboard layout ────────────────── */
+
+  @media (max-width: 640px) {
+    .hb-dashboard-summary {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.625rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .hb-dashboard-stat {
+      min-height: 92px;
+      padding: 0.875rem;
+    }
+
+    .hb-dashboard-stat-value {
+      font-size: 1.875rem;
+    }
+
+    .hb-bento-card {
+      grid-column: auto !important;
+      grid-row: span 2 !important;
+      min-height: 140px;
+    }
+
+    .hb-bento-card .hb-posts-widget-row,
+    .hb-bento-card .hb-snippet,
+    .hb-bento-card ul {
+      max-height: 220px;
+      overflow-y: auto;
+    }
+  }
+
+  /* ── Mobile Bento Reset (legacy dashboard widgets) ── */
 
   @media (max-width: 640px) {
     .hb-bento-card {

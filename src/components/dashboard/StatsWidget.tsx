@@ -23,7 +23,7 @@ export function StatsWidget({
     <section aria-labelledby="progress-heading" className="hb-card-surface p-5">
       <header className="mb-3 flex items-baseline justify-between gap-4">
         <h2 id="progress-heading" className="hb-card-section text-sm">
-          Progress
+          Your progress
         </h2>
         <Link
           href="/your-progress"

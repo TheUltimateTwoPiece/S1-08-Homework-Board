@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "../theme/school-sci-tech/theme.css";
+@import "../theme/human-overrides.css";
 
 /* Class-based dark mode: make every `dark:` utility follow the in-app
    theme toggle (.dark on <html>) instead of the OS preference. */
