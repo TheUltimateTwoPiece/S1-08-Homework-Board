@@ -41,7 +41,7 @@ export function AnnouncementForm() {
         <h2 className="hb-card-title text-lg">Send an announcement</h2>
         <p className="hb-card-body mt-0.5 text-sm">
           Goes to every student and admin. It shows up in their bell
-          notifications and (unless they opted out) their email — useful for
+          notifications and (unless they opted out) their email. Useful for
           patch notes and new-feature updates.
         </p>
       </div>
@@ -94,7 +94,7 @@ export function AnnouncementForm() {
             </div>
             {state.testMode ? (
               <div className="text-xs">
-                Test mode active — emails redirected to{" "}
+                Test mode active: emails redirected to{" "}
                 {state.testModeEmail ?? "(unset)"}.
               </div>
             ) : state.emailedCount !== undefined && state.emailedCount > 0 ? (
@@ -105,7 +105,7 @@ export function AnnouncementForm() {
               </div>
             ) : (
               <div className="text-xs">
-                No emails sent — check Brevo configuration or recipients’
+                No emails sent. Check Brevo configuration or recipients'
                 email opt-in.
               </div>
             )}

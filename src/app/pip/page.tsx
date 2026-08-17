@@ -34,7 +34,7 @@ export default async function PipPage() {
       <PageTopBar
         profile={profile}
         greetingName={firstName}
-        subtitle={`Chat with Pip — ${remaining} prompt${remaining !== 1 ? "s" : ""} left today`}
+        subtitle={`Chat with Pip: ${remaining} prompt${remaining !== 1 ? "s" : ""} left today`}
         showAdminCta={false}
       />
 

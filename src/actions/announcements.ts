@@ -179,7 +179,7 @@ export async function sendAnnouncement(formData: FormData) {
     await supabase
       .from("notifications")
       .update({
-        email_error: "Skipped — recipient opted out of reminder emails.",
+        email_error: "Skipped: recipient opted out of reminder emails.",
       })
       .in("id", optedOut);
   }
@@ -190,7 +190,7 @@ export async function sendAnnouncement(formData: FormData) {
         .from("notifications")
         .update({
           email_error:
-            "Email not sent — Brevo API key / from-address not configured on server.",
+            "Email not sent: Brevo API key / from-address not configured on server.",
         })
         .in(
           "id",

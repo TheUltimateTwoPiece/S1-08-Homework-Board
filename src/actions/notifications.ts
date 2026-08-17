@@ -179,7 +179,7 @@ export async function notifyNewPost(params: {
     await supabase
       .from("notifications")
       .update({
-        email_error: "Skipped — recipient opted out of new-post emails.",
+        email_error: "Skipped: recipient opted out of new-post emails.",
       })
       .in("id", optedOutIds);
   }
@@ -201,7 +201,7 @@ export async function notifyNewPost(params: {
         .from("notifications")
         .update({
           email_error:
-            "Email not sent — Brevo API key / from-address not configured on server.",
+            "Email not sent: Brevo API key / from-address not configured on server.",
         })
         .in(
           "id",
@@ -471,7 +471,7 @@ export async function sendReminder(formData: FormData) {
           "No student or admin accounts found. Sign users up first, then send your reminder.";
       } else if (incompleteCompletedCount === incompleteTrackedCount) {
         const n = incompleteTrackedCount;
-        label = `All ${n} user${n === 1 ? "" : "s"} already completed this post — nothing left to remind.`;
+        label = `All ${n} user${n === 1 ? "" : "s"} already completed this post. Nothing left to remind.`;
       } else {
         label = `No incomplete users found for this post.`;
       }
@@ -584,7 +584,7 @@ export async function sendReminder(formData: FormData) {
   if (optedOut.length > 0) {
     await supabase
       .from("notifications")
-      .update({ email_error: "Skipped — recipient opted out of reminder emails." })
+      .update({ email_error: "Skipped: recipient opted out of reminder emails." })
       .in("id", optedOut);
   }
 
@@ -595,7 +595,7 @@ export async function sendReminder(formData: FormData) {
       .from("notifications")
       .update({
         email_error:
-          "Email not sent — Brevo API key / from-address not configured on server.",
+          "Email not sent: Brevo API key / from-address not configured on server.",
       })
       .in(
         "id",
