@@ -381,12 +381,12 @@ export function PipWidget({
 
   // ── Render ──
   return (
-    <div className="flex h-[calc(100vh-10rem)] max-sm:h-[calc(100dvh-3rem)] overflow-hidden rounded-xl border bg-white shadow-lg dark:border-slate-700 dark:bg-slate-900">
+    <div className="hb-chat-panel flex h-[calc(100vh-10rem)] max-sm:h-[calc(100dvh-3rem)] overflow-hidden rounded-xl shadow-lg">
       {/* ── Mobile sidebar overlay ── */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 sm:hidden" onClick={() => setSidebarOpen(false)}>
           <div className="absolute inset-0 bg-black/40" />
-          <div className="absolute left-0 top-0 bottom-0 w-64 bg-white dark:bg-slate-900 border-r dark:border-slate-700 z-50 shadow-xl"
+          <div className="hb-chat-panel absolute left-0 top-0 bottom-0 w-64 z-50 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <ChatSidebar
@@ -401,7 +401,7 @@ export function PipWidget({
       )}
 
       {/* ── Desktop sidebar ── */}
-      <div className="hidden sm:flex w-60 shrink-0 flex-col border-r bg-slate-50/50 dark:border-slate-700 dark:bg-slate-900/50">
+      <div className="hb-chat-sidebar hidden sm:flex w-60 shrink-0 flex-col">
         <ChatSidebar
           chats={chats} activeChatId={activeChatId} editingTitle={editingTitle} titleDraft={titleDraft}
           onSelect={(id) => setActiveChatId(id)}
@@ -414,22 +414,22 @@ export function PipWidget({
       {/* ── Main chat area ── */}
       <div className="flex flex-1 flex-col min-w-0">
         {/* Header */}
-        <div className="flex shrink-0 items-center justify-between border-b px-4 sm:px-5 py-3 sm:py-4 dark:border-slate-700">
+        <div className="hb-border-theme flex shrink-0 items-center justify-between border-b px-4 sm:px-5 py-3 sm:py-4">
           <div className="flex items-center gap-2 sm:gap-3">
             {/* Mobile hamburger */}
-            <button onClick={() => setSidebarOpen(true)} className="sm:hidden flex h-8 w-8 items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" title="Chats">
+            <button onClick={() => setSidebarOpen(true)} className="hb-hover-surface sm:hidden flex h-8 w-8 items-center justify-center rounded-lg" title="Chats">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4"><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="15" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></svg>
             </button>
             <div className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-blue-600 text-white text-xs sm:text-sm font-bold">P</div>
             <div>
-              <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">Pip</h2>
-              <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">Homework assistant</p>
+              <h2 className="hb-section-title text-sm">Pip</h2>
+              <p className="hb-muted-text text-[10px] sm:text-xs">Homework assistant</p>
             </div>
           </div>
-          <span className={`rounded-full px-2 py-0.5 sm:px-2.5 sm:py-0.5 text-[10px] sm:text-xs font-medium ${
-            remaining <= 5 ? "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-              : remaining <= 15 ? "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-              : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+          <span className={`hb-bg-overlay rounded-full px-2 py-0.5 sm:px-2.5 sm:py-0.5 text-[10px] sm:text-xs font-medium ${
+            remaining <= 5 ? "text-red-700 dark:text-red-400"
+              : remaining <= 15 ? "text-amber-700 dark:text-amber-400"
+              : "text-slate-600 dark:text-slate-400"
           }`}>
             {remaining} prompt{remaining !== 1 ? "s" : ""} left
           </span>
@@ -437,20 +437,20 @@ export function PipWidget({
 
         {/* Instructions banner */}
         {hasInstructions && !isNewEmptyChat && (
-          <div className="shrink-0 border-b bg-blue-50/50 dark:bg-blue-900/20 dark:border-slate-700 px-3 sm:px-5 py-2 sm:py-2.5">
+          <div className="hb-bg-accent hb-border-theme shrink-0 border-b px-3 sm:px-5 py-2 sm:py-2.5">
             <div className="flex items-center gap-2 text-xs">
-              <span className="text-slate-500 dark:text-slate-400">Instructions:</span>
-              <span className="font-medium text-blue-700 dark:text-blue-300 truncate max-w-[200px] sm:max-w-[300px]">{activeChat?.system_instructions}</span>
+              <span className="hb-muted-text">Instructions:</span>
+              <span className="hb-text-accent font-medium truncate max-w-[200px] sm:max-w-[300px]">{activeChat?.system_instructions}</span>
               <button onClick={() => { setInstructionsInput(activeChat?.system_instructions ?? ""); setShowInstructions(true); }}
-                className="ml-auto text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 text-[10px] font-medium shrink-0">Edit</button>
+                className="hb-muted-text ml-auto text-[10px] font-medium shrink-0 hover:opacity-70">Edit</button>
             </div>
           </div>
         )}
 
         {/* Instructions editor */}
         {showInstructions && isNewEmptyChat && (
-          <div className="shrink-0 border-b bg-blue-50/30 dark:bg-blue-900/10 dark:border-slate-700 px-3 sm:px-5 py-3">
-            <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Tell Pip how to behave (optional)</label>
+          <div className="hb-bg-accent hb-border-theme shrink-0 border-b px-3 sm:px-5 py-3">
+            <label className="hb-muted-text mb-1.5 block text-xs font-medium">Tell Pip how to behave (optional)</label>
             <textarea value={instructionsInput} onChange={(e) => setInstructionsInput(e.target.value)}
               placeholder="e.g. 'Act like Mario', 'Be super formal', 'Explain things like I'm 10'"
               className="hb-input w-full rounded-lg px-3 py-2 text-xs resize-none" rows={2} maxLength={300} />
@@ -458,20 +458,20 @@ export function PipWidget({
               <button onClick={handleSaveInstructions} className="rounded-lg bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700 transition">
                 {instructionsInput.trim() ? "Save & Start" : "Skip"}
               </button>
-              <button onClick={() => setShowInstructions(false)} className="rounded-lg px-3 py-1 text-xs font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition">Cancel</button>
-              <span className="ml-auto text-[10px] text-slate-400 dark:text-slate-500">You can always change this later</span>
+              <button onClick={() => setShowInstructions(false)} className="hb-muted-text rounded-lg px-3 py-1 text-xs font-medium transition hover:opacity-70">Cancel</button>
+              <span className="hb-muted-text ml-auto text-[10px]">You can always change this later</span>
             </div>
           </div>
         )}
 
         {/* Suggested prompts */}
         {!loading && !isStreaming && messages.length <= 1 && (
-          <div className="shrink-0 border-b dark:border-slate-700 px-3 sm:px-5 py-3">
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 mb-2 uppercase tracking-wide">Try asking</p>
+          <div className="hb-border-theme shrink-0 border-b px-3 sm:px-5 py-3">
+            <p className="hb-muted-text mb-2 text-[10px] uppercase tracking-wide">Try asking</p>
             <div className="flex flex-wrap gap-1.5">
               {SUGGESTED_PROMPTS.map((sp) => (
                 <button key={sp.label} onClick={() => handleSend(sp.prompt)}
-                  className="rounded-full border border-slate-200 dark:border-slate-600 px-3 py-1.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-blue-300 dark:hover:border-blue-600 transition"
+                  className="hb-border-theme hb-muted-text hb-hover-surface rounded-full border px-3 py-1.5 text-xs transition hover:border-blue-300 dark:hover:border-blue-600"
                   disabled={exceeded}>
                   {sp.label}
                 </button>
@@ -481,17 +481,17 @@ export function PipWidget({
         )}
 
         {/* Messages */}
-        <div className="flex-1 space-y-4 overflow-y-auto px-3 sm:px-5 py-4 dark:bg-slate-900/30">
+        <div className="flex-1 space-y-4 overflow-y-auto px-3 sm:px-5 py-4">
           {messages.map((msg, i) => (
             <div key={msg.id ?? i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               {/* Pip messages get markdown + hover actions */}
               {msg.role === "pip" ? (
-                <div className="group relative max-w-[90%] sm:max-w-[80%] rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-800 dark:bg-slate-800 px-3 sm:px-4 py-2.5 text-sm">
+                <div className="hb-chat-bubble group relative max-w-[90%] sm:max-w-[80%] rounded-xl px-3 sm:px-4 py-2.5 text-sm">
                   <MarkdownRenderer text={msg.text} />
                   {/* Hover actions */}
                   <div className="absolute -bottom-1 right-1 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity translate-y-full pt-1">
                     <button onClick={() => handleCopy(msg.text, i)}
-                      className="flex h-6 w-6 items-center justify-center rounded bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-[10px] shadow-sm"
+                      className="hb-icon-btn hb-bg-surface hb-border-theme flex h-6 w-6 items-center justify-center rounded border text-[10px] shadow-sm"
                       title="Copy">
                       {copiedIdx === i ? (
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-3 w-3 text-green-500"><polyline points="20 6 9 17 4 12" /></svg>
@@ -501,7 +501,7 @@ export function PipWidget({
                     </button>
                     {i === messages.length - 1 && msg.role === "pip" && (
                       <button onClick={handleRegenerate}
-                        className="flex h-6 w-6 items-center justify-center rounded bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-[10px] shadow-sm"
+                        className="hb-icon-btn hb-bg-surface hb-border-theme flex h-6 w-6 items-center justify-center rounded border text-[10px] shadow-sm"
                         title="Regenerate">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-3 w-3"><polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" /></svg>
                       </button>
@@ -519,19 +519,19 @@ export function PipWidget({
           {/* Streaming message */}
           {isStreaming && (
             <div className="flex justify-start">
-              <div className="max-w-[90%] sm:max-w-[80%] rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-800 dark:bg-slate-800 px-3 sm:px-4 py-2.5 text-sm">
+              <div className="hb-chat-bubble max-w-[90%] sm:max-w-[80%] rounded-xl px-3 sm:px-4 py-2.5 text-sm">
                 {streamingText ? (
                   <MarkdownRenderer text={streamingText} />
                 ) : (
-                  <span className="text-slate-400 dark:text-slate-500 italic">Pip is thinking...</span>
+                  <span className="hb-muted-text italic">Pip is thinking...</span>
                 )}
                 {streamingText && <span className="inline-block w-1.5 h-4 ml-0.5 bg-blue-500 animate-pulse rounded-sm align-middle" />}
               </div>
               {/* Stop button */}
               <button onClick={handleStopStreaming}
-                className="ml-2 self-end mb-1 flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition"
+                className="hb-bg-surface-hover ml-2 self-end mb-1 flex h-6 w-6 items-center justify-center rounded-full transition hover:opacity-80"
                 title="Stop generating">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-3 w-3 text-slate-500 dark:text-slate-400"><rect x="6" y="6" width="12" height="12" rx="2" /></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="hb-muted-text h-3 w-3"><rect x="6" y="6" width="12" height="12" rx="2" /></svg>
               </button>
             </div>
           )}
@@ -539,8 +539,8 @@ export function PipWidget({
           {/* Confirmation cards */}
           {activePendingActions?.map((action, i) => (
             <div key={`action-${i}`} className="flex justify-start">
-              <div className="max-w-[85%] sm:max-w-[80%] rounded-xl border-2 border-blue-200 dark:border-blue-700 bg-blue-50/60 dark:bg-blue-900/30 px-3 sm:px-4 py-3">
-                <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">Pip suggests:</p>
+              <div className="hb-bg-accent hb-border-theme max-w-[85%] sm:max-w-[80%] rounded-xl border-2 px-3 sm:px-4 py-3">
+                <p className="hb-muted-text mb-2 text-xs">Pip suggests:</p>
                 <button onClick={() => handleConfirmAction(action)} disabled={executingAction !== null}
                   className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 transition">
                   {executingAction === `${action.type}-${action.params.post_id}` ? "Doing..." : action.label}
@@ -553,7 +553,7 @@ export function PipWidget({
         </div>
 
         {/* Input */}
-        <div className="shrink-0 border-t dark:border-slate-700 px-3 sm:px-4 py-2 sm:py-3 bg-white dark:bg-slate-900">
+        <div className="hb-border-theme shrink-0 border-t px-3 sm:px-4 py-2 sm:py-3">
           <div className="flex gap-1.5 sm:gap-2">
             <input ref={inputRef} type="text" value={input}
               onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
@@ -563,7 +563,7 @@ export function PipWidget({
               maxLength={500} />
             {isStreaming ? (
               <button onClick={handleStopStreaming}
-                className="shrink-0 rounded-lg bg-slate-200 dark:bg-slate-700 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600 transition">
+                className="hb-bg-surface-hover hb-muted-text shrink-0 rounded-lg px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition hover:opacity-80">
                 Stop
               </button>
             ) : (
@@ -574,9 +574,9 @@ export function PipWidget({
               </button>
             )}
           </div>
-          <p className="mt-1.5 text-center text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500">
+          <p className="hb-muted-text mt-1.5 text-center text-[9px] sm:text-[10px]">
             Pip knows your homework — subjects, due dates, instructions, and what you've completed. {DAILY_LIMIT} prompts/day.{" "}
-            <kbd className="hidden sm:inline px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-[9px] border dark:border-slate-700">{isMac ? "⌘" : "Ctrl"}K</kbd>{" "}
+            <kbd className="hb-bg-surface-hover hb-border-theme hidden sm:inline px-1 py-0.5 rounded text-[9px] border">{isMac ? "⌘" : "Ctrl"}K</kbd>{" "}
             <span className="hidden sm:inline">to focus</span>
           </p>
         </div>
@@ -599,7 +599,7 @@ function ChatSidebar({
   return (
     <>
       <div className="flex items-center justify-between px-3 py-3">
-        <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Chats</span>
+        <span className="hb-muted-text text-xs font-semibold uppercase tracking-wide">Chats</span>
         <button onClick={onNew} className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700 transition" title="New chat (⌘⇧N)">+</button>
       </div>
       <div className="flex-1 space-y-0.5 overflow-y-auto px-2 pb-2">
@@ -607,8 +607,8 @@ function ChatSidebar({
           <div key={chat.id} onClick={() => onSelect(chat.id)}
             className={`group flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm cursor-pointer transition ${
               activeChatId === chat.id
-                ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                ? "hb-bg-overlay hb-text-accent"
+                : "hb-body-text hb-hover-surface"
             }`}>
             {editingTitle === chat.id ? (
               <input className="hb-input flex-1 rounded px-1.5 py-0.5 text-xs"
@@ -620,12 +620,12 @@ function ChatSidebar({
               <>
                 <span className="flex-1 truncate">{chat.title}</span>
                 <button onClick={(e) => onStartRename(chat, e)}
-                  className="hidden group-hover:flex h-5 w-5 shrink-0 items-center justify-center rounded text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"
+                  className="hb-muted-text hidden group-hover:flex h-5 w-5 shrink-0 items-center justify-center rounded hover:opacity-70"
                   title="Rename">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-3 w-3"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /></svg>
                 </button>
                 <button onClick={(e) => onDelete(chat.id, e)}
-                  className="hidden group-hover:flex h-5 w-5 shrink-0 items-center justify-center rounded text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400"
+                  className="hb-muted-text hidden group-hover:flex h-5 w-5 shrink-0 items-center justify-center rounded hover:text-red-500"
                   title="Delete">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-3 w-3"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
                 </button>
@@ -634,7 +634,7 @@ function ChatSidebar({
           </div>
         ))}
         {chats.length === 0 && (
-          <p className="px-2.5 py-4 text-xs text-center text-slate-400 dark:text-slate-500">No chats yet. Start one!</p>
+          <p className="hb-muted-text px-2.5 py-4 text-xs text-center">No chats yet. Start one!</p>
         )}
       </div>
     </>

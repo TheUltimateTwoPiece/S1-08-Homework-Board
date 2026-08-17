@@ -6,16 +6,9 @@
    theme toggle (.dark on <html>) instead of the OS preference. */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Pip's response bubbles are dark in both themes, so force every markdown
-   text node to white. This scoped rule beats prose plugin defaults. */
-.pip-markdown,
-.pip-markdown :is(p, li, span, em, blockquote, code, pre, strong, h1, h2, h3, h4, h5, h6) {
-  color: #ffffff !important;
-}
-
-.pip-markdown a {
-  color: #93c5fd !important;
-}
+/* Class-based dark mode: drive `dark:` utilities off the `.dark` class on
+   <html> (set by the theme engine / FOUC script) instead of the OS setting. */
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
   --color-background: var(--background);
