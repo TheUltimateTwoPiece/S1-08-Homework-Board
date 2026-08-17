@@ -673,9 +673,11 @@ export function ThemeSettingsForm() {
               return (
                 <div
                   key={key}
-                  className="flex flex-col gap-3 rounded-lg border border-slate-200 p-3 transition hover:border-blue-300 dark:border-stone-700 dark:hover:border-blue-500"
+                  className="relative flex flex-col gap-3 rounded-lg border border-slate-200 p-3 transition hover:border-blue-300 dark:border-stone-700 dark:hover:border-blue-500"
                 >
-                  <div className="flex items-center gap-3">
+                  <div
+                    className={`flex items-center gap-3 ${isEditing ? "pr-10" : ""}`}
+                  >
                     <span
                       className="h-9 w-9 shrink-0 rounded-md ring-1 ring-inset ring-black/10"
                       style={{ background: value || "transparent" }}
@@ -687,29 +689,7 @@ export function ThemeSettingsForm() {
                       </div>
                       <div className="hb-card-meta text-[11px]">{hint}</div>
                     </div>
-                    {isEditing ? (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setPicking((p) => (p === key ? null : key))
-                        }
-                        disabled={busy}
-                        title={
-                          picking === key
-                            ? `Cancel picking the ${label.toLowerCase()} colour`
-                            : `Pick the ${label.toLowerCase()} colour from your image`
-                        }
-                        aria-pressed={picking === key}
-                        className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition disabled:opacity-50 ${
-                          picking === key
-                            ? "border-blue-500 bg-blue-50 text-blue-700 dark:border-blue-500 dark:bg-blue-950/50 dark:text-blue-300"
-                            : "border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:border-blue-500 dark:hover:bg-blue-950/40 dark:hover:text-blue-300"
-                        }`}
-                      >
-                        <EyedropperIcon />
-                        {picking === key ? "Cancel" : "Pick"}
-                      </button>
-                    ) : (
+                    {!isEditing && (
                       <button
                         type="button"
                         onClick={() => copyValue(value)}
@@ -722,6 +702,33 @@ export function ThemeSettingsForm() {
                       </button>
                     )}
                   </div>
+
+                  {/* Icon-only eyedropper pinned to the card's top-right corner */}
+                  {isEditing && (
+                    <button
+                      type="button"
+                      onClick={() => setPicking((p) => (p === key ? null : key))}
+                      disabled={busy}
+                      title={
+                        picking === key
+                          ? `Cancel picking the ${label.toLowerCase()} colour`
+                          : `Pick the ${label.toLowerCase()} colour from your image`
+                      }
+                      aria-label={
+                        picking === key
+                          ? `Cancel picking the ${label.toLowerCase()} colour`
+                          : `Pick the ${label.toLowerCase()} colour from your image`
+                      }
+                      aria-pressed={picking === key}
+                      className={`absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-lg border transition disabled:opacity-50 ${
+                        picking === key
+                          ? "border-blue-500 bg-blue-50 text-blue-700 dark:border-blue-500 dark:bg-blue-950/50 dark:text-blue-300"
+                          : "border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:border-blue-500 dark:hover:bg-blue-950/40 dark:hover:text-blue-300"
+                      }`}
+                    >
+                      <EyedropperIcon />
+                    </button>
+                  )}
 
                   {isEditing ? (
                     <div className="flex items-center gap-2">
