@@ -26,8 +26,8 @@ export function FeedbackForm() {
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
         </div>
-        <h1 className="hb-card-title text-2xl">Feedback</h1>
-        <p className="hb-card-body mt-1 text-sm">
+        <h1 className="hb-page-title text-2xl">Feedback</h1>
+        <p className="hb-muted-text mt-1 text-sm">
           Share ideas, report issues, or suggest improvements.
         </p>
       </div>

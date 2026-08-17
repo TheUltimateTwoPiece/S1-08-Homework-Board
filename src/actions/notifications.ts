@@ -721,15 +721,13 @@ export async function sendNotification(formData: FormData) {
   return sendReminder(formData);
 }
 
-export async function markNotificationRead(formData: FormData) {
+export async function markNotificationRead(notificationId: string) {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) redirect("/login");
-
-  const notificationId = formData.get("notificationId") as string;
 
   await supabase
     .from("notifications")
