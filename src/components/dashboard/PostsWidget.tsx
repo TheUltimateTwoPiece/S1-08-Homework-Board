@@ -1,87 +1,125 @@
 import Link from "next/link";
+import { format, parseISO } from "date-fns";
 import { PostCompleteButton } from "@/components/PostCompleteButton";
 import { togglePostComplete } from "@/actions/completions";
-import { getDueBadge } from "@/lib/due";
 import type { Post } from "@/lib/types";
 import { getTodayString } from "@/lib/time";
 
 type PostsWidgetProps = {
   posts: Post[];
   completedSet: Set<string>;
-  firstName: string;
 };
 
-export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps) {
-  const top = posts.slice(0, 7);
-  const totalDone = top.filter((p) => completedSet.has(p.id)).length;
+function dueLabelFor(due: string | null) {
+  const today = getTodayString();
+  if (!due) return { text: "No due date", className: "hb-card-meta" };
+  if (due < today) {
+    return { text: "Overdue", className: "text-rose-600 dark:text-rose-400" };
+  }
+  if (due === today) {
+    return { text: "Today", className: "text-amber-600 dark:text-amber-400" };
+  }
+  return { text: format(parseISO(due), "d MMM"), className: "hb-card-meta" };
+}
+
+export function PostsWidget({ posts, completedSet }: PostsWidgetProps) {
+  const todoPosts = posts.filter((post) => !completedSet.has(post.id));
+  const shown = (todoPosts.length > 0 ? todoPosts : posts).slice(0, 8);
+  const completedCount = posts.length - todoPosts.length;
 
   return (
     <section
-      className="hb-bento-card hb-bento-card--clickable relative "
-      style={{ gridColumn: "span 7", gridRow: "span 2", animationDelay: "40ms" }}
+      aria-labelledby="upcoming-assignments-heading"
+      className="hb-card-surface p-5 sm:p-6"
     >
-      <div className="hb-bento-head relative z-[1]">
-        <div className="flex min-w-0 items-center gap-3">
-          <div className="hb-bento-icon-box">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
-              <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 19.5" />
-              <path d="M9 10h6" />
-              <path d="M9 14h6" />
-            </svg>
-          </div>
-          <div className="min-w-0">
-            <h2 className="hb-card-section hb-truncate text-base tracking-tight">{firstName}'s homework</h2>
-            <p className="hb-card-body hb-truncate text-xs font-semibold">{totalDone} of {top.length} done · tap to open</p>
-          </div>
+      <header className="mb-1 flex items-baseline justify-between gap-4 border-b pb-3">
+        <div className="min-w-0">
+          <h2
+            id="upcoming-assignments-heading"
+            className="hb-card-title text-lg leading-snug"
+          >
+            Upcoming assignments
+          </h2>
+          <p className="hb-card-meta mt-0.5 truncate text-sm">
+            {todoPosts.length > 0
+              ? `${todoPosts.length} assignment${todoPosts.length === 1 ? "" : "s"} left`
+              : completedCount > 0
+                ? "Everything is marked complete"
+                : "No homework posted yet"}
+          </p>
         </div>
-      </div>
+        <Link
+          href="/posts"
+          className="shrink-0 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+        >
+          View all
+        </Link>
+      </header>
 
-      {top.length === 0 ? (
-        <div className="flex h-[calc(100%-56px)] flex-col items-center justify-center text-center">
-          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="hb-card-meta h-6 w-6" aria-hidden="true">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-            </svg>
-          </div>
-          <p className="hb-card-section text-sm">All caught up!</p>
-          <p className="hb-card-meta text-xs">No homework waiting for you.</p>
+      {shown.length === 0 ? (
+        <div className="py-12 text-center">
+          <p className="hb-card-section text-sm">Nothing here yet</p>
+          <p className="hb-card-meta mt-1 text-sm">
+            New homework will show up here as soon as it’s posted.
+          </p>
         </div>
       ) : (
-        <ul className="hb-list-scroll -mx-2 space-y-1 pb-6">
-          {top.map((post, i) => {
-            const done = completedSet.has(post.id);
-            const due = getDueBadge(post.due_at);
-            const rowClass = done ? "hb-posts-widget-row--done" : post.pinned ? "hb-posts-widget-row--pinned" : "hb-posts-widget-row--todo";
-            // Cap the subject tag at two subjects + an overflow count instead of
-            // letting a long list stretch or clip awkwardly inside the row.
-            const subjects = Array.isArray(post.subject) ? post.subject : [];
-            const subjectLabel =
-              subjects.length > 2
-                ? subjects.slice(0, 2).join(" + ") + ` +${subjects.length - 2}`
-                : subjects.join(" + ");
-            return (
-              <li key={post.id} className={"hb-posts-widget-row " + rowClass} style={{ animationDelay: (60 + i * 28) + "ms" }}>
-                <form action={togglePostComplete} className="hb-posts-widget-check relative z-[3]">
-                  <input type="hidden" name="postId" value={post.id} />
-                  <input type="hidden" name="completed" value={done ? "false" : "true"} />
-                  <PostCompleteButton completed={done} compact />
-                </form>
-                <Link href={"/posts/" + post.id} className="min-w-0 flex-1 relative z-[3]">
-                  <div className="flex items-center gap-2 min-w-0">
-                    {post.pinned && <span aria-hidden="true" className="text-amber-600 shrink-0">📌</span>}
-                    <span className={"hb-card-section hb-truncate text-sm " + (done ? "hb-card-faded line-through" : "")}>{post.title}</span>
-                    <span className="hb-badge-subject hb-truncate max-w-[72px] shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold">{subjectLabel}</span>
-                  </div>
-                  {due && <div className={"mt-0.5 text-[11px] font-bold " + due.className}>{due.label}</div>}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+        <>
+          <div className="hb-dashboard-list-head hidden grid-cols-[auto_minmax(0,1fr)_90px_88px] gap-3 px-1 pb-1 pt-4 text-[11px] font-semibold uppercase tracking-wide sm:grid">
+            <span aria-hidden="true" />
+            <span>Assignment</span>
+            <span>Due</span>
+            <span>Subject</span>
+          </div>
+          <ul className="divide-y">
+            {shown.map((post) => {
+              const done = completedSet.has(post.id);
+              const due = dueLabelFor(post.due_at);
+              const subjects = Array.isArray(post.subject) ? post.subject : [];
+              const subjectLabel = subjects.join(", ");
+              return (
+                <li key={post.id}>
+                  <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 py-3 sm:grid-cols-[auto_minmax(0,1fr)_90px_88px]">
+                    <form
+                      action={togglePostComplete}
+                      className="flex shrink-0 items-center"
+                    >
+                      <input type="hidden" name="postId" value={post.id} />
+                      <input
+                        type="hidden"
+                        name="completed"
+                        value={done ? "false" : "true"}
+                      />
+                      <PostCompleteButton completed={done} compact />
+                    </form>
 
-      <Link href="/posts" className="absolute inset-0 z-[1] rounded-[inherit]" tabIndex={-1} aria-hidden="true" aria-label="View all homework" />
+                    <Link href={`/posts/${post.id}`} className="min-w-0">
+                      <span
+                        className={
+                          "hb-card-section block truncate text-sm " +
+                          (done ? "hb-card-faded line-through" : "")
+                        }
+                      >
+                        {post.title}
+                      </span>
+                      <span className={"mt-0.5 block text-xs font-medium sm:hidden " + due.className}>
+                        {due.text}{subjectLabel ? ` · ${subjectLabel}` : ""}
+                      </span>
+                    </Link>
+
+                    <span className={"hidden text-xs font-medium sm:block " + due.className}>
+                      {due.text}
+                    </span>
+                    <span className="hb-card-meta hidden truncate text-xs sm:block">
+                      {subjectLabel || "—"}
+                    </span>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      )}
     </section>
   );
 }

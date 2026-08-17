@@ -348,3 +348,58 @@ export function renderReminderEmail(params: {
 </body>
 </html>`;
 }
+
+/**
+ * Builds the inline-styled HTML body for a class-wide announcement (patch
+ * notes, new-feature notices, etc.). Same layout and inline-styles as the
+ * reminder email but with an "Announcement" header and no post CTA.
+ */
+export function renderAnnouncementEmail(params: {
+  recipientName: string;
+  title: string;
+  message: string;
+  senderName: string;
+}): string {
+  const safeName = escapeHtml(params.recipientName);
+  const safeTitle = escapeHtml(params.title);
+  const safeMessage = escapeHtml(params.message).replace(/\n/g, "<br>");
+  const safeSender = escapeHtml(params.senderName);
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${safeTitle}</title>
+</head>
+<body style="margin:0; padding:0; background-color:#f8fafc; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; color:#0f172a;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f8fafc; padding:24px 0;">
+    <tr>
+      <td align="center">
+        <table role="presentation" cellpadding="0" cellspacing="0" width="600" style="max-width:600px; width:100%; background-color:#ffffff; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden;">
+          <tr>
+            <td style="background-color:#0f172a; padding:24px 32px;">
+              <p style="margin:0; color:#94a3b8; font-size:12px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase;">Announcement</p>
+              <h1 style="margin:6px 0 0; color:#ffffff; font-size:20px; font-weight:600; line-height:1.3;">${safeTitle}</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:28px 32px;">
+              <p style="margin:0 0 16px; color:#475569; font-size:14px;">Hi ${safeName},</p>
+              <div style="margin:0; color:#0f172a; font-size:15px; line-height:1.6;">${safeMessage}</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color:#f1f5f9; padding:16px 32px; border-top:1px solid #e2e8f0;">
+              <p style="margin:0; font-size:12px; color:#64748b; line-height:1.5;">
+                Sent by ${safeSender} via Homework Board.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}

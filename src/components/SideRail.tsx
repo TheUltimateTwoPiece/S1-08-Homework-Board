@@ -7,6 +7,7 @@ import type { ReactNode, MouseEvent as ReactMouseEvent } from "react";
 import { signOut } from "@/actions/auth";
 import { Avatar } from "@/components/Avatar";
 import { PendingButton } from "@/components/PendingButton";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import type { Profile } from "@/lib/types";
 
 type SideRailProps = {
@@ -37,7 +38,7 @@ function Icon({ children }: { children: React.ReactNode }) {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="h-[18px] w-[18px]"
+      className="h-5 w-5"
       aria-hidden="true"
     >
       {children}
@@ -45,7 +46,8 @@ function Icon({ children }: { children: React.ReactNode }) {
   );
 }
 
-const NAV_ITEMS: RailItem[] = [
+// Core navigation: the things students reach for every day.
+const MAIN_NAV: RailItem[] = [
   {
     href: "/",
     label: "Home",
@@ -69,25 +71,6 @@ const NAV_ITEMS: RailItem[] = [
     ),
   },
   {
-    href: "/your-progress",
-    label: "Your progress",
-    icon: (
-      <Icon>
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-      </Icon>
-    ),
-  },
-  {
-    href: "/notifications",
-    label: "Notifications",
-    icon: (
-      <Icon>
-        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-      </Icon>
-    ),
-  },
-  {
     href: "/posts",
     label: "All posts",
     icon: (
@@ -98,15 +81,6 @@ const NAV_ITEMS: RailItem[] = [
         <line x1="3" y1="6" x2="3.01" y2="6" />
         <line x1="3" y1="12" x2="3.01" y2="12" />
         <line x1="3" y1="18" x2="3.01" y2="18" />
-      </Icon>
-    ),
-  },
-  {
-    href: "/feedback",
-    label: "Feedback",
-    icon: (
-      <Icon>
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
       </Icon>
     ),
   },
@@ -125,15 +99,34 @@ const NAV_ITEMS: RailItem[] = [
     ),
   },
   {
-    href: "/theme-settings",
-    label: "Appearance & Themes",
+    href: "/your-progress",
+    label: "Your progress",
     icon: (
       <Icon>
-        <circle cx="13.5" cy="6.5" r="2.5" />
-        <circle cx="17.5" cy="10.5" r="2.5" />
-        <circle cx="8.5" cy="7.5" r="2.5" />
-        <circle cx="6.5" cy="12.5" r="2.5" />
-        <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" />
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+      </Icon>
+    ),
+  },
+  {
+    href: "/notifications",
+    label: "Notifications",
+    icon: (
+      <Icon>
+        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+      </Icon>
+    ),
+  },
+];
+
+// Utility links students use occasionally, kept separate from the daily nav.
+const MORE_NAV: RailItem[] = [
+  {
+    href: "/feedback",
+    label: "Feedback",
+    icon: (
+      <Icon>
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
       </Icon>
     ),
   },
@@ -168,6 +161,17 @@ const ADMIN_NAV_ITEMS: RailItem[] = [
     icon: (
       <Icon>
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      </Icon>
+    ),
+    adminOnly: true,
+  },
+  {
+    href: "/admin/announcements",
+    label: "Announcements",
+    icon: (
+      <Icon>
+        <path d="M3 11v3a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z" />
+        <path d="M15 8a4 4 0 0 1 0 8" />
       </Icon>
     ),
     adminOnly: true,
@@ -318,7 +322,25 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
     };
   }, [adminMenuOpen]);
 
-  const allItems = NAV_ITEMS;
+  const renderItem = (item: RailItem) => {
+    const isActive = activeFor(item.href, item.exactMatch);
+    const isPulsed = pulsedHref === item.href;
+    const eager = EAGER_PREFETCH.has(item.href);
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        prefetch={eager ? true : undefined}
+        className={`hb-siderail-btn ${isActive ? "hb-siderail-btn--active" : ""} ${isPulsed ? "hb-siderail-btn--pulse" : ""}`}
+        aria-current={isActive ? "page" : undefined}
+        aria-label={item.label}
+      >
+        {item.icon}
+        {item.href === "/notifications" && unreadBadgeSlot}
+        <span className="hb-siderail-tooltip">{item.label}</span>
+      </Link>
+    );
+  };
 
   return (
     <aside className="hb-siderail" aria-label="Primary navigation">
@@ -333,7 +355,7 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          strokeWidth="2.2"
+          strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
           className="h-5 w-5"
@@ -349,25 +371,9 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
       <div className="hb-siderail-divider" />
 
       <nav className="hb-siderail-nav" onClick={handleNavClick}>
-        {allItems.map((item) => {
-          const isActive = activeFor(item.href, item.exactMatch);
-          const isPulsed = pulsedHref === item.href;
-          const eager = EAGER_PREFETCH.has(item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              prefetch={eager ? true : undefined}
-              className={`hb-siderail-btn ${isActive ? "hb-siderail-btn--active" : ""} ${isPulsed ? "hb-siderail-btn--pulse" : ""}`}
-              aria-current={isActive ? "page" : undefined}
-              aria-label={item.label}
-            >
-              {item.icon}
-              {item.href === "/notifications" && unreadBadgeSlot}
-              <span className="hb-siderail-tooltip">{item.label}</span>
-            </Link>
-          );
-        })}
+        {MAIN_NAV.map(renderItem)}
+        <div className="hb-siderail-group-divider" aria-hidden="true" />
+        {MORE_NAV.map(renderItem)}
 
         {profile.role === "admin" && (
           <div className="hb-siderail-admin-group" ref={adminMenuRef}>
@@ -425,6 +431,7 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
       </nav>
 
       <div className="hb-siderail-footer">
+        <ThemeToggle />
         <Link
           href="/settings"
           aria-label={`${profile.full_name} — open settings`}

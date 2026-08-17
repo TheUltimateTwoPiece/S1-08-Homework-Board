@@ -57,7 +57,7 @@ export default async function AdminBugReportsPage() {
       </div>
 
       {error ? (
-        <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">Could not load bug reports: {error.message}</div>
+        <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-300">Could not load bug reports: {error.message}</div>
       ) : withScreenshots.length === 0 ? (
         <div className="hb-empty-state rounded-2xl border-2 border-dashed border-slate-200 py-16 text-center dark:border-slate-700"><p className="hb-section-title text-sm">No bug reports yet.</p></div>
       ) : (
@@ -82,10 +82,10 @@ export default async function AdminBugReportsPage() {
                       <>
                         <span className={`rounded-full px-2 py-1 text-[10px] font-bold ${
                           status === "unread"
-                            ? "bg-amber-100 text-amber-800"
+                            ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
                             : status === "resolved"
-                              ? "bg-emerald-100 text-emerald-800"
-                              : "bg-blue-100 text-blue-800"
+                              ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300"
+                              : "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300"
                         }`}>
                           {statusLabel}
                         </span>
@@ -95,7 +95,7 @@ export default async function AdminBugReportsPage() {
                           <PendingButton
                             type="submit"
                             pendingContent="Saving..."
-                            className="hb-card-section rounded-md px-2 py-1 text-[10px] transition hover:bg-slate-100"
+                            className="hb-card-meta rounded-md px-2 py-1 text-[10px] transition hover:bg-slate-100 dark:hover:bg-stone-700/50"
                           >
                             {nextLabel}
                           </PendingButton>
@@ -108,7 +108,7 @@ export default async function AdminBugReportsPage() {
                 </div>
               </div>
               <p className="hb-card-body mt-4 whitespace-pre-line text-sm leading-relaxed">{report.description}</p>
-              {report.steps_to_reproduce && <div className="mt-4 rounded-xl bg-slate-50 p-4 dark:bg-slate-800"><h3 className="hb-card-section text-xs font-bold uppercase tracking-wide">Steps to reproduce</h3><p className="hb-card-body mt-2 whitespace-pre-line text-sm">{report.steps_to_reproduce}</p></div>}
+              {report.steps_to_reproduce && <div className="mt-4 rounded-xl bg-slate-50 p-4 dark:bg-slate-800"><h3 className="hb-card-meta text-xs font-bold uppercase tracking-wide">Steps to reproduce</h3><p className="hb-card-body mt-2 whitespace-pre-line text-sm">{report.steps_to_reproduce}</p></div>}
               <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {report.screenshotUrls.map((url, index) => <a key={url} href={url} target="_blank" rel="noreferrer" className="group overflow-hidden rounded-xl border bg-slate-50 dark:bg-slate-800"><img src={url} alt={`${report.title} screenshot ${index + 1}`} className="aspect-video w-full object-cover transition group-hover:scale-105" /></a>)}
               </div>

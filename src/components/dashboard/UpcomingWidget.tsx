@@ -1,74 +1,83 @@
 import Link from "next/link";
-import { getDueState } from "@/lib/due";
+import { differenceInCalendarDays, parseISO } from "date-fns";
 import { formatAppDateOnly, getTodayString } from "@/lib/time";
 import type { Post } from "@/lib/types";
 
-type UpcomingWidgetProps = { posts: Post[]; };
+type UpcomingWidgetProps = { posts: Post[] };
 
 export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
   const todayStr = getTodayString();
   const upcoming = posts
     .filter((p) => p.due_at && p.due_at >= todayStr)
-    .slice(0, 3);
+    .slice(0, 4);
 
   return (
-    <section
-      className="hb-bento-card hb-bento-card--clickable relative "
-      style={{ gridColumn: "span 4", gridRow: "span 2", animationDelay: "160ms" }}
-    >
-      <div className="hb-bento-head relative z-[1]">
-        <div className="flex min-w-0 items-center gap-3">
-          <div className="hb-bento-icon-box" style={{ background: "linear-gradient(135deg, rgba(217,119,6,0.18), rgba(217,119,6,0.04))", color: "#b45309" }}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
-              <circle cx="12" cy="12" r="10" />
-              <polyline points="12 6 12 12 16 14" />
-            </svg>
-          </div>
-          <h2 className="hb-card-section truncate text-sm tracking-tight">Upcoming deadlines</h2>
-        </div>
-      </div>
+    <section aria-labelledby="upcoming-heading" className="hb-card-surface p-5">
+      <header className="mb-3 flex items-baseline justify-between gap-4">
+        <h2 id="upcoming-heading" className="hb-card-section text-sm">
+          Upcoming
+        </h2>
+        <Link
+          href="/calendar"
+          className="shrink-0 text-xs font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+        >
+          Calendar
+        </Link>
+      </header>
 
       {upcoming.length === 0 ? (
-        <div className="flex h-[calc(100%-44px)] items-center justify-center text-center">
-          <div>
-            <p className="hb-card-section text-sm">Nothing on the horizon</p>
-            <p className="hb-card-meta text-xs">Enjoy the breathing room ✨</p>
-          </div>
-        </div>
+        <p className="hb-card-meta text-sm">Nothing due in the next few days.</p>
       ) : (
-        <ul className="hb-list-scroll -mx-1 space-y-1 pb-1">
-          {upcoming.map((post, i) => {
+        <ul className="space-y-2.5">
+          {upcoming.map((post) => {
             const dueAt = post.due_at as string;
-            // Calendar-day countdown, not elapsed-time: a date-only due_at
-            // is "any time that day", so it reads "Tomorrow" all day instead
-            // of "in about 14 hours" at 10 AM.
-            const state = getDueState(post.due_at);
-            const today = state?.kind === "today";
+            const due = parseISO(dueAt);
+            const daysUntil = differenceInCalendarDays(due, parseISO(todayStr));
+            const today = daysUntil === 0;
             return (
-              <li key={post.id} className="hb-snippet relative z-[3]" style={{ animationDelay: (200 + i * 28) + "ms" }}>
-                <div className={"flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-lg text-[10px] font-bold " + (today ? "bg-amber-200 text-amber-900" : "hb-card-meta bg-zinc-100")}>
-                  <span className="leading-none">{formatAppDateOnly(dueAt, { month: "short" })}</span>
-                  <span className="text-sm font-bold leading-tight">{formatAppDateOnly(dueAt, { day: "numeric" })}</span>
+              <li key={post.id} className="flex items-start gap-3">
+                <div
+                  className={
+                    "mt-0.5 flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-md text-center leading-none " +
+                    (today
+                      ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
+                      : "bg-[var(--hb-surface-hover)]")
+                  }
+                >
+                  <span className="text-[10px] font-semibold uppercase">
+                    {formatAppDateOnly(dueAt, { month: "short" })}
+                  </span>
+                  <span className="mt-0.5 text-sm font-semibold">
+                    {formatAppDateOnly(dueAt, { day: "numeric" })}
+                  </span>
                 </div>
-                <Link href={"/posts/" + post.id} className="min-w-0 flex-1 relative z-[3]">
-                  <div className="hb-card-section hb-truncate text-sm">{post.title}</div>
-                  <div className={"text-[11px] font-bold " + (today ? "text-amber-800" : "hb-card-meta")}>
+                <div className="min-w-0 flex-1">
+                  <Link
+                    href={"/posts/" + post.id}
+                    className="hb-card-section block truncate text-sm hover:text-blue-600 dark:hover:text-blue-400"
+                  >
+                    {post.title}
+                  </Link>
+                  <p
+                    className={
+                      "mt-0.5 text-xs font-medium " +
+                      (today
+                        ? "text-amber-700 dark:text-amber-400"
+                        : "hb-card-meta")
+                    }
+                  >
                     {today
-                      ? "Today"
-                      : state?.kind === "tomorrow"
+                      ? "Due today"
+                      : daysUntil === 1
                         ? "Tomorrow"
-                        : state
-                          ? `In ${state.diffDays} days`
-                          : ""}
-                  </div>
-                </Link>
+                        : `In ${daysUntil} days`}
+                  </p>
+                </div>
               </li>
             );
           })}
         </ul>
       )}
-
-      <Link href="/calendar" className="absolute inset-0 z-[1] rounded-[inherit]" tabIndex={-1} aria-hidden="true" aria-label="Open calendar" />
     </section>
   );
 }

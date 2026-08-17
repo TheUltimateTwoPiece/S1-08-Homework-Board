@@ -1,0 +1,53 @@
+/* Shared human-product pass: the app should feel assembled from practical
+   sections, not a collection of floating showcase cards. This file is loaded
+   after the component theme so it also normalizes utility-class leftovers. */
+
+.hb-card,
+.hb-card-surface,
+.hb-card-surface-strong,
+.hb-bento-card,
+.hb-notification-item {
+  border-radius: var(--hb-radius) !important;
+  box-shadow: none !important;
+}
+
+.hb-card--interactive:hover,
+.hb-notification-item:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.hb-card-surface,
+.hb-card-surface-strong {
+  background: var(--hb-surface) !important;
+  border-color: var(--hb-border) !important;
+}
+
+.hb-page-title,
+.hb-card-title {
+  letter-spacing: -0.025em;
+}
+
+.hb-page-actions {
+  flex-wrap: wrap;
+}
+
+.hb-dashboard-stat {
+  box-shadow: none;
+}
+
+/* A quiet divider is more useful than a hover animation for list rows. */
+.hb-snippet:hover,
+.hb-posts-widget-row:hover {
+  transform: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hb-card,
+  .hb-card-surface,
+  .hb-card-surface-strong,
+  .hb-bento-card,
+  .hb-notification-item {
+    transition: none !important;
+  }
+}

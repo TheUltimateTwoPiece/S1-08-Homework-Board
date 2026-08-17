@@ -38,7 +38,7 @@ export function ChecklistEditor({ defaultItems = [] }: ChecklistEditorProps) {
   }
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-3">
+    <div className="border border-[var(--hb-border)] bg-[var(--hb-surface-hover)] p-3">
       <input type="hidden" name="checklist" value={JSON.stringify(items)} />
       <div className="mb-2 flex items-center justify-between gap-2">
         <div>
@@ -52,7 +52,7 @@ export function ChecklistEditor({ defaultItems = [] }: ChecklistEditorProps) {
         <div className="mb-3 space-y-2">
           {items.map((item, index) => (
             <div key={item.id} className="flex items-center gap-2">
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded border border-slate-300 bg-white text-[10px] text-slate-400">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center border border-[var(--hb-border)] bg-[var(--hb-surface)] text-[10px] hb-card-meta">
                 {index + 1}
               </span>
               <input
@@ -60,13 +60,13 @@ export function ChecklistEditor({ defaultItems = [] }: ChecklistEditorProps) {
                 maxLength={MAX_ITEM_LENGTH}
                 onChange={(event) => updateItem(item.id, event.target.value)}
                 aria-label={`Checklist step ${index + 1}`}
-                className="hb-input min-w-0 flex-1 rounded-md bg-white px-2.5 py-1.5 text-xs"
+                className="hb-input min-w-0 flex-1 rounded-md px-2.5 py-1.5 text-xs"
               />
               <button
                 type="button"
                 onClick={() => removeItem(item.id)}
                 aria-label={`Remove checklist step ${index + 1}`}
-                className="rounded-md px-2 py-1 text-xs text-slate-400 transition hover:bg-red-50 hover:text-red-600"
+                className="rounded-md px-2 py-1 text-xs hb-card-meta transition hover:text-rose-700 dark:hover:text-rose-300"
               >
                 Remove
               </button>
@@ -88,13 +88,12 @@ export function ChecklistEditor({ defaultItems = [] }: ChecklistEditorProps) {
           }}
           placeholder={items.length >= MAX_ITEMS ? "Checklist limit reached" : "Add a step, e.g. Read pages 12–15"}
           disabled={items.length >= MAX_ITEMS}
-          className="hb-input min-w-0 flex-1 rounded-md bg-white px-2.5 py-1.5 text-xs"
+          className="hb-input min-w-0 flex-1 rounded-md px-2.5 py-1.5 text-xs"
         />
         <button
           type="button"
           onClick={addItem}
-          disabled={!draft.trim() || items.length >= MAX_ITEMS}
-          className="rounded-md bg-slate-800 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+          disabled={!draft.trim() || items.length >= MAX_ITEMS}            className="rounded-md bg-[var(--hb-text-page)] px-3 py-1.5 text-xs font-medium text-[var(--hb-surface)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
           Add step
         </button>

@@ -59,7 +59,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
   }
 
   return (
-    <div className="mb-6 rounded-xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur-sm">
+    <div className="mb-6 hb-card-surface p-4">
       <form
         className="flex flex-col gap-3 sm:flex-row sm:items-end"
         onSubmit={(e) => {
@@ -68,7 +68,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
         }}
       >
         <div className="flex-1">
-          <label className="hb-card-section mb-1.5 block text-[10px] font-semibold uppercase tracking-widest">
+          <label className="hb-card-meta mb-1.5 block text-[10px] font-semibold uppercase tracking-widest">
             Search
           </label>
           <div className="relative">
@@ -100,7 +100,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
         </div>
 
         <div className="sm:w-44">
-          <label className="hb-card-section mb-1.5 block text-[10px] font-semibold uppercase tracking-widest">
+          <label className="hb-card-meta mb-1.5 block text-[10px] font-semibold uppercase tracking-widest">
             Subject
           </label>
           <select
@@ -119,7 +119,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
         </div>
 
         <div className="sm:w-40">
-          <label className="hb-card-section mb-1.5 block text-[10px] font-semibold uppercase tracking-widest">
+          <label className="hb-card-meta mb-1.5 block text-[10px] font-semibold uppercase tracking-widest">
             Due
           </label>
           <select
@@ -148,7 +148,7 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
         </button>
       </form>
 
-      <div className="mt-3 flex items-center gap-1 rounded-lg bg-slate-100/70 p-1">
+      <div className="mt-3 hb-segmented flex items-center gap-1 p-1">
         {[
           { value: "all", label: "All" },
           { value: "todo", label: "To do" },
@@ -160,8 +160,8 @@ export function PostFiltersBar({ subjects }: PostFiltersBarProps) {
             onClick={() => setParams({ status: option.value })}
             disabled={isPending}              className={`flex-1 rounded-md px-3 py-1.5 text-xs transition ${
                 initial.status === option.value
-                  ? "hb-card-section bg-white shadow-sm"
-                  : "hb-card-meta hover:bg-white/60"
+                  ? "hb-segmented-btn--active"
+                  : "hb-segmented-btn--inactive"
               }`}
           >
             {option.label}

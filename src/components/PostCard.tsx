@@ -18,10 +18,10 @@ export function PostCard({ post, completed }: PostCardProps) {
 
   return (
     <div
-      className={`relative flex items-start gap-4 rounded-xl border bg-white p-5 transition-all duration-200 ${
+      className={`relative flex items-start gap-4 border-b p-5 transition-colors duration-150 ${
         completed
-          ? "hb-card--completed"
-          : "border-slate-200 shadow-sm hover:border-blue-300/50 hover:shadow-lg hover:-translate-y-0.5"
+          ? "border-emerald-300/70 bg-emerald-50/50 dark:border-emerald-800 dark:bg-emerald-950/30"
+          : "border-[var(--hb-border)] bg-[var(--hb-surface)] hover:bg-[var(--hb-surface-hover)]"
       }`}
     >
       <PostCompleteCheckbox postId={post.id} completed={completed} compact />
@@ -31,8 +31,8 @@ export function PostCard({ post, completed }: PostCardProps) {
           <div className="min-w-0">
             <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
               {post.pinned && (
-                <span className="hb-badge-new inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold">
-                  📌 Pinned
+                <span className="hb-badge-new inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold">
+                  Pinned
                 </span>
               )}
               {post.subject.map((subject) => (
@@ -44,7 +44,7 @@ export function PostCard({ post, completed }: PostCardProps) {
                 </span>
               ))}
               {(post.checklist?.length ?? 0) > 0 && (
-                <span className="hb-card-meta inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold dark:bg-slate-800">
+                <span className="hb-card-meta inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold dark:bg-stone-700/40">
                   ✓ {post.checklist.length} step{post.checklist.length === 1 ? "" : "s"}
                 </span>
               )}
@@ -60,7 +60,7 @@ export function PostCard({ post, completed }: PostCardProps) {
               )}
             </div>
             <h2
-              className={`text-base leading-snug transition-colors duration-150 group-hover:text-blue-600 ${
+              className={`text-base leading-snug transition-colors duration-150 group-hover:text-blue-600 dark:group-hover:text-blue-400 ${
                 completed ? "hb-card-faded line-through" : "hb-card-section"
               }`}
             >
