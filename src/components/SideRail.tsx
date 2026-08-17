@@ -371,19 +371,6 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
       }
     }
 
-    function handleTouchMove(event: TouchEvent) {
-      const start = mobileTouchRef.current;
-      const touch = event.touches[0];
-      if (!start || !touch) return;
-      const dx = touch.clientX - start.x;
-      const dy = touch.clientY - start.y;
-      // Let normal vertical scrolling continue, but keep an edge swipe from
-      // becoming the browser's horizontal navigation gesture.
-      if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.15) {
-        event.preventDefault();
-      }
-    }
-
     function handleTouchEnd(event: TouchEvent) {
       const start = mobileTouchRef.current;
       const touch = event.changedTouches[0];
@@ -409,12 +396,10 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
     }
 
     window.addEventListener("touchstart", handleTouchStart, { passive: true });
-    window.addEventListener("touchmove", handleTouchMove, { passive: false });
     window.addEventListener("touchend", handleTouchEnd, { passive: true });
     window.addEventListener("touchcancel", handleTouchCancel, { passive: true });
     return () => {
       window.removeEventListener("touchstart", handleTouchStart);
-      window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
       window.removeEventListener("touchcancel", handleTouchCancel);
     };
@@ -539,6 +524,9 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
           </svg>
           <span>Swipe for menu</span>
         </div>
+      )}
+      {!mobileMenuOpen && (
+        <div className="hb-mobile-swipe-zone" aria-hidden="true" />
       )}
       {mobileMenuOpen && (
         <button

@@ -46,6 +46,7 @@
 .hb-mobile-topbar,
 .hb-mobile-nav-backdrop,
 .hb-mobile-swipe-hint,
+.hb-mobile-swipe-zone,
 .hb-dashboard-stat-mobile-label,
 .hb-dashboard-stat-mobile-value,
 .hb-progress-mobile-ring {
@@ -183,6 +184,20 @@
     flex: 0 0 auto;
   }
 
+  /* A hair-thin strip along the screen edge declares the swipe gesture while
+     leaving vertical scrolling to the browser (`pan-y`). Crucially, it does
+     NOT call preventDefault, which was breaking native scrolling on iOS. */
+  .hb-mobile-swipe-zone {
+    position: fixed;
+    z-index: 4;
+    top: 64px;
+    bottom: 0;
+    left: 0;
+    width: 12px;
+    touch-action: pan-y pinch-zoom;
+    pointer-events: auto;
+  }
+
   @keyframes hb-swipe-hint {
     0% {
       opacity: 0;
@@ -247,6 +262,7 @@
     gap: 4px !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
+    touch-action: pan-y pinch-zoom;
     background: var(--hb-surface) !important;
     background-image: none !important;
     border-right: 1px solid var(--hb-border);
