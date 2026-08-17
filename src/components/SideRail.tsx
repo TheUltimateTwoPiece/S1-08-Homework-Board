@@ -315,6 +315,14 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
 
   const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
 
+  // Close the drawer whenever the route changes, so a new page never opens
+  // with the mobile menu still covering it. This covers nav links, browser
+  // back/forward, and any links rendered inside page content.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
   // Close the mobile drawer with Escape as well as the admin flyout. The
   // drawer is deliberately mobile-only; desktop keeps the icon rail exactly
   // as it was.
@@ -405,9 +413,6 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
               <path d="M4 18h16" />
             </svg>
           )}
-          <span className="hb-mobile-menu-button-label">
-            {mobileMenuOpen ? "Close" : "Menu"}
-          </span>
         </button>
         <span className="hb-mobile-topbar-title">{mobilePageTitle(pathname)}</span>
         <Link
