@@ -268,6 +268,7 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
   const [pulsedHref, setPulsedHref] = useState<string | null>(null);
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showSwipeHint, setShowSwipeHint] = useState(false);
   const mobileMenuOpenRef = useRef(false);
   const mobileTouchRef = useRef<{ x: number; y: number } | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -321,6 +322,34 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
   useEffect(() => {
     mobileMenuOpenRef.current = mobileMenuOpen;
   }, [mobileMenuOpen]);
+
+  // On the first phone visit, nudge once toward the hidden swipe gesture. It
+  // disappears after a few seconds and is never shown again this session, so
+  // it stays a quiet affordance rather than an onboarding step.
+  useEffect(() => {
+    if (
+      typeof window === "undefined" ||
+      !window.matchMedia("(max-width: 768px)").matches ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
+    }
+    try {
+      if (sessionStorage.getItem("hb-swipe-hint-shown")) return;
+    } catch {
+      return;
+    }
+
+    const showTimer = setTimeout(() => setShowSwipeHint(true), 500);
+    const hideTimer = setTimeout(() => setShowSwipeHint(false), 4200);
+    try {
+      sessionStorage.setItem("hb-swipe-hint-shown", "1");
+    } catch { /* sessionStorage can throw in private mode */ }
+    return () => {
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+    };
+  }, []);
 
   // A phone user can open the drawer by starting at the actual left edge,
   // not only by finding the hamburger button. The listeners live on window so
@@ -503,6 +532,14 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
           {unreadBadgeSlot}
         </Link>
       </div>
+      {showSwipeHint && !mobileMenuOpen && (
+        <div className="hb-mobile-swipe-hint" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="9 6 15 12 9 18" />
+          </svg>
+          <span>Swipe for menu</span>
+        </div>
+      )}
       {mobileMenuOpen && (
         <button
           type="button"
