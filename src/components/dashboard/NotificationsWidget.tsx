@@ -10,7 +10,7 @@ export function NotificationsWidget({ notifications }: NotificationsWidgetProps)
 
   return (
     <section
-      className="hb-bento-card hb-bento-card--clickable group relative "
+      className="hb-bento-card hb-bento-card--clickable relative "
       style={{ gridColumn: "span 4", gridRow: "span 2", animationDelay: "160ms" }}
     >
       <div className="hb-bento-head relative z-[1]">
@@ -28,9 +28,6 @@ export function NotificationsWidget({ notifications }: NotificationsWidgetProps)
             </span>
           )}
         </div>
-        <span className="hb-bento-action">
-          View all →
-        </span>
       </div>
 
       {recent.length === 0 ? (

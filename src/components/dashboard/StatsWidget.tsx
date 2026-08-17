@@ -25,7 +25,7 @@ export function StatsWidget({
 
   return (
     <section
-      className="hb-bento-card hb-bento-card--clickable group relative overflow-hidden"
+      className="hb-bento-card hb-bento-card--clickable relative overflow-hidden"
       style={{
         gridColumn: "span 4",
         gridRow: "span 2",
@@ -50,9 +50,6 @@ export function StatsWidget({
             Your progress
           </h2>
         </div>
-        <span className="hb-bento-action">
-          View →
-        </span>
       </div>
 
       <div className="grid grid-cols-[96px_1fr] items-center gap-4 overflow-hidden">
