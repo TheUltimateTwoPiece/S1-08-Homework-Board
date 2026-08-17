@@ -43,7 +43,7 @@ export interface CustomThemePayload {
   text: string;
   /** Exact contrast ratio between `text` and `bg`. Always >= 4.5 (AA). */
   contrast: number;
-  /** Small data-URL thumbnail of the source image (for the preview UI). */
+  /** Data-URL thumbnail of the source image (preview UI + eyedropper source). */
   thumbnail?: string;
 }
 
@@ -301,7 +301,7 @@ function loadImage(file: File): Promise<HTMLImageElement> {
 }
 
 const SAMPLE_SIZE = 64; // downscaled sample grid — plenty for an average
-const THUMB_SIZE = 120;
+const THUMB_SIZE = 512;
 
 /**
  * Samples an uploaded image with the Canvas API, averages its RGB, and builds
@@ -377,8 +377,23 @@ export async function extractPaletteFromImage(
     thumbCanvas.width = THUMB_SIZE;
     thumbCanvas.height = THUMB_SIZE;
     const thumbCtx = thumbCanvas.getContext("2d");
-    if (thumbCtx) {
-      thumbCtx.drawImage(img, 0, 0, THUMB_SIZE, THUMB_SIZE);
+    if (thumbCtx && img.naturalWidth > 0 && img.naturalHeight > 0) {
+      // Center-crop to a square so the thumbnail keeps the source aspect
+      // ratio — a squished thumb made the restored eyedropper image look
+      // distorted after a page reload.
+      const scale = Math.max(
+        THUMB_SIZE / img.naturalWidth,
+        THUMB_SIZE / img.naturalHeight,
+      );
+      const dw = img.naturalWidth * scale;
+      const dh = img.naturalHeight * scale;
+      thumbCtx.drawImage(
+        img,
+        (THUMB_SIZE - dw) / 2,
+        (THUMB_SIZE - dh) / 2,
+        dw,
+        dh,
+      );
       thumbnail = thumbCanvas.toDataURL("image/jpeg", 0.72);
     }
   } catch {

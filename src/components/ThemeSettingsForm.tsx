@@ -190,6 +190,13 @@ export function ThemeSettingsForm() {
     const loaded = loadTheme();
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPrefs(loaded);
+    // The eyedropper's blob URL only lives for the upload session — restore
+    // the picker source from the persisted thumbnail so "Pick" also works
+    // after a fresh page load (or when switching back to a saved custom
+    // theme).
+    if (loaded.custom?.thumbnail) {
+      setImageUrl(loaded.custom.thumbnail);
+    }
     setMounted(true);
   }, []);
 
@@ -548,8 +555,8 @@ export function ThemeSettingsForm() {
                   Drag & drop an image here
                 </p>
                 <p className="hb-card-meta mt-0.5 text-xs">
-                  or click to browse. We'll average its colors and build an
-                  accessible palette.
+                  or click to browse — we'll recommend a colour scheme from it
+                  that you can tweak with the eyedropper.
                 </p>
               </div>
             </>
