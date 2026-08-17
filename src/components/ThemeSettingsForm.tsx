@@ -112,7 +112,7 @@ function HexField({
           commit();
         }
       }}
-      className="hb-input w-full rounded-lg px-2.5 py-1.5 font-mono text-xs"
+      className="hb-input w-full rounded-lg px-2.5 py-1.5 font-mono text-[11px]"
       placeholder="#rrggbb"
       aria-label="Colour hex value"
     />
@@ -684,23 +684,11 @@ export function ThemeSettingsForm() {
                       aria-hidden="true"
                     />
                     <div className="min-w-0 flex-1">
-                      <div className="hb-card-section text-sm font-semibold">
+                      <div className="hb-card-section text-xs font-semibold">
                         {label}
                       </div>
-                      <div className="hb-card-meta text-[11px]">{hint}</div>
+                      <div className="hb-card-meta text-[10px]">{hint}</div>
                     </div>
-                    {!isEditing && (
-                      <button
-                        type="button"
-                        onClick={() => copyValue(value)}
-                        title={
-                          value ? `Copy ${label.toLowerCase()} colour` : undefined
-                        }
-                        className="hb-card-meta text-[11px] uppercase tracking-wider transition hover:text-slate-700 dark:hover:text-stone-200"
-                      >
-                        {copiedThis ? "Copied!" : "Copy"}
-                      </button>
-                    )}
                   </div>
 
                   {/* Icon-only eyedropper pinned to the card's top-right corner */}
@@ -750,7 +738,7 @@ export function ThemeSettingsForm() {
                     </div>
                   ) : (
                     <div className="flex items-center justify-between gap-2">
-                      <span className="hb-card-body truncate font-mono text-[11px]">
+                      <span className="hb-card-body truncate font-mono text-[10px]">
                         {value || "—"}
                       </span>
                       {value && (
