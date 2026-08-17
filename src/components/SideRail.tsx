@@ -249,10 +249,28 @@ function InboxStatusBadge({ count }: { count: number }) {
 // destinations.
 const EAGER_PREFETCH = new Set<string>(["/", "/calendar", "/admin"]);
 
+function mobilePageTitle(pathname: string): string {
+  if (pathname === "/") return "Dashboard";
+  if (pathname === "/posts" || pathname.startsWith("/posts/")) return "Homework";
+  if (pathname === "/calendar") return "Calendar";
+  if (pathname === "/pip") return "Pip";
+  if (pathname === "/your-progress") return "Your progress";
+  if (pathname === "/notifications") return "Reminders";
+  if (pathname === "/settings") return "Settings";
+  if (pathname === "/feedback") return "Feedback";
+  if (pathname === "/bug-report") return "Report a bug";
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) return "Admin";
+  return "Homework Board";
+}
+
 export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRailProps) {
   const pathname = usePathname();
   const [pulsedHref, setPulsedHref] = useState<string | null>(null);
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showSwipeHint, setShowSwipeHint] = useState(false);
+  const mobileMenuOpenRef = useRef(false);
+  const mobileTouchRef = useRef<{ x: number; y: number } | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const adminMenuRef = useRef<HTMLDivElement | null>(null);
 
@@ -282,6 +300,8 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
     if (timerRef.current) clearTimeout(timerRef.current);
     setPulsedHref(href);
     if (!href.startsWith("/admin")) setAdminMenuOpen(false);
+    mobileMenuOpenRef.current = false;
+    setMobileMenuOpen(false);
     timerRef.current = setTimeout(() => {
       setPulsedHref(null);
       timerRef.current = null;
@@ -298,6 +318,129 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
   );
 
   const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
+
+  useEffect(() => {
+    mobileMenuOpenRef.current = mobileMenuOpen;
+  }, [mobileMenuOpen]);
+
+  // On the first phone visit, nudge once toward the hidden swipe gesture. It
+  // disappears after a few seconds and is never shown again this session, so
+  // it stays a quiet affordance rather than an onboarding step.
+  useEffect(() => {
+    if (
+      typeof window === "undefined" ||
+      !window.matchMedia("(max-width: 768px)").matches ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
+    }
+    try {
+      if (sessionStorage.getItem("hb-swipe-hint-shown")) return;
+    } catch {
+      return;
+    }
+
+    const showTimer = setTimeout(() => setShowSwipeHint(true), 500);
+    const hideTimer = setTimeout(() => setShowSwipeHint(false), 4200);
+    try {
+      sessionStorage.setItem("hb-swipe-hint-shown", "1");
+    } catch { /* sessionStorage can throw in private mode */ }
+    return () => {
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+    };
+  }, []);
+
+  // A phone user can open the drawer by starting at the actual left edge,
+  // not only by finding the hamburger button. The listeners live on window so
+  // the gesture works anywhere along the page, including below the header.
+  useEffect(() => {
+    function isMobileViewport() {
+      return typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches;
+    }
+
+    function handleTouchStart(event: TouchEvent) {
+      if (!isMobileViewport()) return;
+      const touch = event.touches[0];
+      if (!touch) return;
+      const drawerWidth = Math.min(window.innerWidth * 0.84, 320);
+      const startsAtEdge = touch.clientX <= 28;
+      const startsInOpenDrawer = mobileMenuOpenRef.current && touch.clientX <= drawerWidth;
+      if (startsAtEdge || startsInOpenDrawer) {
+        mobileTouchRef.current = { x: touch.clientX, y: touch.clientY };
+      }
+    }
+
+    function handleTouchMove(event: TouchEvent) {
+      const start = mobileTouchRef.current;
+      const touch = event.touches[0];
+      if (!start || !touch) return;
+      const dx = touch.clientX - start.x;
+      const dy = touch.clientY - start.y;
+      // Let normal vertical scrolling continue, but keep an edge swipe from
+      // becoming the browser's horizontal navigation gesture.
+      if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.15) {
+        event.preventDefault();
+      }
+    }
+
+    function handleTouchEnd(event: TouchEvent) {
+      const start = mobileTouchRef.current;
+      const touch = event.changedTouches[0];
+      mobileTouchRef.current = null;
+      if (!start || !touch || !isMobileViewport()) return;
+
+      const dx = touch.clientX - start.x;
+      const dy = touch.clientY - start.y;
+      const isHorizontalSwipe = Math.abs(dx) >= 48 && Math.abs(dx) > Math.abs(dy) * 1.15;
+      if (!isHorizontalSwipe) return;
+
+      if (!mobileMenuOpenRef.current && start.x <= 28 && dx > 0) {
+        mobileMenuOpenRef.current = true;
+        setMobileMenuOpen(true);
+      } else if (mobileMenuOpenRef.current && dx < 0) {
+        mobileMenuOpenRef.current = false;
+        setMobileMenuOpen(false);
+      }
+    }
+
+    function handleTouchCancel() {
+      mobileTouchRef.current = null;
+    }
+
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+    window.addEventListener("touchcancel", handleTouchCancel, { passive: true });
+    return () => {
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
+      window.removeEventListener("touchcancel", handleTouchCancel);
+    };
+  }, []);
+
+  // Close the mobile drawer with Escape as well as the admin flyout. The
+  // drawer is deliberately mobile-only; desktop keeps the icon rail exactly
+  // as it was.
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    function handleMobileKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        mobileMenuOpenRef.current = false;
+        setMobileMenuOpen(false);
+      }
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", handleMobileKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleMobileKeyDown);
+    };
+  }, [mobileMenuOpen]);
 
   // Close the flyout when focus moves elsewhere or Escape is pressed. This
   // keeps the compact rail from leaving an overlay stranded over page content.
@@ -343,7 +486,71 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
   };
 
   return (
-    <aside className="hb-siderail" aria-label="Primary navigation">
+    <aside
+      className={`hb-siderail ${mobileMenuOpen ? "hb-siderail--mobile-open" : ""}`}
+      aria-label="Primary navigation"
+    >
+      <div className="hb-mobile-topbar">
+        <button
+          type="button"
+          className="hb-mobile-menu-button"
+          aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="hb-primary-navigation"
+          onClick={() => {
+            mobileMenuOpenRef.current = !mobileMenuOpenRef.current;
+            setMobileMenuOpen((open) => !open);
+          }}
+        >
+          {mobileMenuOpen ? (
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              <path d="m6 6 12 12" />
+              <path d="m18 6-12 12" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              <path d="M4 6h16" />
+              <path d="M4 12h16" />
+              <path d="M4 18h16" />
+            </svg>
+          )}
+        </button>
+        <span className="hb-mobile-topbar-title">{mobilePageTitle(pathname)}</span>
+        <Link
+          href="/notifications"
+          className="hb-mobile-notifications"
+          aria-label="Reminders"
+          onClick={() => {
+            mobileMenuOpenRef.current = false;
+            setMobileMenuOpen(false);
+          }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+          </svg>
+          {unreadBadgeSlot}
+        </Link>
+      </div>
+      {showSwipeHint && !mobileMenuOpen && (
+        <div className="hb-mobile-swipe-hint" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="9 6 15 12 9 18" />
+          </svg>
+          <span>Swipe for menu</span>
+        </div>
+      )}
+      {mobileMenuOpen && (
+        <button
+          type="button"
+          className="hb-mobile-nav-backdrop"
+          aria-label="Close navigation menu"
+          onClick={() => {
+            mobileMenuOpenRef.current = false;
+            setMobileMenuOpen(false);
+          }}
+        />
+      )}
       <Link
         href="/"
         className="hb-siderail-brand"
@@ -370,7 +577,7 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
 
       <div className="hb-siderail-divider" />
 
-      <nav className="hb-siderail-nav" onClick={handleNavClick}>
+      <nav id="hb-primary-navigation" className="hb-siderail-nav" onClick={handleNavClick}>
         {MAIN_NAV.map(renderItem)}
         <div className="hb-siderail-group-divider" aria-hidden="true" />
         {MORE_NAV.map(renderItem)}
@@ -415,7 +622,11 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
                         role="menuitem"
                         aria-current={isActive ? "page" : undefined}
                         className={`hb-siderail-admin-link ${isActive ? "hb-siderail-admin-link--active" : ""}`}
-                        onClick={() => setAdminMenuOpen(false)}
+                        onClick={() => {
+                          setAdminMenuOpen(false);
+                          mobileMenuOpenRef.current = false;
+                          setMobileMenuOpen(false);
+                        }}
                       >
                         {item.icon}
                         <span className="hb-siderail-admin-link-label">{item.label}</span>
