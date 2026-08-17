@@ -60,7 +60,7 @@ export function PostsWidget({ posts, completedSet }: PostsWidgetProps) {
         <div className="py-12 text-center">
           <p className="hb-card-section text-sm">Nothing here yet</p>
           <p className="hb-card-meta mt-1 text-sm">
-            New homework will show up here as soon as it’s posted.
+            New homework will show up here as soon as it's posted.
           </p>
         </div>
       ) : (
@@ -111,7 +111,7 @@ export function PostsWidget({ posts, completedSet }: PostsWidgetProps) {
                       {due.text}
                     </span>
                     <span className="hb-card-meta hidden truncate text-xs sm:block">
-                      {subjectLabel || "—"}
+                      {subjectLabel || "No subject"}
                     </span>
                   </div>
                 </li>

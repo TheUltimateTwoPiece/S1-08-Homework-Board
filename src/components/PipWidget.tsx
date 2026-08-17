@@ -15,13 +15,13 @@ import { DAILY_LIMIT, type PipResult } from "@/lib/pip-types";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 
 const WELCOME_TEXT =
-  "Hey! I'm Pip, your homework assistant. I can see your assignments, due dates, and progress. Ask me anything — how you're doing, what's overdue, or what to tackle next!";
+  "Hey! I'm Pip, your homework assistant. I can see your assignments, due dates, and progress. Ask me anything: how you're doing, what's overdue, or what to tackle next!";
 
 const SUGGESTED_PROMPTS = [
   { label: "What's overdue?", prompt: "What assignments are overdue?" },
   { label: "How am I doing?", prompt: "How am I doing overall? Give me a quick summary." },
   { label: "What next?", prompt: "What should I work on next?" },
-  { label: "This week", prompt: "Summarize my week — what's due and what have I finished?" },
+  { label: "This week", prompt: "Summarize my week: what's due and what have I finished?" },
 ];
 
 function useIsMac(): boolean {
@@ -575,7 +575,7 @@ export function PipWidget({
             )}
           </div>
           <p className="hb-muted-text mt-1.5 text-center text-[9px] sm:text-[10px]">
-            Pip knows your homework — subjects, due dates, instructions, and what you've completed. {DAILY_LIMIT} prompts/day.{" "}
+            Pip knows your homework: subjects, due dates, instructions, and what you've completed. {DAILY_LIMIT} prompts/day.{" "}
             <kbd className="hb-bg-surface-hover hb-border-theme hidden sm:inline px-1 py-0.5 rounded text-[9px] border">{isMac ? "⌘" : "Ctrl"}K</kbd>{" "}
             <span className="hidden sm:inline">to focus</span>
           </p>

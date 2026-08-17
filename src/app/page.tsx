@@ -87,7 +87,7 @@ export default async function DashboardPage() {
   const subtitle =
     overdueCount > 0
       ? `${formatAppDate(new Date())} · ${overdueCount} overdue`
-      : `${formatAppDate(new Date())} · keep an eye on what’s due next`;
+      : `${formatAppDate(new Date())} · keep an eye on what's due next`;
 
   return (
     <div className="hb-dashboard-page mx-auto w-full max-w-[1180px] px-4 py-8 sm:px-6 lg:px-8">

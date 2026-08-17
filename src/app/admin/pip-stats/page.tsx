@@ -268,7 +268,7 @@ export default async function AdminPipStatsPage() {
 
       {/* 7-day usage chart */}
       <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <h2 className="hb-card-section text-base">Prompts — last 7 days</h2>
+        <h2 className="hb-card-section text-base">Prompts in the last 7 days</h2>
         <div className="mt-4 grid grid-cols-7 items-end gap-2 sm:gap-3" style={{ height: "180px" }}>
           {dayLabels.map((label, i) => {
             const hPct = (dayCounts[i] / maxDayCount) * 100;
@@ -397,7 +397,7 @@ export default async function AdminPipStatsPage() {
                   <td className="px-5 py-3 text-right text-xs text-slate-400">
                     {u.lastActive
                       ? formatAppDateTime(u.lastActive)
-                      : "—"}
+                      : "Never"}
                   </td>
                 </tr>
               ))}
