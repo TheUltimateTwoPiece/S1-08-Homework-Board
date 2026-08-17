@@ -31,7 +31,8 @@ export type ThemeMode =
 export interface CustomThemePayload {
   /** Average color of the uploaded image (hex), used as the page background. */
   bg: string;
-  /** Semi-transparent overlay color for cards/surfaces (rgba). */
+  /** Solid surface color for cards/panels (hex) — derived from the image and
+      editable via the palette editor in settings. */
   cardBg: string;
   /** Semi-transparent overlay color for borders (rgba). */
   border: string;
@@ -176,6 +177,95 @@ export function pickTextColor(
     : { color: BLACK, ratio: blackRatio };
 }
 
+/** Derives a solid card-surface color from the page background: slightly
+    lifted for elevation in dark themes, brightened toward white in light
+    themes so cards read as elevated panels. */
+function deriveSurface(
+  bg: { r: number; g: number; b: number },
+  isDark: boolean,
+): string {
+  const t = isDark ? 0.08 : 0.55;
+  const mix = (x: number, y: number) => Math.round(x + (y - x) * t);
+  return rgbToHex(mix(bg.r, 255), mix(bg.g, 255), mix(bg.b, 255));
+}
+
+/**
+ * Rebuilds a theme payload from user-edited solid colors (the palette editor
+ * in settings). Recomputes the border overlay + WCAG contrast so the payload
+ * stays consistent with the single-source-of-truth generation flow.
+ */
+export function buildCustomTheme(opts: {
+  bg: string;
+  surface: string;
+  primary: string;
+  text: string;
+  thumbnail?: string;
+}): CustomThemePayload {
+  const bgRgb = hexToRgb(opts.bg) ?? { r: 255, g: 255, b: 255 };
+  const textRgb = hexToRgb(opts.text) ?? { r: 0, g: 0, b: 0 };
+  const bgLum = relativeLuminance(bgRgb.r, bgRgb.g, bgRgb.b);
+  const textLum = relativeLuminance(textRgb.r, textRgb.g, textRgb.b);
+  const contrast = contrastRatio(
+    Math.max(bgLum, textLum),
+    Math.min(bgLum, textLum),
+  );
+  // Border direction follows text: light text (dark theme) → light border.
+  const border =
+    textLum > 0.5 ? "rgba(255, 255, 255, 0.18)" : "rgba(0, 0, 0, 0.14)";
+  return {
+    bg: opts.bg,
+    cardBg: opts.surface,
+    border,
+    primary: opts.primary,
+    text: opts.text,
+    contrast,
+    thumbnail: opts.thumbnail,
+  };
+}
+
+/**
+ * If `picked` fails WCAG-AA against `bg`, suggests a *similar* color that
+ * passes: same hue (and roughly same saturation), with lightness pushed just
+ * far enough toward the readable direction to reach 4.5:1. Returns null when
+ * the picked color is already accessible.
+ */
+export function suggestAccessibleTextColor(
+  picked: string,
+  bg: string,
+): { color: string; ratio: number } | null {
+  const pickedRgb = hexToRgb(picked);
+  const bgRgb = hexToRgb(bg);
+  if (!pickedRgb || !bgRgb) return null;
+  const bgLum = relativeLuminance(bgRgb.r, bgRgb.g, bgRgb.b);
+  const curLum = relativeLuminance(pickedRgb.r, pickedRgb.g, pickedRgb.b);
+  if (contrastRatio(Math.max(bgLum, curLum), Math.min(bgLum, curLum)) >= 4.5) {
+    return null;
+  }
+  const { h, s, l } = rgbToHsl(pickedRgb.r, pickedRgb.g, pickedRgb.b);
+  // Keep the pick's hue; nudge saturation up a touch so the suggestion stays
+  // vivid (grayscale picks stay near-neutral).
+  const sat = Math.max(s, 0.3);
+  const lighten = pickTextColor(bgRgb).color === WHITE;
+  const target = lighten ? 1 : 0;
+  // Contrast is monotonic in lightness within [l, target] — binary-search the
+  // lightness closest to the original that still reaches AA.
+  let lo = l;
+  let hi = target;
+  for (let i = 0; i < 24; i += 1) {
+    const mid = (lo + hi) / 2;
+    const rgb = hslToRgb(h, sat, mid);
+    const lum = relativeLuminance(rgb.r, rgb.g, rgb.b);
+    const ok = contrastRatio(Math.max(bgLum, lum), Math.min(bgLum, lum)) >= 4.5;
+    if (ok) hi = mid;
+    else lo = mid;
+  }
+  const rgb = hslToRgb(h, sat, hi);
+  const color = rgbToHex(rgb.r, rgb.g, rgb.b);
+  const lum = relativeLuminance(rgb.r, rgb.g, rgb.b);
+  const ratio = contrastRatio(Math.max(bgLum, lum), Math.min(bgLum, lum));
+  return { color, ratio };
+}
+
 /** Derives a vivid, contrasting accent from the average color of the image. */
 function derivePrimary(
   avg: { r: number; g: number; b: number },
@@ -272,13 +362,9 @@ export async function extractPaletteFromImage(
     relativeLuminance(avg.r, avg.g, avg.b),
   );
 
-  // Semi-transparent overlays scale naturally over any background while
-  // keeping separation between surfaces. Direction follows the text color so
-  // text stays readable on cards (dark overlay + white text; light overlay +
-  // black text).
-  const cardBg = isDark
-    ? "rgba(0, 0, 0, 0.38)"
-    : "rgba(255, 255, 255, 0.72)";
+  // Solid surface color: slightly lifted from the background in dark themes
+  // (elevation), brightened toward white in light themes (cards as panels).
+  const cardBg = deriveSurface(avg, isDark);
   const border = isDark
     ? "rgba(255, 255, 255, 0.18)"
     : "rgba(0, 0, 0, 0.14)";
@@ -321,7 +407,13 @@ function isResolvedDark(
   custom: CustomThemePayload | null,
 ): boolean {
   if (resolved === "dark") return true;
-  if (resolved === "custom") return custom?.text === WHITE;
+  // A custom theme is "dark" whenever its text color is light — whether that's
+  // the generated pure-white text or a user-picked light color.
+  if (resolved === "custom" && custom) {
+    const rgb = hexToRgb(custom.text);
+    if (rgb) return relativeLuminance(rgb.r, rgb.g, rgb.b) > 0.5;
+    return false;
+  }
   return false;
 }
 
@@ -410,7 +502,14 @@ function sanitizeCustom(value: unknown): CustomThemePayload | null {
   if (!value || typeof value !== "object") return null;
   const p = value as Record<string, unknown>;
   if (typeof p.bg !== "string" || typeof p.text !== "string") return null;
-  return value as CustomThemePayload;
+  const payload = value as CustomThemePayload;
+  // Legacy payloads stored a translucent rgba overlay in `cardBg`; migrate to
+  // a solid hex surface so the palette editor can operate on hex values.
+  const bgRgb = hexToRgb(payload.bg);
+  if (bgRgb && !hexToRgb(payload.cardBg)) {
+    payload.cardBg = deriveSurface(bgRgb, payload.text === WHITE);
+  }
+  return payload;
 }
 
 export function loadTheme(): ThemePrefs {

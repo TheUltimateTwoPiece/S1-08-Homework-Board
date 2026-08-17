@@ -24,12 +24,13 @@ export default async function SettingsPage() {
           <div className="mb-4 border-b pb-2">
             <h2
               id="appearance-heading"
-              className="hb-card-title text-lg leading-snug"
+              className="hb-page-title text-lg leading-snug"
             >
               Appearance
             </h2>
-            <p className="hb-card-meta mt-0.5 text-sm">
-              Pick a preset theme or generate one from any image.
+            <p className="hb-muted-text mt-0.5 text-sm">
+              Pick a preset theme, or upload an image and we'll recommend a
+              colour scheme you can tweak with the eyedropper.
             </p>
           </div>
           <ThemeSettingsForm />
