@@ -190,6 +190,13 @@ export function ThemeSettingsForm() {
     const loaded = loadTheme();
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPrefs(loaded);
+    // The eyedropper's blob URL only lives for the upload session — restore
+    // the picker source from the persisted thumbnail so "Pick" also works
+    // after a fresh page load (or when switching back to a saved custom
+    // theme).
+    if (loaded.custom?.thumbnail) {
+      setImageUrl(loaded.custom.thumbnail);
+    }
     setMounted(true);
   }, []);
 
@@ -483,7 +490,7 @@ export function ThemeSettingsForm() {
         <div
           role="button"
           tabIndex={0}
-          aria-label="Generate theme from image — upload or drop an image"
+          aria-label="Generate theme from image: upload or drop an image"
           aria-disabled={busy}
           onClick={() => !busy && fileInputRef.current?.click()}
           onKeyDown={(e) => {
@@ -507,7 +514,7 @@ export function ThemeSettingsForm() {
           {busy ? (
             <>
               <span className="hb-spinner" aria-hidden="true" />
-              <p className="hb-card-body text-sm">Sampling your image…</p>
+              <p className="hb-card-body text-sm">Sampling your image...</p>
             </>
           ) : custom?.thumbnail ? (
             <>

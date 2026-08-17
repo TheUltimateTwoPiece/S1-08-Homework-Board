@@ -196,7 +196,7 @@ export default async function YourProgressPage() {
             {totalPosts === 0
               ? "Welcome! Once your admin posts homework, you'll see your progress here."
               : todoCount === 0
-              ? "Every assignment is done — incredible work!"
+              ? "Every assignment is done. Nice work!"
               : `${todoCount} assignment${todoCount === 1 ? "" : "s"} left to mark off.`}
           </p>
           <div className="grid grid-cols-2 gap-3 pt-2 sm:grid-cols-4">
@@ -256,7 +256,7 @@ export default async function YourProgressPage() {
         </div>
         {upNext.length === 0 ? (
           <p className="hb-card-meta py-8 text-center text-sm">
-            You’re completely caught up.
+            You're completely caught up.
           </p>
         ) : (
           <ul className="divide-y divide-slate-100 dark:divide-slate-700">
