@@ -5,13 +5,16 @@ import {
   applyCustomFromImage,
   applyPreset,
   applyTheme,
+  buildCustomTheme,
   contrastRatio,
   DEFAULT_PREFS,
   hexToRgb,
   loadTheme,
   relativeLuminance,
   resetTheme,
+  rgbToHex,
   saveTheme,
+  suggestAccessibleTextColor,
   THEME_OPTIONS,
   type CustomThemePayload,
   type ThemeMode,
@@ -27,6 +30,7 @@ type Swatches = {
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 const ACCEPTED = "image/*";
+const HEX_RE = /^#[0-9a-fA-F]{6}$/;
 
 function readSwatches(): Swatches {
   const cs = getComputedStyle(document.documentElement);
@@ -50,12 +54,108 @@ function contrastOf(swatches: Swatches): { ratio: number | null; aa: boolean } {
   return { ratio, aa: ratio >= 4.5 };
 }
 
+/** WCAG contrast between two hex colors, or null if either isn't a hex. */
+function ratioBetween(bgHex: string, textHex: string): number | null {
+  const bg = hexToRgb(bgHex);
+  const text = hexToRgb(textHex);
+  if (!bg || !text) return null;
+  return contrastRatio(
+    relativeLuminance(bg.r, bg.g, bg.b),
+    relativeLuminance(text.r, text.g, text.b),
+  );
+}
+
 const SWATCH_LABELS: { key: keyof Swatches; label: string; hint: string }[] = [
   { key: "bg", label: "Background", hint: "Page canvas" },
   { key: "surface", label: "Surface", hint: "Cards & panels" },
   { key: "text", label: "Text", hint: "Main text" },
   { key: "primary", label: "Primary", hint: "Actions & links" },
 ];
+
+/** Hex text field that only commits well-formed values; otherwise reverts. */
+function HexField({
+  id,
+  value,
+  onCommit,
+}: {
+  id: string;
+  value: string;
+  onCommit: (hex: string) => void;
+}) {
+  const [draft, setDraft] = useState(value);
+  const [lastValue, setLastValue] = useState(value);
+  // Value changed externally (eyedropper pick, colour picker, new upload) —
+  // re-sync the draft during render, the React-recommended way.
+  if (value !== lastValue) {
+    setLastValue(value);
+    setDraft(value);
+  }
+  const commit = () => {
+    let v = draft.trim();
+    if (v && !v.startsWith("#")) v = `#${v}`;
+    if (HEX_RE.test(v)) onCommit(v.toLowerCase());
+    else setDraft(value);
+  };
+  return (
+    <input
+      id={id}
+      type="text"
+      inputMode="text"
+      spellCheck={false}
+      autoComplete="off"
+      value={draft}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          commit();
+        }
+      }}
+      className="hb-input w-full rounded-lg px-2.5 py-1.5 font-mono text-xs"
+      placeholder="#rrggbb"
+      aria-label="Colour hex value"
+    />
+  );
+}
+
+/** Maps a click/hover position on the rendered image to canvas pixel coords. */
+function pixelFromEvent(
+  e: React.MouseEvent<HTMLImageElement>,
+  canvas: HTMLCanvasElement,
+): { x: number; y: number } | null {
+  const rect = e.currentTarget.getBoundingClientRect();
+  if (rect.width === 0 || rect.height === 0) return null;
+  const x = Math.min(
+    canvas.width - 1,
+    Math.max(0, Math.floor(((e.clientX - rect.left) / rect.width) * canvas.width)),
+  );
+  const y = Math.min(
+    canvas.height - 1,
+    Math.max(0, Math.floor(((e.clientY - rect.top) / rect.height) * canvas.height)),
+  );
+  return { x, y };
+}
+
+function EyedropperIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-3.5 w-3.5"
+      aria-hidden="true"
+    >
+      <path d="m2 22 1-1h3l9-9" />
+      <path d="M3 21v-3l9-9" />
+      <path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z" />
+    </svg>
+  );
+}
 
 export function ThemeSettingsForm() {
   const [prefs, setPrefs] = useState<ThemePrefs>(DEFAULT_PREFS);
@@ -65,9 +165,26 @@ export function ThemeSettingsForm() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const [picking, setPicking] = useState<keyof Swatches | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [pickerFailed, setPickerFailed] = useState(false);
+  const [hoverColor, setHoverColor] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const custom: CustomThemePayload | null = prefs.custom;
+
+  // The recommended (then user-tweaked) scheme — only editable while the
+  // custom theme is active; presets fall back to read-only CSS swatches.
+  const editable: Swatches | null =
+    prefs.mode === "custom" && custom
+      ? {
+          bg: custom.bg,
+          surface: custom.cardBg,
+          text: custom.text,
+          primary: custom.primary,
+        }
+      : null;
 
   useEffect(() => {
     const loaded = loadTheme();
@@ -83,8 +200,35 @@ export function ThemeSettingsForm() {
     setSwatches(readSwatches());
   }, [prefs, mounted]);
 
+  // Load the uploaded image into a sampling canvas for the eyedropper.
+  useEffect(() => {
+    if (!imageUrl) return;
+    const img = new Image();
+    img.onload = () => {
+      const MAX_SAMPLE = 2048;
+      const scale = Math.min(
+        1,
+        MAX_SAMPLE / Math.max(img.naturalWidth, img.naturalHeight),
+      );
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
+      canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      if (ctx) {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvasRef.current = canvas;
+      }
+    };
+    img.src = imageUrl;
+    return () => {
+      URL.revokeObjectURL(imageUrl);
+    };
+  }, [imageUrl]);
+
   const handlePresetChange = useCallback((value: ThemeMode) => {
     setError(null);
+    setPicking(null);
+    setHoverColor(null);
     if (value === "custom") {
       // Re-apply the retained custom palette generated from an image.
       const stored = loadTheme();
@@ -118,6 +262,10 @@ export function ThemeSettingsForm() {
     try {
       const next = await applyCustomFromImage(file);
       setPrefs(next);
+      setImageUrl(URL.createObjectURL(file));
+      setPickerFailed(false);
+      setPicking(null);
+      setHoverColor(null);
     } catch (e) {
       setError(
         e instanceof Error
@@ -143,6 +291,10 @@ export function ThemeSettingsForm() {
     setError(null);
     resetTheme();
     setPrefs(DEFAULT_PREFS);
+    setPicking(null);
+    setHoverColor(null);
+    setPickerFailed(false);
+    setImageUrl(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   }, []);
 
@@ -154,7 +306,103 @@ export function ThemeSettingsForm() {
     }
   }, []);
 
-  const contrast = swatches ? contrastOf(swatches) : { ratio: null, aa: false };
+  /** Applies an edited palette immediately (live preview + persistence). */
+  const commitEdits = useCallback(
+    (patch: Partial<Swatches>) => {
+      if (!custom) return;
+      setError(null);
+      const nextEditable: Swatches = {
+        bg: patch.bg ?? custom.bg,
+        surface: patch.surface ?? custom.cardBg,
+        text: patch.text ?? custom.text,
+        primary: patch.primary ?? custom.primary,
+      };
+      const payload = buildCustomTheme({
+        bg: nextEditable.bg,
+        surface: nextEditable.surface,
+        primary: nextEditable.primary,
+        text: nextEditable.text,
+        thumbnail: custom.thumbnail,
+      });
+      const next: ThemePrefs = { mode: "custom", custom: payload };
+      saveTheme(next);
+      applyTheme(next);
+      setPrefs(next);
+    },
+    [custom],
+  );
+
+  /** Samples the pixel under the cursor on the rendered image. */
+  const sampleAt = useCallback(
+    (e: React.MouseEvent<HTMLImageElement>) => {
+      const canvas = canvasRef.current;
+      if (!canvas || !picking) return;
+      const px = pixelFromEvent(e, canvas);
+      if (!px) return;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      if (!ctx) return;
+      const d = ctx.getImageData(px.x, px.y, 1, 1).data;
+      commitEdits({ [picking]: rgbToHex(d[0], d[1], d[2]) });
+      setPicking(null);
+      setHoverColor(null);
+    },
+    [picking, commitEdits],
+  );
+
+  const hoverAt = useCallback(
+    (e: React.MouseEvent<HTMLImageElement>) => {
+      if (!picking) return;
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const px = pixelFromEvent(e, canvas);
+      if (!px) return;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      if (!ctx) return;
+      const d = ctx.getImageData(px.x, px.y, 1, 1).data;
+      setHoverColor(rgbToHex(d[0], d[1], d[2]));
+    },
+    [picking],
+  );
+
+  // Text contrast against BOTH the page background and card surfaces — text
+  // renders on cards, so a pick that fails either deserves the warning.
+  const textContrast = (() => {
+    if (!editable) return null;
+    const candidates: { ratio: number; bg: string }[] = [];
+    const bgRatio = ratioBetween(editable.bg, editable.text);
+    const surfaceRatio = ratioBetween(editable.surface, editable.text);
+    if (bgRatio !== null) candidates.push({ ratio: bgRatio, bg: editable.bg });
+    if (surfaceRatio !== null) {
+      candidates.push({ ratio: surfaceRatio, bg: editable.surface });
+    }
+    if (candidates.length === 0) return null;
+    return candidates.reduce((a, b) => (b.ratio < a.ratio ? b : a));
+  })();
+
+  // Flagged whenever the text color fails AA anywhere, with a similar
+  // suggested replacement tuned against whichever surface is worst.
+  const textWarning = (() => {
+    if (!textContrast || textContrast.ratio >= 4.5 || !editable) return null;
+    return {
+      ratio: textContrast.ratio,
+      suggestion: suggestAccessibleTextColor(editable.text, textContrast.bg),
+    };
+  })();
+  const textSuggestion = textWarning?.suggestion ?? null;
+
+  const badge = (() => {
+    if (editable) {
+      const worst = textContrast;
+      return worst === null
+        ? null
+        : { ratio: worst.ratio, aa: worst.ratio >= 4.5 };
+    }
+    return swatches ? contrastOf(swatches) : null;
+  })();
+
+  const pickingLabel = picking
+    ? SWATCH_LABELS.find((s) => s.key === picking)?.label ?? ""
+    : "";
 
   return (
     <div className="hb-card-surface space-y-8 p-6 sm:p-8">
@@ -300,8 +548,8 @@ export function ThemeSettingsForm() {
                   Drag & drop an image here
                 </p>
                 <p className="hb-card-meta mt-0.5 text-xs">
-                  or click to browse — we'll average its colors and build an
-                  accessible palette.
+                  or click to browse — we'll recommend a colour scheme from it
+                  that you can tweak with the eyedropper.
                 </p>
               </div>
             </>
@@ -322,7 +570,7 @@ export function ThemeSettingsForm() {
         </div>
       </section>
 
-      {/* ── Live preview + swatches ─────────────── */}
+      {/* ── Live preview + editable palette ─────── */}
       <section>
         <div className="mb-4 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
@@ -344,23 +592,30 @@ export function ThemeSettingsForm() {
                 <path d="M5 17h14" />
               </svg>
             </div>
-            <h2 className="hb-card-section text-base">Live preview</h2>
+            <h2 className="hb-card-section text-base">Live preview & palette</h2>
           </div>
 
-          {contrast.ratio !== null && (
+          {badge?.ratio != null && (
             <span
               className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                contrast.aa
+                badge.aa
                   ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"
                   : "bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300"
               }`}
-              title="WCAG 2.1 AA contrast of text against the background"
+              title="WCAG 2.1 AA contrast of text against the background and card surfaces"
             >
-              {contrast.aa ? "✓" : "✕"} {contrast.ratio.toFixed(1)}:1{" "}
-              {contrast.aa ? "AA" : "AA"}
+              {badge.aa ? "✓ AA" : "✕ Below AA"} {badge.ratio.toFixed(1)}:1
             </span>
           )}
         </div>
+
+        {editable && (
+          <p className="hb-card-meta mb-3 text-xs">
+            Here's the colour scheme we recommend from your image — tweak any
+            colour with the eyedropper, hex field, or colour picker, and it
+            applies instantly.
+          </p>
+        )}
 
         <div className="grid gap-4 sm:grid-cols-2">
           {/* Mock dashboard surface rendered with the *live* CSS vars */}
@@ -379,7 +634,10 @@ export function ThemeSettingsForm() {
                 borderColor: "var(--hb-border)",
               }}
             >
-              <p className="text-sm font-semibold" style={{ color: "var(--hb-text)" }}>
+              <p
+                className="text-sm font-semibold"
+                style={{ color: "var(--hb-text)" }}
+              >
                 Homework board
               </p>
               <p
@@ -397,48 +655,203 @@ export function ThemeSettingsForm() {
             </div>
           </div>
 
-          {/* Swatch tiles */}
+          {/* Swatch editors (read-only tiles for presets) */}
           <div className="grid grid-cols-2 gap-3">
             {SWATCH_LABELS.map(({ key, label, hint }) => {
-              const value = swatches?.[key] ?? "";
+              const value = editable
+                ? editable[key]
+                : (swatches?.[key] ?? "");
               const copiedThis = copied === value && value !== "";
+              const isEditing = editable !== null;
               return (
-                <button
+                <div
                   key={key}
-                  type="button"
-                  onClick={() => copyValue(value)}
-                  title={value ? `Copy ${label.toLowerCase()} color` : undefined}
-                  className="group flex flex-col gap-2 rounded-lg border border-slate-200 p-3 text-left transition hover:border-blue-300 hover:bg-slate-50 dark:border-stone-700 dark:hover:border-blue-500 dark:hover:bg-stone-800"
+                  className="flex flex-col gap-3 rounded-lg border border-slate-200 p-3 transition hover:border-blue-300 dark:border-stone-700 dark:hover:border-blue-500"
                 >
-                  <span className="flex items-center justify-between">
-                    <span className="hb-card-meta text-[11px] uppercase tracking-wider">
-                      {label}
-                    </span>
-                    {value && (
-                      <span className="text-[10px] text-slate-400 opacity-0 transition group-hover:opacity-100 dark:text-stone-400">
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="h-9 w-9 shrink-0 rounded-md ring-1 ring-inset ring-black/10"
+                      style={{ background: value || "transparent" }}
+                      aria-hidden="true"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="hb-card-section text-sm font-semibold">
+                        {label}
+                      </div>
+                      <div className="hb-card-meta text-[11px]">{hint}</div>
+                    </div>
+                    {isEditing ? (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setPicking((p) => (p === key ? null : key))
+                        }
+                        disabled={busy}
+                        title={
+                          picking === key
+                            ? `Cancel picking the ${label.toLowerCase()} colour`
+                            : `Pick the ${label.toLowerCase()} colour from your image`
+                        }
+                        aria-pressed={picking === key}
+                        className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition disabled:opacity-50 ${
+                          picking === key
+                            ? "border-blue-500 bg-blue-50 text-blue-700 dark:border-blue-500 dark:bg-blue-950/50 dark:text-blue-300"
+                            : "border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:border-blue-500 dark:hover:bg-blue-950/40 dark:hover:text-blue-300"
+                        }`}
+                      >
+                        <EyedropperIcon />
+                        {picking === key ? "Cancel" : "Pick"}
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => copyValue(value)}
+                        title={
+                          value ? `Copy ${label.toLowerCase()} colour` : undefined
+                        }
+                        className="hb-card-meta text-[11px] uppercase tracking-wider transition hover:text-slate-700 dark:hover:text-stone-200"
+                      >
                         {copiedThis ? "Copied!" : "Copy"}
-                      </span>
+                      </button>
                     )}
-                  </span>
-                  <span
-                    className="h-10 w-full rounded-md ring-1 ring-inset ring-black/10"
-                    style={{ background: value || "transparent" }}
-                    aria-hidden="true"
-                  />
-                  <span className="hb-card-body truncate font-mono text-[11px]">
-                    {value || "—"}
-                  </span>
-                  <span className="hb-card-meta text-[11px]">{hint}</span>
-                </button>
+                  </div>
+
+                  {isEditing ? (
+                    <div className="flex items-center gap-2">
+                      <HexField
+                        id={`swatch-hex-${key}`}
+                        value={value}
+                        onCommit={(hex) => commitEdits({ [key]: hex })}
+                      />
+                      <input
+                        type="color"
+                        value={value}
+                        onChange={(e) =>
+                          commitEdits({ [key]: e.target.value })
+                        }
+                        title="Open colour picker"
+                        aria-label={`${label} colour picker`}
+                        className="h-8 w-9 shrink-0 cursor-pointer rounded-md border border-slate-200 bg-white p-0.5 dark:border-stone-700 dark:bg-stone-800"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="hb-card-body truncate font-mono text-[11px]">
+                        {value || "—"}
+                      </span>
+                      {value && (
+                        <button
+                          type="button"
+                          onClick={() => copyValue(value)}
+                          className="hb-card-meta shrink-0 text-[10px] uppercase tracking-wider transition hover:text-slate-700 dark:hover:text-stone-200"
+                        >
+                          {copiedThis ? "Copied!" : "Copy"}
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>
         </div>
+
+        {/* Text contrast warning + similar-colour suggestion */}
+        {textWarning && (
+          <div
+            role="alert"
+            className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-800/60 dark:bg-amber-950/40"
+          >
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="flex min-w-0 items-start gap-2">
+                <span aria-hidden="true">⚠️</span>
+                <p className="text-sm text-amber-800 dark:text-amber-200">
+                  <span className="font-semibold">Low text contrast.</span>{" "}
+                  Your text colour only has{" "}
+                  <span className="font-semibold">
+                    {textWarning.ratio.toFixed(1)}:1
+                  </span>{" "}
+                  contrast against your background or card surfaces — below the
+                  4.5:1 WCAG AA minimum for readable text.
+                </p>
+              </div>
+              {textSuggestion && (
+                <button
+                  type="button"
+                  onClick={() => commitEdits({ text: textSuggestion.color })}
+                  className="rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold text-amber-800 transition hover:bg-amber-100 dark:border-amber-700 dark:bg-stone-900 dark:text-amber-200 dark:hover:bg-amber-950/60"
+                >
+                  Use suggested colour {textSuggestion.color}{" "}
+                  <span className="opacity-70">
+                    ({textSuggestion.ratio.toFixed(1)}:1)
+                  </span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Eyedropper picker */}
+        {picking && (
+          <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50/40 p-4 dark:border-blue-900 dark:bg-blue-950/20">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <p className="text-sm text-slate-700 dark:text-stone-200">
+                <span className="font-semibold">
+                  Pick the {pickingLabel.toLowerCase()} colour
+                </span>{" "}
+                — click anywhere on your image. Hover to preview.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setPicking(null);
+                  setHoverColor(null);
+                }}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-50 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700/50"
+              >
+                Cancel
+              </button>
+            </div>
+            {imageUrl && !pickerFailed ? (
+              <div className="relative mx-auto w-fit cursor-crosshair">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={imageUrl}
+                  alt="Your uploaded image — click to pick a colour from it"
+                  onClick={sampleAt}
+                  onMouseMove={hoverAt}
+                  onMouseLeave={() => setHoverColor(null)}
+                  onError={() => setPickerFailed(true)}
+                  className="max-h-96 w-auto max-w-full rounded-lg object-contain ring-1 ring-slate-200 dark:ring-stone-700"
+                />
+                {hoverColor && (
+                  <div className="absolute right-2 top-2 flex items-center gap-1.5 rounded-md bg-black/70 px-2 py-1 font-mono text-[11px] text-white">
+                    <span
+                      className="h-3 w-3 rounded-sm ring-1 ring-white/40"
+                      style={{ background: hoverColor }}
+                      aria-hidden="true"
+                    />
+                    {hoverColor}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p className="hb-card-meta text-sm">
+                {pickerFailed
+                  ? "Couldn't display that image. Re-upload it to pick colours from it."
+                  : "Re-upload your image to pick colours from it."}
+              </p>
+            )}
+          </div>
+        )}
       </section>
 
       {/* ── Footer / reset ──────────────────────── */}
       {error && (
-        <div role="alert" className="rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
+        <div
+          role="alert"
+          className="rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:bg-rose-950/50 dark:text-rose-300"
+        >
           {error}
         </div>
       )}
