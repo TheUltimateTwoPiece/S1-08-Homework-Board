@@ -30,7 +30,7 @@ export function CalendarWidget({ posts }: CalendarWidgetProps) {
 
   return (
     <section
-      className="hb-bento-card hb-bento-card--clickable group relative "
+      className="hb-bento-card hb-bento-card--clickable relative "
       style={{ gridColumn: "span 5", gridRow: "span 2", animationDelay: "80ms" }}
     >
       <div className="hb-bento-head relative z-[1]">
@@ -48,9 +48,6 @@ export function CalendarWidget({ posts }: CalendarWidgetProps) {
             <p className="hb-card-body hb-truncate text-xs font-semibold">{format(today, "MMMM yyyy")} · {totalThisMonth} due</p>
           </div>
         </div>
-        <span className="hb-bento-action">
-          Expand →
-        </span>
       </div>
 
       {/* z-[3] keeps day links above the full-card overlay link (z-[2])

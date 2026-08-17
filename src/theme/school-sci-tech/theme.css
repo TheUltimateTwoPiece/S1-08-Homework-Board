@@ -1785,24 +1785,6 @@
     gap: 8px;
   }
 
-  /* Standardized action link in card headers */
-  .hb-bento-action {
-    display: inline-flex;
-    align-items: center;
-    flex: none;
-    border-radius: 6px;
-    padding: 4px 10px;
-    font-size: 11px;
-    font-weight: 700;
-    color: #2563eb;
-    white-space: nowrap;
-    transition: background-color 180ms ease, color 180ms ease;
-  }
-
-  .group:hover .hb-bento-action {
-    background: rgba(37, 99, 235, 0.08);
-  }
-
   .hb-bento-icon-box {
     display: inline-flex;
     align-items: center;

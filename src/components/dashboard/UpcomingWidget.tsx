@@ -13,7 +13,7 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
 
   return (
     <section
-      className="hb-bento-card hb-bento-card--clickable group relative "
+      className="hb-bento-card hb-bento-card--clickable relative "
       style={{ gridColumn: "span 4", gridRow: "span 2", animationDelay: "160ms" }}
     >
       <div className="hb-bento-head relative z-[1]">
@@ -26,9 +26,6 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
           </div>
           <h2 className="hb-card-section truncate text-sm tracking-tight">Upcoming deadlines</h2>
         </div>
-        <span className="hb-bento-action">
-          Calendar →
-        </span>
       </div>
 
       {upcoming.length === 0 ? (

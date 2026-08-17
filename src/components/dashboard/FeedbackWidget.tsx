@@ -12,7 +12,7 @@ export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
 
   return (
     <section
-      className="hb-bento-card hb-bento-card--clickable group relative "
+      className="hb-bento-card hb-bento-card--clickable relative "
       style={{ gridColumn: "span 6", gridRow: "span 2", animationDelay: "80ms" }}
     >
       <div className="hb-bento-head relative z-[1]">
@@ -29,9 +29,6 @@ export function FeedbackWidget({ feedback }: FeedbackWidgetProps) {
             </span>
           )}
         </div>
-        <span className="hb-bento-action">
-          View all →
-        </span>
       </div>
 
       {top.length === 0 ? (

@@ -17,7 +17,7 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
 
   return (
     <section
-      className="hb-bento-card hb-bento-card--clickable group relative "
+      className="hb-bento-card hb-bento-card--clickable relative "
       style={{ gridColumn: "span 7", gridRow: "span 2", animationDelay: "40ms" }}
     >
       <div className="hb-bento-head relative z-[1]">
@@ -34,9 +34,6 @@ export function PostsWidget({ posts, completedSet, firstName }: PostsWidgetProps
             <p className="hb-card-body hb-truncate text-xs font-semibold">{totalDone} of {top.length} done · tap to open</p>
           </div>
         </div>
-        <span className="hb-bento-action">
-          View all →
-        </span>
       </div>
 
       {top.length === 0 ? (
