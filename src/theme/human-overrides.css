@@ -52,6 +52,29 @@
 }
 
 @media (max-width: 768px) {
+  /* The phone should inherit the selected theme all the way through the
+     viewport, including the overscroll area and native form controls. */
+  :root,
+  html,
+  body,
+  .hb-app-shell,
+  .hb-app-main {
+    background-color: var(--hb-surface-muted) !important;
+    background-image: none !important;
+  }
+
+  html[data-theme="dark"],
+  html[data-theme="custom"].dark {
+    color-scheme: dark;
+  }
+
+  html[data-theme="light"],
+  html[data-theme="emerald"],
+  html[data-theme="sunset"],
+  html[data-theme="custom"]:not(.dark) {
+    color-scheme: light;
+  }
+
   /* The desktop icon rail becomes a small, familiar app header. The drawer
      below it is the only navigation surface on phones; no bottom nav remains. */
   .hb-siderail {
@@ -67,7 +90,9 @@
     border-top: 0 !important;
     border-right: 0 !important;
     border-bottom: 1px solid var(--hb-border);
-    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
+    background: var(--hb-surface) !important;
+    background-image: none !important;
+    box-shadow: 0 1px 0 color-mix(in srgb, var(--hb-text-page) 8%, transparent);
     overflow: visible;
   }
 
@@ -80,7 +105,8 @@
     align-items: center;
     gap: 8px;
     padding: 0 12px;
-    background: var(--hb-surface);
+    background: var(--hb-surface) !important;
+    background-image: none !important;
   }
 
   .hb-mobile-menu-button,
@@ -136,7 +162,7 @@
     width: 100%;
     padding: 0;
     border: 0;
-    background: rgba(15, 23, 42, 0.28);
+    background: color-mix(in srgb, var(--hb-text-page) 12%, transparent);
     cursor: default;
   }
 
@@ -162,9 +188,10 @@
     gap: 4px !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
-    background: var(--hb-surface);
+    background: var(--hb-surface) !important;
+    background-image: none !important;
     border-right: 1px solid var(--hb-border);
-    box-shadow: 8px 0 24px rgba(15, 23, 42, 0.1);
+    box-shadow: 8px 0 24px color-mix(in srgb, var(--hb-text-page) 12%, transparent);
     pointer-events: none;
     transform: translateX(-105%);
     visibility: hidden;
@@ -289,7 +316,8 @@
     justify-content: flex-start;
     gap: 8px;
     padding: 10px 12px max(10px, env(safe-area-inset-bottom));
-    background: var(--hb-surface);
+    background: var(--hb-surface) !important;
+    background-image: none !important;
     border-top: 1px solid var(--hb-border);
   }
 
