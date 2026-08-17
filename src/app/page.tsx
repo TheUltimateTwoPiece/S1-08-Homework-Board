@@ -60,6 +60,9 @@ export default async function DashboardPage() {
   const totalPosts = typedPosts.length;
   const completedCount = typedPosts.filter((post) => completedSet.has(post.id)).length;
   const assignmentsLeft = Math.max(0, totalPosts - completedCount);
+  const dueTodayCount = typedPosts.filter(
+    (post) => post.due_at === todayStr && !completedSet.has(post.id),
+  ).length;
   const dueTomorrowCount = typedPosts.filter(
     (post) => post.due_at === tomorrowStr && !completedSet.has(post.id),
   ).length;
@@ -87,7 +90,7 @@ export default async function DashboardPage() {
       : `${formatAppDate(new Date())} · keep an eye on what’s due next`;
 
   return (
-    <div className="mx-auto w-full max-w-[1180px] px-4 py-8 sm:px-6 lg:px-8">
+    <div className="hb-dashboard-page mx-auto w-full max-w-[1180px] px-4 py-8 sm:px-6 lg:px-8">
       <PageTopBar
         profile={profile}
         greetingName={firstName}
@@ -97,6 +100,7 @@ export default async function DashboardPage() {
       />
 
       <DashboardSummary
+        dueToday={dueTodayCount}
         dueTomorrow={dueTomorrowCount}
         assignmentsLeft={assignmentsLeft}
         overdue={overdueCount}

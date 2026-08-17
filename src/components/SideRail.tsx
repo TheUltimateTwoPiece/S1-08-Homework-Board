@@ -249,10 +249,25 @@ function InboxStatusBadge({ count }: { count: number }) {
 // destinations.
 const EAGER_PREFETCH = new Set<string>(["/", "/calendar", "/admin"]);
 
+function mobilePageTitle(pathname: string): string {
+  if (pathname === "/") return "Dashboard";
+  if (pathname === "/posts" || pathname.startsWith("/posts/")) return "Homework";
+  if (pathname === "/calendar") return "Calendar";
+  if (pathname === "/pip") return "Pip";
+  if (pathname === "/your-progress") return "Your progress";
+  if (pathname === "/notifications") return "Reminders";
+  if (pathname === "/settings") return "Settings";
+  if (pathname === "/feedback") return "Feedback";
+  if (pathname === "/bug-report") return "Report a bug";
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) return "Admin";
+  return "Homework Board";
+}
+
 export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRailProps) {
   const pathname = usePathname();
   const [pulsedHref, setPulsedHref] = useState<string | null>(null);
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const adminMenuRef = useRef<HTMLDivElement | null>(null);
 
@@ -282,6 +297,7 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
     if (timerRef.current) clearTimeout(timerRef.current);
     setPulsedHref(href);
     if (!href.startsWith("/admin")) setAdminMenuOpen(false);
+    setMobileMenuOpen(false);
     timerRef.current = setTimeout(() => {
       setPulsedHref(null);
       timerRef.current = null;
@@ -298,6 +314,25 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
   );
 
   const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
+
+  // Close the mobile drawer with Escape as well as the admin flyout. The
+  // drawer is deliberately mobile-only; desktop keeps the icon rail exactly
+  // as it was.
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    function handleMobileKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setMobileMenuOpen(false);
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", handleMobileKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleMobileKeyDown);
+    };
+  }, [mobileMenuOpen]);
 
   // Close the flyout when focus moves elsewhere or Escape is pressed. This
   // keeps the compact rail from leaving an overlay stranded over page content.
@@ -343,7 +378,54 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
   };
 
   return (
-    <aside className="hb-siderail" aria-label="Primary navigation">
+    <aside
+      className={`hb-siderail ${mobileMenuOpen ? "hb-siderail--mobile-open" : ""}`}
+      aria-label="Primary navigation"
+    >
+      <div className="hb-mobile-topbar">
+        <button
+          type="button"
+          className="hb-mobile-menu-button"
+          aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="hb-primary-navigation"
+          onClick={() => setMobileMenuOpen((open) => !open)}
+        >
+          {mobileMenuOpen ? (
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              <path d="m6 6 12 12" />
+              <path d="m18 6-12 12" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              <path d="M4 6h16" />
+              <path d="M4 12h16" />
+              <path d="M4 18h16" />
+            </svg>
+          )}
+        </button>
+        <span className="hb-mobile-topbar-title">{mobilePageTitle(pathname)}</span>
+        <Link
+          href="/notifications"
+          className="hb-mobile-notifications"
+          aria-label="Reminders"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+          </svg>
+          {unreadBadgeSlot}
+        </Link>
+      </div>
+      {mobileMenuOpen && (
+        <button
+          type="button"
+          className="hb-mobile-nav-backdrop"
+          aria-label="Close navigation menu"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
       <Link
         href="/"
         className="hb-siderail-brand"
@@ -370,7 +452,7 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
 
       <div className="hb-siderail-divider" />
 
-      <nav className="hb-siderail-nav" onClick={handleNavClick}>
+      <nav id="hb-primary-navigation" className="hb-siderail-nav" onClick={handleNavClick}>
         {MAIN_NAV.map(renderItem)}
         <div className="hb-siderail-group-divider" aria-hidden="true" />
         {MORE_NAV.map(renderItem)}
@@ -415,7 +497,10 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
                         role="menuitem"
                         aria-current={isActive ? "page" : undefined}
                         className={`hb-siderail-admin-link ${isActive ? "hb-siderail-admin-link--active" : ""}`}
-                        onClick={() => setAdminMenuOpen(false)}
+                        onClick={() => {
+                          setAdminMenuOpen(false);
+                          setMobileMenuOpen(false);
+                        }}
                       >
                         {item.icon}
                         <span className="hb-siderail-admin-link-label">{item.label}</span>

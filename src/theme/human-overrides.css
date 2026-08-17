@@ -42,6 +42,534 @@
   transform: none !important;
 }
 
+/* Mobile-only elements are intentionally absent from the desktop layout. */
+.hb-mobile-topbar,
+.hb-mobile-nav-backdrop,
+.hb-dashboard-stat-mobile-label,
+.hb-dashboard-stat-mobile-value,
+.hb-progress-mobile-ring {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* The desktop icon rail becomes a small, familiar app header. The drawer
+     below it is the only navigation surface on phones; no bottom nav remains. */
+  .hb-siderail {
+    top: 0 !important;
+    right: 0 !important;
+    bottom: auto !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 64px !important;
+    min-height: 64px;
+    display: block !important;
+    padding: 0 !important;
+    border-top: 0 !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--hb-border);
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
+    overflow: visible;
+  }
+
+  .hb-mobile-topbar {
+    position: relative;
+    z-index: 3;
+    display: grid;
+    height: 64px;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    background: var(--hb-surface);
+  }
+
+  .hb-mobile-menu-button,
+  .hb-mobile-notifications {
+    position: relative;
+    display: inline-flex;
+    height: 40px;
+    width: 40px;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: var(--hb-radius-sm);
+    color: var(--hb-text-section);
+    background: transparent;
+  }
+
+  .hb-mobile-menu-button:hover,
+  .hb-mobile-notifications:hover {
+    background: var(--hb-surface-hover);
+  }
+
+  .hb-mobile-menu-button svg,
+  .hb-mobile-notifications svg {
+    height: 21px;
+    width: 21px;
+  }
+
+  .hb-mobile-topbar-title {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--hb-text-page);
+    font-family: var(--font-fraunces), var(--font-geist-sans), Georgia, serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .hb-mobile-notifications .hb-siderail-btn-badge {
+    top: 2px;
+    right: 1px;
+  }
+
+  .hb-mobile-nav-backdrop {
+    position: fixed;
+    z-index: 1;
+    top: 64px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: rgba(15, 23, 42, 0.28);
+    cursor: default;
+  }
+
+  .hb-siderail-brand,
+  .hb-siderail-divider {
+    display: none !important;
+  }
+
+  .hb-siderail-nav {
+    position: fixed;
+    z-index: 2;
+    top: 64px !important;
+    bottom: 72px !important;
+    left: 0;
+    display: flex !important;
+    width: min(84vw, 320px);
+    min-width: 0;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 12px;
+    align-items: stretch !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    background: var(--hb-surface);
+    border-right: 1px solid var(--hb-border);
+    box-shadow: 8px 0 24px rgba(15, 23, 42, 0.1);
+    pointer-events: none;
+    transform: translateX(-105%);
+    visibility: hidden;
+    transition: transform 180ms ease, visibility 180ms ease;
+  }
+
+  .hb-siderail--mobile-open .hb-siderail-nav {
+    pointer-events: auto;
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  .hb-siderail-nav .hb-siderail-btn {
+    width: 100%;
+    min-height: 48px;
+    height: 48px;
+    flex: 0 0 auto;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 0 12px;
+    border-radius: var(--hb-radius-sm);
+    color: var(--hb-text-body);
+  }
+
+  .hb-siderail-nav .hb-siderail-btn > svg {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 auto;
+  }
+
+  .hb-siderail-nav .hb-siderail-tooltip {
+    position: static;
+    display: inline;
+    min-width: 0;
+    padding: 0;
+    overflow: hidden;
+    transform: none;
+    background: transparent;
+    box-shadow: none;
+    color: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.2;
+    opacity: 1;
+    pointer-events: auto;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .hb-siderail-nav .hb-siderail-btn:hover {
+    color: var(--hb-text-page);
+    background: var(--hb-surface-hover);
+  }
+
+  .hb-siderail-nav .hb-siderail-btn--active {
+    color: var(--hb-blue);
+    background: color-mix(in srgb, var(--hb-blue) 9%, var(--hb-surface));
+  }
+
+  .hb-siderail-nav .hb-siderail-btn--active::before {
+    top: 50%;
+    bottom: auto;
+    left: 0;
+    width: 3px;
+    height: 24px;
+    border-radius: 0 2px 2px 0;
+    transform: translateY(-50%);
+  }
+
+  .hb-siderail-nav .hb-siderail-btn-badge {
+    top: 8px;
+    right: 10px;
+  }
+
+  .hb-siderail-group-divider {
+    display: block !important;
+    width: 100%;
+    height: 1px;
+    flex: 0 0 auto;
+    margin: 8px 0;
+    background: var(--hb-border);
+  }
+
+  .hb-siderail-admin-group {
+    width: 100%;
+  }
+
+  .hb-siderail-admin-menu {
+    position: static !important;
+    width: 100% !important;
+    margin: 4px 0 0;
+    padding: 8px;
+    border: 1px solid var(--hb-border);
+    border-radius: var(--hb-radius-sm);
+    background: var(--hb-surface-muted);
+    box-shadow: none !important;
+  }
+
+  .hb-siderail-admin-menu-title {
+    font-size: 0.68rem;
+  }
+
+  .hb-siderail-admin-link {
+    min-height: 42px;
+    border-radius: var(--hb-radius-sm);
+  }
+
+  .hb-siderail-footer {
+    display: none !important;
+  }
+
+  .hb-siderail--mobile-open .hb-siderail-footer {
+    position: fixed;
+    z-index: 3;
+    bottom: 0;
+    left: 0;
+    display: flex !important;
+    width: min(84vw, 320px);
+    height: 72px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 10px 12px max(10px, env(safe-area-inset-bottom));
+    background: var(--hb-surface);
+    border-top: 1px solid var(--hb-border);
+  }
+
+  .hb-siderail--mobile-open .hb-siderail-footer > :first-child {
+    margin-right: auto;
+  }
+
+  .hb-siderail--mobile-open .hb-siderail-footer .hb-siderail-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .hb-app-main {
+    padding-top: 64px !important;
+    padding-left: 0 !important;
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom)) !important;
+  }
+
+  .hb-page-topbar {
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .hb-page-topbar .hb-page-title {
+    font-size: 1.45rem !important;
+    line-height: 1.15;
+  }
+
+  .hb-page-actions {
+    gap: 0.35rem;
+  }
+
+  .hb-page-action,
+  .hb-page-actions .button {
+    min-height: 35px;
+    padding: 0.4rem 0.65rem;
+    font-size: 0.76rem;
+  }
+
+  /* Keep the dashboard close to the sketch: four readable rows, then the
+     full homework list, reminders, and a compact progress panel. */
+  .hb-dashboard-page {
+    padding-top: 1.25rem !important;
+    padding-right: 0.9rem !important;
+    padding-bottom: 2rem !important;
+    padding-left: 0.9rem !important;
+  }
+
+  .hb-dashboard-page .hb-page-topbar {
+    margin-bottom: 1.1rem !important;
+  }
+
+  .hb-dashboard-summary {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .hb-dashboard-stat {
+    display: flex;
+    min-height: 56px !important;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 0.85rem !important;
+    border-top: 1px solid var(--hb-border) !important;
+    border-left: 3px solid var(--hb-stat-accent, var(--hb-border-hover));
+    border-radius: var(--hb-radius-sm);
+  }
+
+  .hb-dashboard-stat-label {
+    font-size: 0.9rem;
+  }
+
+  .hb-dashboard-stat-value {
+    margin-top: 0;
+    font-size: 1.6rem !important;
+  }
+
+  .hb-dashboard-stat-desktop-label,
+  .hb-dashboard-stat-desktop-value {
+    display: none;
+  }
+
+  .hb-dashboard-stat-mobile-label,
+  .hb-dashboard-stat-mobile-value {
+    display: inline;
+  }
+
+  .hb-dashboard-page > .grid {
+    gap: 1rem !important;
+  }
+
+  .hb-dashboard-page > .grid > section,
+  .hb-dashboard-page > .grid > aside > section {
+    padding: 1rem !important;
+  }
+
+  .hb-dashboard-page > .grid > aside {
+    gap: 1rem !important;
+  }
+
+  .hb-dashboard-page .hb-dashboard-list-head {
+    display: none !important;
+  }
+
+  .hb-dashboard-page .hb-dashboard-list-head + ul li > div {
+    min-height: 58px;
+  }
+
+  .hb-dashboard-page .hb-card-title,
+  .hb-dashboard-page .hb-card-section {
+    font-size: 1rem;
+  }
+
+  .hb-dashboard-page .hb-card-meta {
+    font-size: 0.76rem;
+  }
+
+  .hb-dashboard-page .hb-progress-widget {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    column-gap: 0.9rem;
+    align-items: center;
+  }
+
+  .hb-dashboard-page .hb-progress-widget > header {
+    grid-column: 1 / -1;
+  }
+
+  .hb-dashboard-page .hb-progress-mobile-ring {
+    position: relative;
+    display: flex;
+    width: 68px;
+    height: 68px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background: conic-gradient(
+      var(--hb-success) calc(var(--hb-progress) * 1%),
+      var(--hb-surface-hover) 0
+    );
+    color: var(--hb-text-page);
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .hb-dashboard-page .hb-progress-mobile-ring::before {
+    position: absolute;
+    inset: 7px;
+    border-radius: inherit;
+    background: var(--hb-surface);
+    content: "";
+  }
+
+  .hb-dashboard-page .hb-progress-mobile-ring span,
+  .hb-dashboard-page .hb-progress-mobile-ring small {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hb-dashboard-page .hb-progress-mobile-ring small {
+    margin-top: 0.25rem;
+    font-size: 0.62rem;
+  }
+
+  .hb-dashboard-page .hb-progress-widget-details {
+    min-width: 0;
+  }
+
+  .hb-dashboard-page .hb-progress-widget-details > .mb-3,
+  .hb-dashboard-page .hb-progress-widget-details > .hb-bar-track {
+    display: none;
+  }
+
+  .hb-dashboard-page .hb-progress-widget-details dl {
+    margin-top: 0 !important;
+  }
+
+  /* Floating Pip stays clear of the mobile header and the safe-area inset. */
+  .hb-dashboard-page > .hb-chat-panel {
+    right: 1rem !important;
+    bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+    width: 3.5rem !important;
+  }
+
+  .hb-dashboard-page > .hb-chat-panel:has(.hb-chat-bubble) {
+    width: calc(100vw - 2rem) !important;
+    height: min(32rem, calc(100dvh - 5rem)) !important;
+  }
+
+  /* Pip's full chat gets the available phone height rather than the desktop
+     viewport calculation, while its chat sidebar remains drawer-based. */
+  .hb-pip-page {
+    padding-top: 1.25rem !important;
+    padding-right: 0.75rem !important;
+    padding-left: 0.75rem !important;
+  }
+
+  .hb-pip-page > .hb-chat-panel {
+    width: 100% !important;
+    height: min(42rem, calc(100dvh - 9.5rem)) !important;
+    max-height: calc(100dvh - 9.5rem);
+    border-radius: var(--hb-radius);
+  }
+
+  .hb-pip-page .hb-chat-sidebar {
+    width: min(84vw, 320px) !important;
+  }
+
+  /* Seven-column calendar cells need room for the date, not a desktop-sized
+     card. Keep the first and last item visible without hiding the data. */
+  .hb-calendar-cell {
+    min-height: 4.5rem !important;
+    padding: 0.4rem !important;
+  }
+
+  .hb-calendar-cell li:not(:first-child):not(:last-child) {
+    display: none;
+  }
+
+  .hb-calendar-cell li:last-child,
+  .hb-calendar-cell li:first-child {
+    overflow: hidden;
+  }
+
+  .hb-calendar-cell a {
+    padding: 0.2rem !important;
+    font-size: 0.62rem !important;
+    line-height: 1.25;
+  }
+
+  .hb-calendar-cell .hb-faded-text {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  /* Long admin controls and notification actions should wrap instead of
+     forcing a horizontal scroll on a phone. */
+  .hb-page-actions,
+  .hb-form-section,
+  .hb-notification-item > div,
+  .hb-notification-item form {
+    min-width: 0;
+  }
+
+  .hb-notification-item {
+    padding: 1rem !important;
+  }
+
+  .hb-notification-item > div {
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .hb-mobile-topbar {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .hb-dashboard-page {
+    padding-right: 0.7rem !important;
+    padding-left: 0.7rem !important;
+  }
+
+  .hb-dashboard-page > .grid > section,
+  .hb-dashboard-page > .grid > aside > section {
+    padding-right: 0.8rem !important;
+    padding-left: 0.8rem !important;
+  }
+
+  .hb-page-topbar .hb-page-actions .hb-page-action {
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hb-card,
   .hb-card-surface,

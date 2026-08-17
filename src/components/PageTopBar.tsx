@@ -17,7 +17,7 @@ export function PageTopBar({
   showPipCta = false,
 }: PageTopBarProps) {
   return (
-    <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+    <div className="hb-page-topbar mb-8 flex flex-wrap items-end justify-between gap-4">
       <div className="min-w-0 flex-1">
         <h1 className="hb-page-title text-2xl tracking-tight sm:text-[28px]">
           Hi, {greetingName}

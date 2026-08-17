@@ -30,7 +30,7 @@ export default async function PipPage() {
   const firstName = profile.full_name.split(" ")[0] ?? profile.full_name;
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
+    <div className="hb-pip-page mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
       <PageTopBar
         profile={profile}
         greetingName={firstName}
