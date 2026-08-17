@@ -56,7 +56,7 @@ export function CreatePostForm() {
             name="title"
             required
             maxLength={160}
-            placeholder="e.g. Math — Chapter 5 exercises"
+            placeholder="e.g. Math: Chapter 5 exercises"
             className="hb-input w-full rounded-lg px-3 py-2.5 text-sm"
           />
         </div>

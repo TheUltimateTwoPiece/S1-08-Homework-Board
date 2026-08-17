@@ -529,7 +529,7 @@ export function SideRail({ profile, unreadBadgeSlot, adminInboxCounts }: SideRai
         <ThemeToggle />
         <Link
           href="/settings"
-          aria-label={`${profile.full_name} — open settings`}
+          aria-label={`Open settings for ${profile.full_name}`}
           className="hb-siderail-avatar-link group"
         >
           <Avatar

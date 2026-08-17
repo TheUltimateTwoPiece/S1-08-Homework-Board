@@ -86,7 +86,7 @@ export function ChecklistEditor({ defaultItems = [] }: ChecklistEditorProps) {
               addItem();
             }
           }}
-          placeholder={items.length >= MAX_ITEMS ? "Checklist limit reached" : "Add a step, e.g. Read pages 12–15"}
+          placeholder={items.length >= MAX_ITEMS ? "Checklist limit reached" : "Add a step, e.g. Read pages 12-15"}
           disabled={items.length >= MAX_ITEMS}
           className="hb-input min-w-0 flex-1 rounded-md px-2.5 py-1.5 text-xs"
         />

@@ -235,7 +235,7 @@ export function ThemeSettingsForm() {
         <div
           role="button"
           tabIndex={0}
-          aria-label="Generate theme from image — upload or drop an image"
+          aria-label="Generate theme from image: upload or drop an image"
           aria-disabled={busy}
           onClick={() => !busy && fileInputRef.current?.click()}
           onKeyDown={(e) => {
@@ -259,7 +259,7 @@ export function ThemeSettingsForm() {
           {busy ? (
             <>
               <span className="hb-spinner" aria-hidden="true" />
-              <p className="hb-card-body text-sm">Sampling your image…</p>
+              <p className="hb-card-body text-sm">Sampling your image...</p>
             </>
           ) : custom?.thumbnail ? (
             <>
@@ -300,7 +300,7 @@ export function ThemeSettingsForm() {
                   Drag & drop an image here
                 </p>
                 <p className="hb-card-meta mt-0.5 text-xs">
-                  or click to browse — we'll average its colors and build an
+                  or click to browse. We'll average its colors and build an
                   accessible palette.
                 </p>
               </div>
@@ -426,7 +426,7 @@ export function ThemeSettingsForm() {
                     aria-hidden="true"
                   />
                   <span className="hb-card-body truncate font-mono text-[11px]">
-                    {value || "—"}
+                    {value || "None"}
                   </span>
                   <span className="hb-card-meta text-[11px]">{hint}</span>
                 </button>

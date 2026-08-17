@@ -67,7 +67,7 @@ export function BugReportForm() {
           </div>
 
           {state?.error &&        <div role="alert" className="border border-[var(--hb-danger)] border-opacity-40 bg-[var(--hb-surface-hover)] px-4 py-3 text-sm text-rose-700 dark:text-rose-300">{state.error}</div>}
-          {state?.success &&        <div role="status" className="border border-emerald-700 border-opacity-40 bg-[var(--hb-surface-hover)] px-4 py-3 text-sm text-emerald-700 dark:text-emerald-300">Thanks — your bug report and screenshots were sent to the admins.</div>}
+          {state?.success &&        <div role="status" className="border border-emerald-700 border-opacity-40 bg-[var(--hb-surface-hover)] px-4 py-3 text-sm text-emerald-700 dark:text-emerald-300">Thanks! Your bug report and screenshots were sent to the admins.</div>}
 
           <button type="submit" disabled={pending} className={`button w-full gap-2 ${pending ? "hb-btn--pending" : ""}`}>
             {pending && <span className="hb-spinner" aria-hidden="true" />}

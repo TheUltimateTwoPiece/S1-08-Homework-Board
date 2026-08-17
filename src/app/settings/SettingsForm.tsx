@@ -235,7 +235,7 @@ export function SettingsForm({ profile }: SettingsFormProps) {
           <h2 className="hb-card-section text-base">Email notifications</h2>
         </div>
         <p className="hb-card-meta mb-4 text-sm">
-          Pick which class emails you want to receive. In-app bell notifications are unaffected — you'll still see new homework and reminders in the app regardless of these settings.
+          Pick which class emails you want to receive. In-app bell notifications are unaffected. You'll still see new homework and reminders in the app regardless of these settings.
         </p>
 
         <div className="space-y-3">
