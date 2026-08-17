@@ -2,56 +2,53 @@ import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import type { Notification } from "@/lib/types";
 
-type NotificationsWidgetProps = { notifications: Notification[]; };
+type NotificationsWidgetProps = { notifications: Notification[] };
 
 export function NotificationsWidget({ notifications }: NotificationsWidgetProps) {
   const recent = notifications.slice(0, 3);
-  const unread = recent.filter((n) => !n.read_at).length;
 
   return (
-    <section
-      className="hb-bento-card hb-bento-card--clickable relative "
-      style={{ gridColumn: "span 4", gridRow: "span 2", animationDelay: "160ms" }}
-    >
-      <div className="hb-bento-head relative z-[1]">
-        <div className="flex min-w-0 items-center gap-3">
-          <div className="hb-bento-icon-box" style={{ background: "linear-gradient(135deg, rgba(220,38,38,0.18), rgba(220,38,38,0.04))", color: "#dc2626" }}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
-              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-            </svg>
-          </div>
-          <h2 className="hb-card-section truncate text-sm tracking-tight">Reminders</h2>
-          {unread > 0 && (
-            <span className="shrink-0 rounded-full bg-rose-200 px-1.5 py-0.5 text-[10px] font-bold text-rose-800">
-              {unread} new
-            </span>
-          )}
-        </div>
-      </div>
+    <section aria-labelledby="reminders-heading" className="hb-card-surface p-5">
+      <header className="mb-3 flex items-baseline justify-between gap-4">
+        <h2 id="reminders-heading" className="hb-card-section text-sm">
+          Reminders
+        </h2>
+        <Link
+          href="/notifications"
+          className="shrink-0 text-xs font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+        >
+          View all
+        </Link>
+      </header>
 
       {recent.length === 0 ? (
-        <div className="flex h-[calc(100%-44px)] flex-col items-center justify-center text-center">
-          <p className="hb-card-section text-sm">You're all caught up</p>
-          <p className="hb-card-meta text-xs">No new reminders</p>
-        </div>
+        <p className="hb-card-meta text-sm">No reminders yet.</p>
       ) : (
-        <ul className="hb-list-scroll -mx-1 space-y-1 pb-1">
-          {recent.map((n, i) => (
-            <li key={n.id} className={"hb-snippet " + (!n.read_at ? "hb-snippet--unread" : "")} style={{ animationDelay: (200 + i * 28) + "ms" }}>
-              <div className={"mt-0.5 h-2 w-2 shrink-0 rounded-full " + (n.read_at ? "bg-zinc-400" : "bg-amber-500 hb-pulse-dot")} />
+        <ul className="space-y-2">
+          {recent.map((n) => (
+            <li key={n.id} className="flex items-start gap-2.5">
+              <span
+                className={
+                  "mt-1.5 h-2 w-2 shrink-0 rounded-full " +
+                  (n.read_at ? "bg-zinc-300 dark:bg-stone-600" : "bg-amber-500")
+                }
+                aria-hidden="true"
+              />
               <div className="min-w-0 flex-1">
-                <div className="hb-card-section hb-truncate text-sm">{n.title}</div>
-                <div className="hb-card-meta hb-truncate text-xs">
-                  {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
-                </div>
+                <p className="hb-card-section truncate text-sm">{n.title}</p>
+                <p className="hb-card-meta truncate text-xs">
+                  {formatDistanceToNow(new Date(n.created_at), {
+                    addSuffix: true,
+                  })}
+                </p>
               </div>
+              {!n.read_at && (
+                <span className="hb-card-meta shrink-0 text-[11px]">new</span>
+              )}
             </li>
           ))}
         </ul>
       )}
-
-      <Link href="/notifications" className="absolute inset-0 z-[1] rounded-[inherit]" tabIndex={-1} aria-hidden="true" aria-label="View all notifications" />
     </section>
   );
 }

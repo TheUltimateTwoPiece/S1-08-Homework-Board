@@ -23,16 +23,9 @@ export function EditPostForm({ post }: EditPostFormProps) {
 
   return (
     <form action={formAction} className="rounded-xl border hb-card-surface p-6">
-      <div className="mb-5 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden="true">
-            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-          </svg>
-        </div>
-        <div>
-          <h2 className="hb-card-section text-base">Edit post</h2>
-          <p className="hb-card-body text-xs">Update the assignment details</p>
-        </div>
+      <div className="mb-5 border-b pb-4">
+        <h2 className="hb-card-title text-lg">Edit post</h2>
+        <p className="hb-card-body mt-0.5 text-sm">Update the assignment details</p>
       </div>
 
       <input type="hidden" name="postId" value={post.id} />
@@ -76,7 +69,7 @@ export function EditPostForm({ post }: EditPostFormProps) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2.5">
+        <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2.5 dark:bg-stone-800/60">
           <input
             type="checkbox"
             name="pinned"
@@ -106,10 +99,10 @@ export function EditPostForm({ post }: EditPostFormProps) {
         </div>
 
         {state?.error && (
-          <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">{state.error}</div>
+          <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-red-950/50 dark:text-red-300">{state.error}</div>
         )}
         {state?.success && (
-          <div className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-600">
+          <div className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-600 dark:bg-green-950/50 dark:text-green-300">
             <div className="flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
                 <polyline points="20 6 9 17 4 12" />

@@ -17,111 +17,74 @@ export function StatsWidget({
   const pct =
     totalPosts === 0 ? 0 : Math.round((completedCount / totalPosts) * 100);
   const safePct = Math.min(100, Math.max(0, pct));
-  const radius = 44;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference * (1 - safePct / 100);
-
   const barStyle = { "--hb-bar-target": safePct / 100 } as CSSProperties;
 
   return (
-    <section
-      className="hb-bento-card hb-bento-card--clickable relative overflow-hidden"
-      style={{
-        gridColumn: "span 4",
-        gridRow: "span 2",
-        animationDelay: "120ms",
-      }}
-    >
-      <div className="hb-bento-head relative z-[1]">
-        <div className="flex min-w-0 items-center gap-3">
-          <div
-            className="hb-bento-icon-box"
-            style={{
-              background:
-                "linear-gradient(135deg, rgba(22,163,74,0.18), rgba(22,163,74,0.04))",
-              color: "#15803d",
-            }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-            </svg>
-          </div>
-          <h2 className="hb-card-section truncate text-sm font-bold tracking-tight">
-            Your progress
-          </h2>
-        </div>
+    <section aria-labelledby="progress-heading" className="hb-card-surface p-5">
+      <header className="mb-3 flex items-baseline justify-between gap-4">
+        <h2 id="progress-heading" className="hb-card-section text-sm">
+          Your progress
+        </h2>
+        <Link
+          href="/your-progress"
+          className="shrink-0 text-xs font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+        >
+          Details
+        </Link>
+      </header>
+
+      <div className="mb-3 flex items-baseline justify-between">
+        <span className="hb-card-meta text-sm">
+          {completedCount} of {totalPosts} completed
+        </span>
+        <span className="text-sm font-semibold tabular-nums">{safePct}%</span>
       </div>
 
-      <div className="grid grid-cols-[96px_1fr] items-center gap-4 overflow-hidden">
-        <div className="relative flex items-center justify-center">
-          <svg viewBox="0 0 100 100" className="hb-progress-ring h-24 w-24" aria-hidden="true">
-            <circle cx="50" cy="50" r={radius} fill="none" strokeWidth="9" className="text-zinc-200 dark:text-slate-600" stroke="currentColor" />
-            <circle
-              cx="50"
-              cy="50"
-              r={radius}
-              fill="none"
-              stroke="url(#hb-progress-grad)"
-              strokeWidth="9"
-              strokeLinecap="round"
-              strokeDasharray={circumference}
-              strokeDashoffset={offset}
-              className="hb-progress-stroke"
-            />
-            <defs>
-              <linearGradient id="hb-progress-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#22c55e" />
-                <stop offset="100%" stopColor="#15803d" />
-              </linearGradient>
-            </defs>
-          </svg>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-2xl font-bold tabular-nums text-slate-800">
-              {safePct}
-              <span className="text-xs font-bold text-slate-600">%</span>
-            </span>
-          </div>
-        </div>
-        <div className="min-w-0 space-y-1.5 text-xs">
-          <div className="flex items-center justify-between rounded-md bg-emerald-50 px-2 py-1.5">
-            <span className="hb-truncate font-bold text-emerald-800">Done</span>
-            <span className="ml-2 shrink-0 text-base font-bold tabular-nums leading-none text-emerald-800">{completedCount}</span>
-          </div>
-          <div className="flex items-center justify-between rounded-md bg-amber-50 px-2 py-1.5">
-            <span className="hb-truncate font-bold text-amber-800">Upcoming</span>
-            <span className="ml-2 shrink-0 text-base font-bold tabular-nums leading-none text-amber-800">{upcomingCount}</span>
-          </div>
-          {overdueCount > 0 && (
-            <div className="flex items-center justify-between rounded-md bg-rose-50 px-2 py-1.5">
-              <span className="hb-truncate font-bold text-rose-800">Overdue</span>
-              <span className="ml-2 shrink-0 text-base font-bold tabular-nums leading-none text-rose-800">{overdueCount}</span>
-            </div>
-          )}
-        </div>
+      <div
+        className="hb-bar-track"
+        role="progressbar"
+        aria-valuenow={safePct}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label="Overall homework completion"
+      >
+        <div className="hb-bar-fill" style={barStyle} />
       </div>
 
-      <div className="mt-4">
-        <div className="mb-1.5 flex items-center justify-between gap-2">
-          <span className="hb-card-meta min-w-0 truncate text-[11px] font-semibold">
-            {completedCount} of {totalPosts} completed
-          </span>
-          <span className="shrink-0 text-[11px] font-bold tabular-nums text-emerald-700">
-            {safePct}%
-          </span>
+      <dl className="mt-4 grid grid-cols-2 gap-2 text-sm">
+        <div className="rounded-md bg-[var(--hb-surface-hover)] px-3 py-2">
+          <dt className="hb-card-meta text-xs">Done</dt>
+          <dd className="mt-0.5 font-semibold tabular-nums text-emerald-700 dark:text-emerald-400">
+            {completedCount}
+          </dd>
+        </div>
+        <div className="rounded-md bg-[var(--hb-surface-hover)] px-3 py-2">
+          <dt className="hb-card-meta text-xs">Upcoming</dt>
+          <dd className="mt-0.5 font-semibold tabular-nums text-amber-700 dark:text-amber-400">
+            {upcomingCount}
+          </dd>
         </div>
         <div
-          className="hb-bar-track"
-          role="progressbar"
-          aria-valuenow={safePct}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-label="Overall homework completion"
+          className={
+            "col-span-2 rounded-md px-3 py-2 " +
+            (overdueCount > 0
+              ? "bg-rose-50 dark:bg-rose-900/30"
+              : "bg-[var(--hb-surface-hover)]")
+          }
         >
-          <div className="hb-bar-fill" style={barStyle} />
+          <dt className="hb-card-meta text-xs">Overdue</dt>
+          <dd
+            className={
+              "mt-0.5 font-semibold tabular-nums " +
+              (overdueCount > 0
+                ? "text-rose-700 dark:text-rose-400"
+                : "text-foreground")
+            }
+          >
+            {overdueCount}
+          </dd>
         </div>
-      </div>
-
-      <Link href="/your-progress" className="absolute inset-0 z-[2] rounded-[inherit]" tabIndex={-1} aria-hidden="true" aria-label="View your progress" />
+      </dl>
     </section>
   );
 }

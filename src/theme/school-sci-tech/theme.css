@@ -1,9 +1,14 @@
 @layer base {
+  html {
+    /* Lift the whole rem scale ~6% so body copy stops reading as cramped. */
+    font-size: 17px;
+  }
+
   :root {
-    --hb-blue: #2563eb;
-    --hb-blue-light: #3b82f6;
-    --hb-btn-bg: #2563eb;
-    --hb-btn-bg-hover: #1d4ed8;
+    --hb-blue: #1d4ed8;
+    --hb-blue-light: #2563eb;
+    --hb-btn-bg: #1d4ed8;
+    --hb-btn-bg-hover: #1e40af;
     --hb-red: #dc2626;
     --hb-grey: #475569;
     --hb-danger: var(--hb-red);
@@ -11,11 +16,11 @@
     --hb-success-light: #22c55e;
     --hb-warning: #d97706;
     --hb-warning-light: #f59e0b;
-    --hb-surface: #ffffff;
-    --hb-surface-muted: #f8fafc;
-    --hb-surface-hover: #f1f5f9;
-    --hb-border: #e2e8f0;
-    --hb-border-hover: #cbd5e1;
+    --hb-surface: #fffdf9;
+    --hb-surface-muted: #f6f2eb;
+    --hb-surface-hover: #efe9de;
+    --hb-border: #e7e0d3;
+    --hb-border-hover: #d7cdbb;
     /* ── 4-Tier Text Hierarchy (WCAG AA safe in both modes) ── */
     /* Page titles (h1, h2 on dashboards):     slate-900 ~17:1 on white      */
     /* Section / card titles:                  slate-800 ~14:1 on white      */
@@ -30,24 +35,24 @@
     --hb-text: var(--hb-text-body);
     --hb-text-subtle: var(--hb-text-muted);
     --hb-overlay: rgba(0, 0, 0, 0.05);
-    --hb-bg-grad-1: rgba(37, 99, 235, 0.08);
-    --hb-bg-grad-2: rgba(220, 38, 38, 0.07);
-    --hb-bg-grad-3: rgba(100, 116, 139, 0.04);
+    --hb-bg-grad-1: rgba(37, 99, 235, 0.07);
+    --hb-bg-grad-2: rgba(217, 119, 6, 0.06);
+    --hb-bg-grad-3: rgba(120, 113, 108, 0.04);
     --background: var(--hb-surface-muted);
     --foreground: var(--hb-text);
-    --hb-radius: 0.75rem;
-    --hb-radius-sm: 0.5rem;
-    --hb-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
-    --hb-shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
-    --hb-shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
-    --hb-shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+    --hb-radius: 0.5rem;
+    --hb-radius-sm: 0.375rem;
+    --hb-shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.05);
+    --hb-shadow-md: 0 3px 6px -1px rgba(28, 25, 23, 0.07), 0 2px 4px -2px rgba(28, 25, 23, 0.04);
+    --hb-shadow-lg: 0 8px 14px -3px rgba(28, 25, 23, 0.08), 0 4px 6px -4px rgba(28, 25, 23, 0.04);
+    --hb-shadow-xl: 0 16px 24px -6px rgba(28, 25, 23, 0.12), 0 8px 10px -6px rgba(28, 25, 23, 0.05);
   }
 
   .dark {
     --hb-blue: #60a5fa;
     --hb-blue-light: #93c5fd;
     --hb-btn-bg: #2563eb;
-    --hb-btn-bg-hover: #1d4ed8;
+    --hb-btn-bg-hover: #3b82f6;
     --hb-red: #f87171;
     --hb-grey: #cbd5e1;
     --hb-danger: var(--hb-red);
@@ -55,11 +60,11 @@
     --hb-success-light: #86efac;
     --hb-warning: #fbbf24;
     --hb-warning-light: #fcd34d;
-    --hb-surface: #1e293b;
-    --hb-surface-muted: #0f172a;
-    --hb-surface-hover: #334155;
-    --hb-border: #334155;
-    --hb-border-hover: #475569;
+    --hb-surface: #221f19;
+    --hb-surface-muted: #16140f;
+    --hb-surface-hover: #2d2a22;
+    --hb-border: #38332a;
+    --hb-border-hover: #4c4538;
     /* Dark mode: hierarchy reads as light-grey → near-white     */
     /* Page titles:      slate-50  ~13:1 on slate-800  */
     /* Section titles:   slate-100 ~11:1               */
@@ -74,9 +79,9 @@
     --hb-text: var(--hb-text-body);
     --hb-text-subtle: var(--hb-text-muted);
     --hb-overlay: rgba(255, 255, 255, 0.05);
-    --hb-bg-grad-1: rgba(96, 165, 250, 0.06);
-    --hb-bg-grad-2: rgba(248, 113, 113, 0.05);
-    --hb-bg-grad-3: rgba(148, 163, 184, 0.03);
+    --hb-bg-grad-1: rgba(96, 165, 250, 0.05);
+    --hb-bg-grad-2: rgba(251, 191, 36, 0.05);
+    --hb-bg-grad-3: rgba(168, 162, 158, 0.03);
     --background: var(--hb-surface-muted);
     --foreground: var(--hb-text);
     --hb-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -85,11 +90,11 @@
     --hb-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
   }
 
-  /* ── Multi-Theme Presets (data-theme attribute) ──────────────────────────
+  /* ── Multi-Theme Presets (data-theme attribute) ────────────────
      The theme engine sets `data-theme` on <html>. Light/dark reuse the
      :root/.dark token sets above; emerald/sunset add full palettes; custom
-     maps the dynamic vars (--bg/--card-bg/--border/--primary/--text) that the
-     engine injects inline on <html> after sampling an uploaded image. */
+     maps the dynamic vars (--bg/--card-bg/--border/--primary/--text) that
+     the engine injects inline on <html> after sampling an uploaded image. */
 
   [data-theme="emerald"] {
     --hb-blue: #047857;
@@ -182,25 +187,8 @@
   }
 
   body {
-    background:
-      radial-gradient(
-        1000px circle at 20% -5%,
-        var(--hb-bg-grad-1),
-        transparent 50%
-      ),
-      radial-gradient(
-        900px circle at 80% -5%,
-        var(--hb-bg-grad-2),
-        transparent 50%
-      ),
-      radial-gradient(
-        600px circle at 50% 100%,
-        var(--hb-bg-grad-3),
-        transparent 50%
-      ),
-      linear-gradient(to bottom, var(--hb-surface-muted), color-mix(in srgb, var(--hb-surface-muted) 95%, var(--hb-text) 5%));
+    background: var(--hb-surface-muted);
     color: var(--hb-text);
-    background-attachment: fixed;
     transition: background-color 300ms ease, color 300ms ease;
   }
 
@@ -216,7 +204,29 @@
   }
 }
 
-/* ── Custom (uploaded-image) themes: make the palette obvious ─────────
+/* ── Type hierarchy ────────────────────────────────────────────────────────
+   The board read flat: section titles and body copy shared ~14px while
+   metadata dropped to 10–11px. These three tiers separate them again.
+   UNLAYERED so they beat the inline `text-sm` / `text-xs` utilities. */
+.hb-card-section,
+.hb-section-title {
+  font-size: 1.0625rem;   /* ~18px */
+  line-height: 1.4;
+}
+
+.hb-card-body,
+.hb-body-text {
+  font-size: 0.9375rem;   /* ~16px */
+  line-height: 1.6;
+}
+
+.hb-card-meta,
+.hb-muted-text {
+  font-size: 0.8125rem;   /* ~14px */
+  line-height: 1.5;
+}
+
+/* ── Custom (uploaded-image) themes: make the palette obvious ────────────
    Primary buttons and blue accent text adopt deepened / lightened
    variations of the image's main colour instead of the default blue.
    These rules are UNLAYERED so they beat Tailwind's utility classes (which
@@ -227,8 +237,8 @@
   background-color: var(--hb-btn-bg);
 }
 
-/* Light accent chips (sit on always-white card surfaces) take on a soft
-   primary tint so badges/icon boxes stop clashing with the theme. */
+/* Light accent chips take on a soft primary tint so badges/icon boxes stop
+   clashing with the theme. */
 [data-theme="custom"] .bg-blue-50 {
   background-color: color-mix(in srgb, var(--hb-blue) 8%, #ffffff);
 }
@@ -325,15 +335,13 @@
   }
 
   @keyframes hb-page-enter {
-    0% {
+    from {
       opacity: 0;
-      transform: translateY(6px) scale(0.998);
-      filter: blur(2px);
+      transform: translateY(4px);
     }
-    100% {
+    to {
       opacity: 1;
-      transform: translateY(0) scale(1);
-      filter: blur(0);
+      transform: translateY(0);
     }
   }
 
@@ -409,7 +417,7 @@
   }
 
   .hb-page-enter {
-    animation: hb-page-enter 180ms cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+    animation: hb-page-enter 160ms ease-out backwards;
   }
 
   /* ── Header ─────────────────────────────────── */
@@ -418,19 +426,13 @@
     position: sticky;
     top: 0;
     z-index: 50;
-    border-bottom: 1px solid rgba(226, 232, 240, 0.7);
-    background: linear-gradient(
-      90deg,
-      rgba(37, 99, 235, 0.1),
-      rgba(220, 38, 38, 0.1)
-    );
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    transition: box-shadow 200ms ease;
+    border-bottom: 1px solid var(--hb-border);
+    background: color-mix(in srgb, var(--hb-surface) 92%, transparent);
+    transition: box-shadow 200ms ease, background-color 300ms ease, border-color 300ms ease;
   }
 
   .hb-header.scrolled {
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+    box-shadow: var(--hb-shadow-sm);
   }
 
   .hb-brand {
@@ -459,9 +461,8 @@
   }
 
   .hb-card--interactive:hover {
-    border-color: rgba(37, 99, 235, 0.4);
-    box-shadow: var(--hb-shadow-lg);
-    transform: translateY(-2px);
+    border-color: var(--hb-border-hover);
+    box-shadow: var(--hb-shadow-sm);
   }
 
   .hb-card--interactive:active {
@@ -470,30 +471,22 @@
   }
 
   .hb-card-muted {
-    border-color: rgba(226, 232, 240, 0.65);
-    background: rgba(248, 250, 252, 0.75);
+    border-color: var(--hb-border);
+    background: color-mix(in srgb, var(--hb-surface) 72%, var(--hb-surface-muted) 28%);
   }
 
   .hb-card-muted:hover {
-    border-color: rgba(100, 116, 139, 0.25);
+    border-color: var(--hb-border-hover);
   }
 
   .hb-card--completed {
-    border-color: rgba(22, 163, 74, 0.35);
-    background: linear-gradient(
-      135deg,
-      rgba(22, 163, 74, 0.07),
-      rgba(22, 163, 74, 0.02)
-    );
+    border-color: color-mix(in srgb, var(--hb-success) 45%, transparent);
+    background-color: color-mix(in srgb, var(--hb-success) 8%, var(--hb-surface));
   }
 
   .hb-card--unread {
-    border-color: rgba(217, 119, 6, 0.35);
-    background: linear-gradient(
-      135deg,
-      rgba(217, 119, 6, 0.12),
-      rgba(217, 119, 6, 0.04)
-    );
+    border-color: color-mix(in srgb, var(--hb-warning) 45%, transparent);
+    background-color: color-mix(in srgb, var(--hb-warning) 10%, var(--hb-surface));
   }
 
   /* ── Typography ─────────────────────────────── */
@@ -508,8 +501,14 @@
 
   .hb-page-title {
     color: var(--hb-text-page);
-    font-weight: 700;
-    letter-spacing: -0.01em;
+    font-family: var(--font-fraunces), var(--font-geist-sans), Georgia, serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  /* Display serif for standalone headings outside the hb-* title classes. */
+  .hb-display-font {
+    font-family: var(--font-fraunces), var(--font-geist-sans), Georgia, serif;
   }
 
   .hb-section-title {
@@ -533,53 +532,55 @@
     font-weight: 500;
   }
 
-  /* ── Always-Light Card Surface + In-Card Text ─── */
-  /* Widgets / forms / list rows / detail articles always render on a
-     light surface, regardless of theme. Body still flips via --hb-surface-muted.
-     Token values are constant (do NOT cascade through .dark) so post text
-     stays dark-on-white in BOTH light and dark mode. */
+  /* ── Themed Card Surface + In-Card Text ────────── */
+  /* Cards, forms, list rows and detail articles now follow the theme.
+     The 4-tier text hierarchy flips with .dark so content stays legible
+     on both warm-paper (light) and warm-charcoal (dark) surfaces. */
 
   .hb-card-surface {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--hb-surface);
+    border: 1px solid var(--hb-border);
     border-radius: var(--hb-radius);
     box-shadow: var(--hb-shadow-sm);
+    transition: background-color 300ms ease, border-color 300ms ease;
   }
 
   .hb-card-surface-strong {
-    background: #ffffff;
-    border: 1px solid rgba(15, 23, 42, 0.08);
+    background: var(--hb-surface);
+    border: 1px solid var(--hb-border);
     border-radius: var(--hb-radius);
     box-shadow:
-      0 1px 2px rgba(15, 23, 42, 0.07),
-      0 4px 12px -2px rgba(15, 23, 42, 0.05);
+      0 1px 2px rgba(28, 25, 23, 0.06),
+      0 4px 12px -2px rgba(28, 25, 23, 0.05);
+    transition: background-color 300ms ease, border-color 300ms ease;
   }
 
-  /* 4-tier in-card text — always dark text on always-light surface */
+  /* 4-tier in-card text — theme-aware */
   .hb-card-title {
-    color: #0f172a;             /* slate-900 — titles/headings */
-    font-weight: 700;
-    letter-spacing: -0.01em;
+    color: var(--hb-text-page);      /* titles/headings */
+    font-family: var(--font-fraunces), var(--font-geist-sans), Georgia, serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
   }
 
   .hb-card-section {
-    color: #1e293b;             /* slate-800 — section labels */
+    color: var(--hb-text-section);   /* section labels */
     font-weight: 600;
     letter-spacing: -0.005em;
   }
 
   .hb-card-body {
-    color: #334155;             /* slate-700 — paragraphs, body */
+    color: var(--hb-text-body);      /* paragraphs, body */
     font-weight: 500;
   }
 
   .hb-card-meta {
-    color: #475569;             /* slate-600 — timestamps, helper */
+    color: var(--hb-text-muted);     /* timestamps, helper */
     font-weight: 500;
   }
 
   .hb-card-faded {
-    color: #64748b;             /* slate-500 — completed/line-through */
+    color: var(--hb-text-faded);     /* completed/line-through */
     font-weight: 500;
   }
 
@@ -607,10 +608,7 @@
     color: var(--hb-text);
   }
 
-  /* ── Primary Button (Uiverse.io by McHaXYT) ────
-     Big CTAs follow the theme's button tokens (--hb-btn-bg) so they match
-     the active theme — primary-coloured in custom/emerald/sunset themes,
-     blue in light/dark — while keeping white-text AA contrast. */
+  /* ── Primary Button ──────────────────────────── */
 
   .button {
     display: inline-flex;
@@ -618,31 +616,29 @@
     justify-content: center;
     gap: 8px;
     position: relative;
-    padding: 15px 20px;
-    border: none;
+    padding: 12px 20px;
+    border: 1px solid transparent;
     outline: none;
     background-color: var(--hb-btn-bg);
     color: #ffffff;
-    border-radius: 7px;
+    border-radius: 10px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.25s ease-out;
+    box-shadow: 0 1px 2px rgba(28, 25, 23, 0.22);
+    transition: background-color 160ms ease, transform 120ms ease, box-shadow 160ms ease;
     user-select: none;
     text-decoration: none;
   }
 
   .button:hover {
-    transform: translateY(-3px);
     background-color: var(--hb-btn-bg-hover);
-  }
-
-  /* Keep the dark frame visible against dark surfaces (dark mode) */
-  .dark .button {
-    border: 1px solid rgba(238, 238, 238, 0.15);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(28, 25, 23, 0.18);
   }
 
   .button:active {
-    transform: translateY(-1px);
+    transform: translateY(0px);
+    box-shadow: 0 1px 2px rgba(28, 25, 23, 0.22);
   }
 
   .button:disabled {
@@ -671,9 +667,9 @@
   .hb-chip {
     position: relative;
     overflow: hidden;
-    border: 1px solid rgba(100, 116, 139, 0.3);
+    border: 1px solid var(--hb-border-hover);
     color: var(--hb-text-muted);
-    background: rgba(248, 250, 252, 0.85);
+    background: var(--hb-surface);
     border-radius: 9999px;
     transition:
       transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
@@ -684,37 +680,10 @@
     user-select: none;
   }
 
-  .hb-chip::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    left: -60%;
-    width: 55%;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(37, 99, 235, 0.16),
-      transparent
-    );
-    opacity: 0;
-    pointer-events: none;
-  }
-
   .hb-chip:hover {
-    border-color: rgba(37, 99, 235, 0.45);
-    background: rgba(37, 99, 235, 0.07);
-    color: rgba(37, 99, 235, 1);
-    transform: translateY(-1px) scale(1.02);
-    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.1);
-  }
-
-  .hb-chip:hover::after {
-    opacity: 1;
-    animation: hb-sheen 700ms ease-out;
-  }
-
-  .hb-chip:active {
-    transform: translateY(0px) scale(0.98);
+    border-color: var(--hb-border-hover);
+    background: var(--hb-surface-hover);
+    color: var(--hb-text);
   }
 
   .hb-chip:disabled {
@@ -730,7 +699,7 @@
   /* ── Segmented Controls ──────────────────────── */
 
   .hb-segmented {
-    background: rgba(100, 116, 139, 0.08);
+    background: var(--hb-surface-hover);
     border-radius: 0.625rem;
   }
 
@@ -742,33 +711,8 @@
     user-select: none;
   }
 
-  .hb-segmented button::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    left: -60%;
-    width: 55%;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(37, 99, 235, 0.14),
-      transparent
-    );
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  .hb-segmented button:hover:not(:disabled)::after {
-    opacity: 1;
-    animation: hb-sheen 700ms ease-out;
-  }
-
-  .hb-segmented button:hover:not(:disabled) {
-    transform: translateY(-1px);
-  }
-
   .hb-segmented button:active:not(:disabled) {
-    transform: translateY(0px) scale(0.98);
+    transform: translateY(0px);
   }
 
   .hb-segmented-btn--active {
@@ -789,9 +733,7 @@
     overflow: hidden;
     border-color: rgba(37, 99, 235, 0.8);
     background: rgba(37, 99, 235, 0.08);
-    color: rgba(37, 99, 235, 1);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.1);
+    color: var(--hb-blue);
   }
 
   .hb-choice-btn--inactive {
@@ -801,37 +743,8 @@
     color: var(--hb-text-muted);
   }
 
-  .hb-choice-btn--active::after,
-  .hb-choice-btn--inactive::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    left: -60%;
-    width: 55%;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(37, 99, 235, 0.12),
-      transparent
-    );
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  .hb-choice-btn--active:hover::after,
-  .hb-choice-btn--inactive:hover::after {
-    opacity: 1;
-    animation: hb-sheen 700ms ease-out;
-  }
-
   .hb-choice-btn--inactive:hover {
     border-color: rgba(100, 116, 139, 0.7);
-    transform: translateY(-1px);
-  }
-
-  .hb-choice-btn--inactive:active,
-  .hb-choice-btn--active:active {
-    transform: translateY(0px) scale(0.98);
   }
 
   /* ── Action Link ─────────────────────────────── */
@@ -851,11 +764,9 @@
 
   .hb-action-link:hover {
     background-size: 100% 2px;
-    transform: translateY(-1px);
   }
 
   .hb-action-link:active {
-    transform: translateY(0px);
     opacity: 0.8;
   }
 
@@ -902,21 +813,18 @@
   /* ── Badges ──────────────────────────────────── */
 
   .hb-badge-admin {
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(37, 99, 235, 0.06));
-    color: rgba(37, 99, 235, 1);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--hb-blue) 14%, transparent), color-mix(in srgb, var(--hb-blue) 6%, transparent));
+    color: var(--hb-blue);
   }
 
   .hb-badge-new {
-    background: linear-gradient(135deg, rgba(217, 119, 6, 0.2), rgba(217, 119, 6, 0.08));
-    color: rgba(120, 53, 15, 1);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--hb-warning) 20%, transparent), color-mix(in srgb, var(--hb-warning) 8%, transparent));
+    color: var(--hb-warning);
   }
 
   .hb-badge-subject {
-    background: rgba(100, 116, 139, 0.1);
-    /* Fixed dark slate — these badges sit on always-light card surfaces, so
-       the theme-flipped --hb-text-muted (slate-300 in dark mode) was
-       unreadable grey-on-white. */
-    color: #334155;
+    background: var(--hb-surface-hover);
+    color: var(--hb-text-body);
     font-weight: 500;
   }
 
@@ -930,11 +838,6 @@
   .hb-icon-btn:hover {
     background: rgba(100, 116, 139, 0.1);
     color: var(--hb-text);
-    transform: scale(1.05);
-  }
-
-  .hb-icon-btn:active {
-    transform: scale(0.95);
   }
 
   .hb-bell--shake {
@@ -1014,7 +917,7 @@
   .hb-check-btn--done {
     border-color: rgba(22, 163, 74, 0.45);
     background: linear-gradient(135deg, rgba(22, 163, 74, 0.08), rgba(22, 163, 74, 0.03));
-    color: rgba(21, 128, 61, 1);
+    color: var(--hb-success);
     transition:
       transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
       border-color 180ms ease,
@@ -1024,18 +927,12 @@
 
   .hb-check-btn--done:hover {
     border-color: rgba(22, 163, 74, 0.65);
-    background: linear-gradient(135deg, rgba(22, 163, 74, 0.12), rgba(22, 163, 74, 0.06));
-    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.12);
-    transform: translateY(-1px);
-  }
-
-  .hb-check-btn--done:active {
-    transform: translateY(0px);
+    background: rgba(22, 163, 74, 0.08);
   }
 
   .hb-check-btn--todo {
-    border-color: rgba(100, 116, 139, 0.4);
-    background: rgba(255, 255, 255, 0.85);
+    border-color: var(--hb-border-hover);
+    background: var(--hb-surface);
     color: var(--hb-text-muted);
     transition:
       transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
@@ -1047,13 +944,7 @@
   .hb-check-btn--todo:hover {
     border-color: rgba(37, 99, 235, 0.55);
     background: rgba(37, 99, 235, 0.06);
-    color: rgba(37, 99, 235, 1);
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
-    transform: translateY(-1px);
-  }
-
-  .hb-check-btn--todo:active {
-    transform: translateY(0px);
+    color: var(--hb-blue);
   }
 
   .hb-check-icon--done {
@@ -1068,8 +959,8 @@
   }
 
   .hb-check-icon--todo {
-    border-color: rgba(100, 116, 139, 0.8);
-    background: #ffffff;
+    border-color: var(--hb-border-hover);
+    background: var(--hb-surface);
     transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
@@ -1183,42 +1074,28 @@
   }
 
   .hb-calendar-cell--has-items:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--hb-shadow-md);
+    box-shadow: var(--hb-shadow-sm);
     border-color: rgba(37, 99, 235, 0.35);
     cursor: pointer;
   }
 
   .hb-calendar-cell--today {
-    border-color: rgba(37, 99, 235, 0.5);
-    background: linear-gradient(
-      180deg,
-      rgba(37, 99, 235, 0.06),
-      rgba(37, 99, 235, 0.02)
-    );
+    border-color: color-mix(in srgb, var(--hb-blue) 50%, transparent);
+    background-color: color-mix(in srgb, var(--hb-blue) 7%, var(--hb-surface));
   }
 
   .hb-calendar-nav {
-    transition: transform 150ms ease, color 150ms ease;
-  }
-
-  .hb-calendar-nav:hover {
-    transform: scale(1.05);
-  }
-
-  .hb-calendar-nav:active {
-    transform: scale(0.95);
+    transition: color 150ms ease;
   }
 
   /* ── Notification List ───────────────────────── */
 
   .hb-notification-item {
-    transition: transform 150ms ease, box-shadow 150ms ease;
+    transition: box-shadow 150ms ease;
   }
 
   .hb-notification-item:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--hb-shadow-md);
+    box-shadow: var(--hb-shadow-sm);
   }
 
   /* ── Form Section Divider ────────────────────── */
@@ -1256,7 +1133,6 @@
     padding: 14px 8px 12px;
     background: var(--hb-surface);
     border-right: 1px solid var(--hb-border);
-    box-shadow: 4px 0 16px rgba(15, 23, 42, 0.04);
     transition: background-color 300ms ease, border-color 300ms ease;
   }
 
@@ -1266,16 +1142,14 @@
     justify-content: center;
     width: 44px;
     height: 44px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.22), rgba(100, 116, 139, 0.22));
+    border-radius: 10px;
+    background: var(--hb-surface-hover);
     color: var(--hb-text);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-    transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 200ms ease;
+    transition: color 150ms ease;
   }
 
   .hb-siderail-brand:hover {
-    transform: scale(1.08) rotate(-3deg);
-    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.32);
+    color: var(--hb-blue);
   }
 
   .hb-siderail-divider {
@@ -1284,6 +1158,14 @@
     background: var(--hb-border);
     margin: 10px 0 6px;
     opacity: 0.8;
+  }
+
+  .hb-siderail-group-divider {
+    width: 28px;
+    height: 1px;
+    background: var(--hb-border);
+    margin: 8px 0;
+    flex: 0 0 auto;
   }
 
   .hb-siderail-nav {
@@ -1432,17 +1314,16 @@
   .hb-siderail-btn:hover {
     background: var(--hb-surface-hover);
     color: var(--hb-text);
-    transform: translateY(-2px) scale(1.05);
-  }
-
-  .hb-siderail-btn:active {
-    transform: translateY(0) scale(0.97);
   }
 
   .hb-siderail-btn--active {
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.13), rgba(37, 99, 235, 0.06));
+    background: var(--hb-surface-hover);
     color: var(--hb-blue);
-    box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.18);
+  }
+
+  /* Bolden the selected nav icon so the active state reads at a glance. */
+  .hb-siderail-btn--active svg {
+    stroke-width: 2.4;
   }
 
   .hb-siderail-btn--active::before {
@@ -1453,10 +1334,8 @@
     transform: translateY(-50%);
     width: 3px;
     height: 22px;
-    border-radius: 0 4px 4px 0;
-    background: linear-gradient(180deg, var(--hb-blue), var(--hb-blue-light));
-    box-shadow: 0 0 8px rgba(37, 99, 235, 0.4);
-    animation: hb-bubble-pop 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    border-radius: 0 2px 2px 0;
+    background: var(--hb-blue);
   }
 
   .hb-siderail-btn-badge {
@@ -1555,7 +1434,6 @@
   .hb-siderail-logout:hover {
     color: var(--hb-red);
     background: rgba(220, 38, 38, 0.08);
-    transform: scale(1.08);
   }
 
   /* ── App Shell (with SideRail) ────────────────── */
@@ -1585,6 +1463,7 @@
     }
     .hb-siderail-brand { display: none; }
     .hb-siderail-divider { display: none; }
+    .hb-siderail-group-divider { display: none; }
     .hb-siderail-nav {
       min-width: 0;
       flex-direction: row;
@@ -1644,106 +1523,41 @@
 
   .hb-bento-card {
     position: relative;
-    overflow: hidden;
     border-radius: var(--hb-radius);
-    /* Always-light surface so widget bodies stay legible in BOTH themes */
-    background: #ffffff;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    box-shadow:
-      0 1px 2px rgba(15, 23, 42, 0.07),
-      0 4px 12px -2px rgba(15, 23, 42, 0.06);
+    background: var(--hb-surface);
+    border: 1px solid var(--hb-border);
     padding: 16px;
-    transition:
-      transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
-      box-shadow 220ms ease,
-      border-color 220ms ease;
-    animation: hb-bento-enter 380ms cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+    transition: border-color 180ms ease;
   }
 
   .hb-bento-card:hover {
-    transform: translateY(-3px);
-    box-shadow:
-      0 12px 24px -8px rgba(15, 23, 42, 0.15),
-      0 6px 10px -4px rgba(15, 23, 42, 0.08);
-    border-color: rgba(37, 99, 235, 0.4);
+    border-color: var(--hb-border-hover);
   }
 
-  /* ── Captivating Clickable Cards ──────────────── */
+  /* ── Clickable Cards ──────────────────────────── */
 
   .hb-bento-card--clickable {
     cursor: pointer;
   }
 
-  @keyframes hb-card-shimmer {
-    0% { transform: translateX(-150%) skewX(-15deg); opacity: 0; }
-    20% { opacity: 1; }
-    100% { transform: translateX(180%) skewX(-15deg); opacity: 0; }
-  }
-
-  .hb-bento-card--clickable::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    border-radius: inherit;
-    background: linear-gradient(
-      100deg,
-      transparent 30%,
-      rgba(255, 255, 255, 0.45) 50%,
-      transparent 70%
-    );
-    transform: translateX(-150%) skewX(-15deg);
-    opacity: 0;
-    z-index: 0;
-  }
-
-  .dark .hb-bento-card--clickable::after {
-    background: linear-gradient(
-      100deg,
-      transparent 30%,
-      rgba(255, 255, 255, 0.18) 50%,
-      transparent 70%
-    );
-  }
-
   .hb-bento-card--clickable:hover {
-    transform: translateY(-6px) scale(1.012);
-    box-shadow:
-      0 20px 36px -8px rgba(37, 99, 235, 0.28),
-      0 10px 18px -4px rgba(220, 38, 38, 0.14),
-      0 4px 8px rgba(15, 23, 42, 0.08);
-    border-color: rgba(37, 99, 235, 0.5);
-  }
-
-  .hb-bento-card--clickable:hover::after {
-    animation: hb-card-shimmer 900ms ease-out;
-  }
-
-  .hb-bento-card--clickable:active {
-    transform: translateY(-2px) scale(0.997);
-    transition-duration: 80ms;
+    border-color: var(--hb-border-hover);
   }
 
   /* ── SVG Progress Ring ───────────────────────── */
 
   .hb-progress-ring {
-    animation: hb-bubble-pop 700ms cubic-bezier(0.34, 1.56, 0.64, 1);
     transform: rotate(-90deg);
     transform-origin: center;
   }
 
   .hb-progress-stroke {
-    transition: stroke-dashoffset 1.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    filter: drop-shadow(0 0 4px rgba(34, 197, 94, 0.4));
+    transition: stroke-dashoffset 500ms ease;
   }
 
   @keyframes hb-progress-draw {
     from { stroke-dashoffset: var(--hb-circ, 276); }
     to { stroke-dashoffset: var(--hb-target-offset, 0); }
-  }
-
-  .dark .hb-progress-stroke {
-    filter: drop-shadow(0 0 6px rgba(74, 222, 128, 0.55));
   }
 
   /* ── Pulsing Notification Dot ────────────────── */
@@ -1771,8 +1585,7 @@
   }
 
   .hb-mini-cal-cell--link:hover .hb-mini-cal-num {
-    transform: scale(1.15);
-    box-shadow: 0 2px 10px rgba(37, 99, 235, 0.22);
+    background: var(--hb-surface-hover);
   }
 
   /* ── Bento Card Headers ──────────────────────── */
@@ -1791,16 +1604,12 @@
     justify-content: center;
     width: 36px;
     height: 36px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(37, 99, 235, 0.05));
-    color: var(--hb-blue);
+    color: var(--hb-text-muted);
     flex: none;
-    transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 220ms ease;
   }
 
   .hb-bento-card:hover .hb-bento-icon-box {
-    transform: scale(1.1) rotate(-4deg);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.18);
+    color: var(--hb-text);
   }
 
   /* ── Posts Card (PRIORITY) ───────────────────── */
@@ -1818,11 +1627,7 @@
   }
 
   .hb-posts-widget-row:hover {
-    /* Fixed light hover — rows live on always-white cards, so the
-       theme-flipped --hb-surface-hover (slate-700 in dark mode) rendered as
-       a dark block on a white card. */
-    background: rgba(15, 23, 42, 0.05);
-    transform: translateX(2px);
+    background: var(--hb-surface-hover);
   }
 
   .hb-posts-widget-row--todo { border-left-color: var(--hb-warning); }
@@ -1872,8 +1677,7 @@
 
   .hb-mini-cal-head {
     text-align: center;
-    /* Fixed slate — mini-cal renders on an always-white card. */
-    color: #64748b;
+    color: var(--hb-text-faded);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -1890,8 +1694,7 @@
     gap: 1px;
     border-radius: 8px;
     font-weight: 500;
-    /* Fixed slate — mini-cal renders on an always-white card. */
-    color: #475569;
+    color: var(--hb-text-muted);
     position: relative;
     padding: 1px 0;
     min-height: 28px;
@@ -1920,10 +1723,9 @@
 
   /* Today: solid filled pill */
   .hb-mini-cal-cell--today .hb-mini-cal-num {
-    background: #2563eb;
+    background: var(--hb-blue);
     color: #ffffff;
     font-weight: 700;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.38);
   }
 
   /* Days with homework: soft amber pill + indicator dot */
@@ -1933,13 +1735,18 @@
     font-weight: 700;
   }
 
+  .dark .hb-mini-cal-cell--has-due .hb-mini-cal-num {
+    background: rgba(251, 191, 36, 0.18);
+    color: #fcd34d;
+  }
+
   .hb-mini-cal-cell--has-due:hover {
     background: rgba(217, 119, 6, 0.08);
   }
 
   /* When today also has homework, keep the filled-blue emphasis */
   .hb-mini-cal-cell--today.hb-mini-cal-cell--has-due .hb-mini-cal-num {
-    background: #2563eb;
+    background: var(--hb-blue);
     color: #ffffff;
   }
 
@@ -2043,15 +1850,86 @@
   }
 
   .hb-snippet:hover {
-    /* Fixed light hover — snippets live on always-white cards (see above). */
-    background: rgba(15, 23, 42, 0.05);
-    border-color: rgba(15, 23, 42, 0.08);
-    transform: translateX(2px);
+    background: var(--hb-surface-hover);
+    border-color: var(--hb-border-hover);
   }
 
   .hb-snippet--unread {
-    background: linear-gradient(135deg, rgba(217, 119, 6, 0.06), rgba(217, 119, 6, 0.02));
-    border-color: rgba(217, 119, 6, 0.18);
+    background: color-mix(in srgb, var(--hb-warning) 7%, transparent);
+    border-color: color-mix(in srgb, var(--hb-warning) 25%, transparent);
+  }
+
+  /* ── Dashboard summary and top actions ───────── */
+
+  .hb-page-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .hb-page-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--hb-border);
+    border-radius: var(--hb-radius-sm);
+    background: var(--hb-surface);
+    color: var(--hb-text-section);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+  }
+
+  .hb-page-action:hover {
+    border-color: var(--hb-border-hover);
+    background: var(--hb-surface-hover);
+    color: var(--hb-blue);
+  }
+
+  .hb-dashboard-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .hb-dashboard-stat {
+    min-height: 104px;
+    padding: 1rem 1.125rem;
+    border: 1px solid var(--hb-border);
+    border-top: 3px solid var(--hb-stat-accent, var(--hb-border-hover));
+    border-radius: var(--hb-radius);
+    background: var(--hb-surface);
+  }
+
+  .hb-dashboard-stat--blue { --hb-stat-accent: var(--hb-blue); }
+  .hb-dashboard-stat--amber { --hb-stat-accent: var(--hb-warning); }
+  .hb-dashboard-stat--rose { --hb-stat-accent: var(--hb-danger); }
+  .hb-dashboard-stat--green { --hb-stat-accent: var(--hb-success); }
+
+  .hb-dashboard-stat-label {
+    color: var(--hb-text-muted);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  .hb-dashboard-stat-value {
+    margin-top: 0.5rem;
+    color: var(--hb-text-page);
+    font-size: 2.25rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hb-dashboard-list-head {
+    color: var(--hb-text-faded);
+    border-bottom: 1px solid var(--hb-border);
   }
 
   /* ── Progress Bar ───────────────────────────── */
@@ -2059,10 +1937,7 @@
   .hb-bar-track {
     height: 6px;
     border-radius: 9999px;
-    /* Fixed light grey — progress tracks sit on always-white cards, so the
-       theme-flipped --hb-surface-hover (slate-700 in dark mode) rendered as
-       a dark bar on a white card. */
-    background: rgba(15, 23, 42, 0.08);
+    background: var(--hb-surface-hover);
     overflow: hidden;
     position: relative;
   }
@@ -2070,17 +1945,48 @@
   .hb-bar-fill {
     height: 100%;
     border-radius: 9999px;
-    background: linear-gradient(90deg, var(--hb-success), var(--hb-success-light));
+    background: var(--hb-success);
     /* Base transform mirrors the animation target so the bar holds its true
        percentage after the entrance animation ends (without this, the fill
        reverts to transform:none = full width once the keyframes finish). */
     transform: scaleX(var(--hb-bar-target, 0));
     transform-origin: left center;
-    animation: hb-bar-fill 900ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
-    box-shadow: 0 0 8px rgba(22, 163, 74, 0.25);
+    animation: hb-bar-fill 500ms ease-out backwards;
   }
 
-  /* ── Mobile Bento Reset ─────────────────────── */
+  /* ── Mobile dashboard layout ────────────────── */
+
+  @media (max-width: 640px) {
+    .hb-dashboard-summary {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.625rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .hb-dashboard-stat {
+      min-height: 92px;
+      padding: 0.875rem;
+    }
+
+    .hb-dashboard-stat-value {
+      font-size: 1.875rem;
+    }
+
+    .hb-bento-card {
+      grid-column: auto !important;
+      grid-row: span 2 !important;
+      min-height: 140px;
+    }
+
+    .hb-bento-card .hb-posts-widget-row,
+    .hb-bento-card .hb-snippet,
+    .hb-bento-card ul {
+      max-height: 220px;
+      overflow-y: auto;
+    }
+  }
+
+  /* ── Mobile Bento Reset (legacy dashboard widgets) ── */
 
   @media (max-width: 640px) {
     .hb-bento-card {

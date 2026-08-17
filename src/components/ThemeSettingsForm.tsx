@@ -252,8 +252,8 @@ export function ThemeSettingsForm() {
           onDrop={handleDrop}
           className={`flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 text-center transition ${
             dragActive
-              ? "border-blue-500 bg-blue-50"
-              : "border-slate-200 bg-slate-50/60 hover:border-blue-300 hover:bg-blue-50/40"
+              ? "border-blue-500 bg-blue-50 dark:border-blue-500 dark:bg-blue-950/40"
+              : "border-slate-200 bg-slate-50/60 hover:border-blue-300 hover:bg-blue-50/40 dark:border-stone-700 dark:bg-stone-800/50 dark:hover:border-blue-500 dark:hover:bg-blue-950/30"
           } ${busy ? "cursor-wait opacity-60" : "cursor-pointer"}`}
         >
           {busy ? (
@@ -267,7 +267,7 @@ export function ThemeSettingsForm() {
               <img
                 src={custom.thumbnail}
                 alt="Uploaded image used for the current theme"
-                className="h-16 w-16 rounded-lg object-cover ring-1 ring-slate-200"
+                className="h-16 w-16 rounded-lg object-cover ring-1 ring-slate-200 dark:ring-stone-700"
               />
               <div>
                 <p className="hb-card-section text-sm">
@@ -288,7 +288,7 @@ export function ThemeSettingsForm() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="h-8 w-8 text-slate-400"
+                className="h-8 w-8 text-slate-400 dark:text-stone-400"
                 aria-hidden="true"
               >
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -351,8 +351,8 @@ export function ThemeSettingsForm() {
             <span
               className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
                 contrast.aa
-                  ? "bg-emerald-50 text-emerald-700"
-                  : "bg-rose-50 text-rose-700"
+                  ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"
+                  : "bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300"
               }`}
               title="WCAG 2.1 AA contrast of text against the background"
             >
@@ -408,14 +408,14 @@ export function ThemeSettingsForm() {
                   type="button"
                   onClick={() => copyValue(value)}
                   title={value ? `Copy ${label.toLowerCase()} color` : undefined}
-                  className="group flex flex-col gap-2 rounded-lg border border-slate-200 p-3 text-left transition hover:border-blue-300 hover:bg-slate-50"
+                  className="group flex flex-col gap-2 rounded-lg border border-slate-200 p-3 text-left transition hover:border-blue-300 hover:bg-slate-50 dark:border-stone-700 dark:hover:border-blue-500 dark:hover:bg-stone-800"
                 >
                   <span className="flex items-center justify-between">
                     <span className="hb-card-meta text-[11px] uppercase tracking-wider">
                       {label}
                     </span>
                     {value && (
-                      <span className="text-[10px] text-slate-400 opacity-0 transition group-hover:opacity-100">
+                      <span className="text-[10px] text-slate-400 opacity-0 transition group-hover:opacity-100 dark:text-stone-400">
                         {copiedThis ? "Copied!" : "Copy"}
                       </span>
                     )}
@@ -438,12 +438,12 @@ export function ThemeSettingsForm() {
 
       {/* ── Footer / reset ──────────────────────── */}
       {error && (
-        <div role="alert" className="rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-700">
+        <div role="alert" className="rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
           {error}
         </div>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-6 dark:border-stone-700">
         <p className="hb-card-meta text-sm">
           Your theme is saved to this browser and applied instantly.
         </p>
@@ -451,7 +451,7 @@ export function ThemeSettingsForm() {
           type="button"
           onClick={handleReset}
           disabled={busy}
-          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700/50"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

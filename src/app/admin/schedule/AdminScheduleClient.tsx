@@ -69,12 +69,12 @@ export function AdminScheduleClient({
                 key={i}
                 className={`rounded-lg border p-3 text-center transition ${
                   isToday
-                    ? "border-blue-300 bg-blue-50"
-                    : "border-slate-100 bg-slate-50"
+                    ? "border-blue-300 bg-blue-50 dark:border-blue-600 dark:bg-blue-950/40"
+                    : "border-slate-100 bg-slate-50 dark:border-stone-700 dark:bg-stone-800/50"
                 }`}
               >
                 <div className={`text-[10px] font-bold uppercase tracking-wider ${
-                  isToday ? "text-blue-700" : "hb-card-meta"
+                  isToday ? "text-blue-700 dark:text-blue-300" : "hb-card-meta"
                 }`}>
                   {DAYS_SHORT[i]}
                 </div>
@@ -111,14 +111,14 @@ export function AdminScheduleClient({
             return (
               <div
                 key={admin.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-slate-100 bg-slate-50 px-4 py-3"
+                className="flex items-center justify-between gap-3 rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 dark:border-stone-700 dark:bg-stone-800/50"
               >
                 <div>
                   <div className="hb-card-section text-sm">{admin.full_name}</div>
                   <div className="hb-card-meta text-xs">{admin.email}</div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className={`text-xs font-semibold ${done ? "text-green-700" : "text-amber-700"}`}>
+                  <span className={`text-xs font-semibold ${done ? "text-green-700 dark:text-green-400" : "text-amber-700 dark:text-amber-300"}`}>
                     {done ? "✓ Completed" : "Pending"}
                   </span>
                   <form action={dutyAction}>
@@ -152,7 +152,7 @@ export function AdminScheduleClient({
         <form action={scheduleAction} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label htmlFor="adminId" className="hb-card-section mb-1.5 block text-xs">Admin</label>
+              <label htmlFor="adminId" className="hb-card-meta mb-1.5 block text-xs">Admin</label>
               <select
                 id="adminId"
                 name="adminId"
@@ -168,7 +168,7 @@ export function AdminScheduleClient({
               </select>
             </div>
             <div>
-              <label htmlFor="dayOfWeek" className="hb-card-section mb-1.5 block text-xs">Day of week</label>
+              <label htmlFor="dayOfWeek" className="hb-card-meta mb-1.5 block text-xs">Day of week</label>
               <select
                 id="dayOfWeek"
                 name="dayOfWeek"

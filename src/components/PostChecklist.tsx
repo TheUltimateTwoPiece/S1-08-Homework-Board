@@ -51,13 +51,13 @@ export function PostChecklist({ postId, items, initialCheckedIds }: PostChecklis
   const completedCount = items.filter((item) => checked.has(item.id)).length;
 
   return (
-    <section className="mt-6 rounded-xl border border-blue-100 bg-blue-50/60 p-4 dark:border-blue-900/50 dark:bg-blue-950/20" aria-label="Mini checklist">
+    <section className="mt-6 border-t border-[var(--hb-border)] pt-4" aria-label="Mini checklist">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div>
-          <h2 className="hb-card-section text-sm dark:text-slate-100">Mini checklist</h2>
-          <p className="hb-card-meta mt-0.5 text-xs dark:text-slate-300">Tick each step as you work through it. Your progress syncs to your account.</p>
+          <h2 className="hb-card-section text-sm">Mini checklist</h2>
+          <p className="hb-card-meta mt-0.5 text-xs">Tick each step as you work through it. Your progress syncs to your account.</p>
         </div>
-        <span className="rounded-full bg-white px-2 py-1 text-[11px] font-semibold tabular-nums text-blue-700 shadow-sm dark:bg-slate-800 dark:text-blue-300">
+        <span className="hb-card-meta tabular-nums text-xs font-semibold">
           {completedCount}/{items.length}
         </span>
       </div>
@@ -68,7 +68,7 @@ export function PostChecklist({ postId, items, initialCheckedIds }: PostChecklis
           const isPending = pending.has(item.id);
           return (
             <li key={item.id}>
-              <label className={`flex items-start gap-2.5 rounded-lg px-2 py-2 transition hover:bg-white/70 dark:hover:bg-slate-800/60 ${isPending ? "cursor-wait opacity-60" : "cursor-pointer"}`}>
+              <label className={`flex items-start gap-2.5 px-2 py-2 transition hover:bg-[var(--hb-surface-hover)] ${isPending ? "cursor-wait opacity-60" : "cursor-pointer"}`}>
                 <input
                   type="checkbox"
                   checked={isChecked}
@@ -76,7 +76,7 @@ export function PostChecklist({ postId, items, initialCheckedIds }: PostChecklis
                   onChange={() => toggle(item.id)}
                   className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                 />
-                <span className={`text-sm leading-relaxed ${isChecked ? "text-slate-400 line-through" : "hb-card-body dark:text-slate-100"}`}>
+                <span className={`text-sm leading-relaxed ${isChecked ? "hb-card-faded line-through" : "hb-card-body"}`}>
                   {item.text}
                 </span>
               </label>

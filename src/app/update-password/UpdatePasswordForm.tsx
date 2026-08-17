@@ -16,7 +16,7 @@ export function UpdatePasswordForm() {
   return (
     <form action={action} className="space-y-4">
       <div>
-        <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-slate-700">
+        <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-stone-300">
           New password
         </label>
         <input
@@ -31,7 +31,7 @@ export function UpdatePasswordForm() {
         />
       </div>
       <div>
-        <label htmlFor="confirmPassword" className="mb-1.5 block text-sm font-medium text-slate-700">
+        <label htmlFor="confirmPassword" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-stone-300">
           Confirm new password
         </label>
         <input
@@ -46,7 +46,7 @@ export function UpdatePasswordForm() {
         />
       </div>
       {state?.error && (
-        <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600" role="alert">
+        <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-red-950/50 dark:text-red-300" role="alert">
           {state.error}
         </div>
       )}
