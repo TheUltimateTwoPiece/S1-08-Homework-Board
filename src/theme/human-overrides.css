@@ -45,8 +45,6 @@
 /* Mobile-only elements are intentionally absent from the desktop layout. */
 .hb-mobile-topbar,
 .hb-mobile-nav-backdrop,
-.hb-mobile-swipe-hint,
-.hb-mobile-swipe-zone,
 .hb-dashboard-stat-mobile-label,
 .hb-dashboard-stat-mobile-value,
 .hb-progress-mobile-ring {
@@ -103,7 +101,7 @@
     z-index: 3;
     display: grid;
     height: 64px;
-    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    grid-template-columns: auto minmax(0, 1fr) 44px;
     align-items: center;
     gap: 8px;
     padding: 0 12px;
@@ -111,7 +109,6 @@
     background-image: none !important;
   }
 
-  .hb-mobile-menu-button,
   .hb-mobile-notifications {
     position: relative;
     display: inline-flex;
@@ -125,15 +122,48 @@
     background: transparent;
   }
 
-  .hb-mobile-menu-button:hover,
   .hb-mobile-notifications:hover {
     background: var(--hb-surface-hover);
   }
 
-  .hb-mobile-menu-button svg,
   .hb-mobile-notifications svg {
     height: 21px;
     width: 21px;
+  }
+
+  /* The hamburger is the primary way to open navigation, so it gets a real
+     button treatment — a visible surface, a border, and an explicit label. */
+  .hb-mobile-menu-button {
+    position: relative;
+    display: inline-flex;
+    height: 40px;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 0.8rem 0 0.65rem;
+    border: 1px solid var(--hb-border);
+    border-radius: var(--hb-radius-sm);
+    background: var(--hb-surface-hover);
+    color: var(--hb-text-section);
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+  }
+
+  .hb-mobile-menu-button:hover {
+    background: var(--hb-border-hover);
+    color: var(--hb-text-page);
+  }
+
+  .hb-siderail--mobile-open .hb-mobile-menu-button {
+    background: color-mix(in srgb, var(--hb-blue) 12%, var(--hb-surface));
+    border-color: color-mix(in srgb, var(--hb-blue) 45%, var(--hb-border));
+    color: var(--hb-blue);
+  }
+
+  .hb-mobile-menu-button svg {
+    height: 20px;
+    width: 20px;
+    flex: 0 0 auto;
   }
 
   .hb-mobile-topbar-title {
@@ -151,78 +181,6 @@
   .hb-mobile-notifications .hb-siderail-btn-badge {
     top: 2px;
     right: 1px;
-  }
-
-  /* One-time "this edge is swipeable" nudge. The chevron points right and the
-     pill retreats to the edge before fading, so it reads as a gesture hint
-     rather than a floating banner. */
-  .hb-mobile-swipe-hint {
-    position: fixed;
-    z-index: 5;
-    left: 0;
-    top: 50%;
-    display: inline-flex;
-    align-items: center;
-    gap: 2px;
-    padding: 0.45rem 0.55rem 0.45rem 0.3rem;
-    border: 1px solid var(--hb-border);
-    border-left: 0;
-    border-radius: 0 9999px 9999px 0;
-    background: var(--hb-surface);
-    color: var(--hb-text-muted);
-    box-shadow: var(--hb-shadow-md);
-    font-size: 0.7rem;
-    font-weight: 600;
-    pointer-events: none;
-    transform: translateY(-50%);
-    animation: hb-swipe-hint 3.7s ease-in-out forwards;
-  }
-
-  .hb-mobile-swipe-hint svg {
-    height: 16px;
-    width: 16px;
-    flex: 0 0 auto;
-  }
-
-  /* A hair-thin strip along the screen edge declares the swipe gesture while
-     leaving vertical scrolling to the browser (`pan-y`). Crucially, it does
-     NOT call preventDefault, which was breaking native scrolling on iOS. */
-  .hb-mobile-swipe-zone {
-    position: fixed;
-    z-index: 4;
-    top: 64px;
-    bottom: 0;
-    left: 0;
-    width: 12px;
-    touch-action: pan-y pinch-zoom;
-    pointer-events: auto;
-  }
-
-  @keyframes hb-swipe-hint {
-    0% {
-      opacity: 0;
-      transform: translate(-110%, -50%);
-    }
-    18% {
-      opacity: 1;
-      transform: translate(0, -50%);
-    }
-    32% {
-      transform: translate(6px, -50%);
-    }
-    46% {
-      transform: translate(0, -50%);
-    }
-    60% {
-      transform: translate(6px, -50%);
-    }
-    74% {
-      transform: translate(0, -50%);
-    }
-    100% {
-      opacity: 0;
-      transform: translate(-110%, -50%);
-    }
   }
 
   .hb-mobile-nav-backdrop {
@@ -262,7 +220,6 @@
     gap: 4px !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
-    touch-action: pan-y pinch-zoom;
     background: var(--hb-surface) !important;
     background-image: none !important;
     border-right: 1px solid var(--hb-border);
