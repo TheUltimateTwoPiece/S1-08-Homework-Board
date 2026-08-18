@@ -96,7 +96,6 @@ export default async function DashboardPage() {
         greetingName={firstName}
         subtitle={subtitle}
         showAdminCta
-        showPipCta
       />
 
       <DashboardSummary

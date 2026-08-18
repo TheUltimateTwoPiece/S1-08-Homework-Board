@@ -201,7 +201,7 @@ export function PipBubble({ remaining: initialRemaining }: { remaining: number }
         className={`hb-hover-surface flex shrink-0 items-center transition rounded-t-2xl ${
           open ? "gap-3 px-4 py-3 border-b hb-border-theme" : "justify-center px-3 py-3 rounded-b-2xl"
         }`}>
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-blue-600 text-white text-xs font-bold">P</div>
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--hb-btn-bg)] to-[var(--hb-btn-bg-hover)] text-white text-xs font-bold">P</div>
         {open && (
           <>
             <span className="hb-section-title flex-1 text-left text-sm">Pip</span>
