@@ -420,7 +420,7 @@ export function PipWidget({
             <button onClick={() => setSidebarOpen(true)} className="hb-hover-surface sm:hidden flex h-8 w-8 items-center justify-center rounded-lg" title="Chats">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4"><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="15" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></svg>
             </button>
-            <div className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-blue-600 text-white text-xs sm:text-sm font-bold">P</div>
+            <div className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--hb-btn-bg)] to-[var(--hb-btn-bg-hover)] text-white text-xs sm:text-sm font-bold">P</div>
             <div>
               <h2 className="hb-section-title text-sm">Pip</h2>
               <p className="hb-muted-text text-[10px] sm:text-xs">Homework assistant</p>
