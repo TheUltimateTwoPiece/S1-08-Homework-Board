@@ -112,7 +112,7 @@ function HexField({
           commit();
         }
       }}
-      className="hb-input w-full rounded-lg px-2.5 py-1.5 font-mono text-[11px]"
+      className="hb-input w-full rounded-lg px-2 py-1 font-mono text-[11px]"
       placeholder="#rrggbb"
       aria-label="Colour hex value"
     />
@@ -435,7 +435,7 @@ export function ThemeSettingsForm() {
               <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" />
             </svg>
           </div>
-          <h2 className="hb-card-section text-base">Theme</h2>
+          <h2 className="hb-card-title text-base">Theme</h2>
         </div>
 
         <label
@@ -484,7 +484,7 @@ export function ThemeSettingsForm() {
               <path d="M21 15l-5-5L5 21" />
             </svg>
           </div>
-          <h2 className="hb-card-section text-base">Generate Theme from Image</h2>
+          <h2 className="hb-card-title text-base">Generate Theme from Image</h2>
         </div>
 
         <div
@@ -579,8 +579,8 @@ export function ThemeSettingsForm() {
 
       {/* ── Live preview + editable palette ─────── */}
       <section>
-        <div className="mb-4 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <div className="hb-bento-icon-box" aria-hidden="true">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -599,7 +599,7 @@ export function ThemeSettingsForm() {
                 <path d="M5 17h14" />
               </svg>
             </div>
-            <h2 className="hb-card-section text-base">Live preview & palette</h2>
+            <h2 className="hb-card-title text-base">Live preview & palette</h2>
           </div>
 
           {badge?.ratio != null && (
@@ -673,18 +673,18 @@ export function ThemeSettingsForm() {
               return (
                 <div
                   key={key}
-                  className="relative flex flex-col gap-3 rounded-lg border border-slate-200 p-3 transition hover:border-blue-300 dark:border-stone-700 dark:hover:border-blue-500"
+                  className="relative flex flex-col gap-2 rounded-lg border border-slate-200 p-2.5 transition hover:border-blue-300 dark:border-stone-700 dark:hover:border-blue-500"
                 >
                   <div
-                    className={`flex items-center gap-3 ${isEditing ? "pr-10" : ""}`}
+                    className={`flex items-center gap-2 ${isEditing ? "pr-11" : ""}`}
                   >
                     <span
-                      className="h-9 w-9 shrink-0 rounded-md ring-1 ring-inset ring-black/10"
+                      className="h-8 w-8 shrink-0 rounded-md ring-1 ring-inset ring-black/10"
                       style={{ background: value || "transparent" }}
                       aria-hidden="true"
                     />
                     <div className="min-w-0 flex-1">
-                      <div className="hb-card-section text-xs font-semibold">
+                      <div className="hb-card-section text-[11px] font-semibold">
                         {label}
                       </div>
                       <div className="hb-card-meta text-[10px]">{hint}</div>
@@ -708,7 +708,7 @@ export function ThemeSettingsForm() {
                           : `Pick the ${label.toLowerCase()} colour from your image`
                       }
                       aria-pressed={picking === key}
-                      className={`absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-lg border transition disabled:opacity-50 ${
+                      className={`absolute right-1.5 top-1.5 inline-flex h-7 w-7 items-center justify-center rounded-lg border transition disabled:opacity-50 ${
                         picking === key
                           ? "border-blue-500 bg-blue-50 text-blue-700 dark:border-blue-500 dark:bg-blue-950/50 dark:text-blue-300"
                           : "border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:border-blue-500 dark:hover:bg-blue-950/40 dark:hover:text-blue-300"
@@ -733,7 +733,7 @@ export function ThemeSettingsForm() {
                         }
                         title="Open colour picker"
                         aria-label={`${label} colour picker`}
-                        className="h-8 w-9 shrink-0 cursor-pointer rounded-md border border-slate-200 bg-white p-0.5 dark:border-stone-700 dark:bg-stone-800"
+                        className="h-8 w-8 shrink-0 cursor-pointer rounded-md border border-slate-200 bg-white p-0.5 dark:border-stone-700 dark:bg-stone-800"
                       />
                     </div>
                   ) : (
