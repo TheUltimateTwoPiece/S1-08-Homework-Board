@@ -15,6 +15,7 @@ import {
   rgbToHex,
   saveTheme,
   suggestAccessibleTextColor,
+  THEME_CHANGE_EVENT,
   THEME_OPTIONS,
   type CustomThemePayload,
   type ThemeMode,
@@ -198,6 +199,30 @@ export function ThemeSettingsForm() {
       setImageUrl(loaded.custom.thumbnail);
     }
     setMounted(true);
+  }, []);
+
+  // Keep the form in sync with theme changes made outside it (e.g. the
+  // header ThemeToggle or another tab). Without this, the preset dropdown
+  // can show a stale selection ("Custom (from image)") while a preset is
+  // actually applied — and re-selecting the same option is a no-op on a
+  // native <select>, so the custom theme silently can't be re-applied.
+  useEffect(() => {
+    const sync = () => {
+      const loaded = loadTheme();
+      setPrefs(loaded);
+      // An external toggle away from custom mode should close the eyedropper
+      // (the swatch editor is hidden, so a lingering picker would be odd).
+      if (loaded.mode !== "custom") {
+        setPicking(null);
+        setHoverColor(null);
+      }
+    };
+    window.addEventListener(THEME_CHANGE_EVENT, sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener(THEME_CHANGE_EVENT, sync);
+      window.removeEventListener("storage", sync);
+    };
   }, []);
 
   // Re-read resolved CSS vars whenever the active theme changes.
