@@ -164,8 +164,8 @@ export default async function AdminPipStatsPage() {
   // Sort: most active this week first
   userStats.sort((a, b) => b.promptsWeek - a.promptsWeek);
 
-  // Aggregate stats
-  const studentStats = userStats.filter((u) => u.role === "student");
+  // Aggregate stats — completion tracking includes admins, so the cohort
+  // average is computed over every Pip user (students + admins).
   // Overview totals come directly from the same raw prompt rows as the chart.
   // This keeps the card correct even if a prompt's profile is missing or has
   // a role outside the normal student/admin set.
@@ -184,8 +184,8 @@ export default async function AdminPipStatsPage() {
   const avgPromptsPerUser = activeUsersWeek > 0
     ? Math.round(totalPromptsWeek / activeUsersWeek)
     : 0;
-  const avgStudentCompletion = studentStats.length > 0
-    ? Math.round(studentStats.reduce((sum, u) => sum + u.completionRate, 0) / studentStats.length)
+  const avgCompletion = userStats.length > 0
+    ? Math.round(userStats.reduce((sum, u) => sum + u.completionRate, 0) / userStats.length)
     : 0;
 
   // 7-day chart data: day-by-day prompt counts for the bar chart
@@ -254,8 +254,8 @@ export default async function AdminPipStatsPage() {
         />
         <StatCard
           label="Avg completion"
-          value={`${avgStudentCompletion}%`}
-          sub="avg across students"
+          value={`${avgCompletion}%`}
+          sub="across all Pip users"
           color="rose"
           icon={
             <>
@@ -268,7 +268,7 @@ export default async function AdminPipStatsPage() {
 
       {/* 7-day usage chart */}
       <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <h2 className="hb-card-section text-base">Prompts — last 7 days</h2>
+        <h2 className="hb-card-section text-base">Prompts in the last 7 days</h2>
         <div className="mt-4 grid grid-cols-7 items-end gap-2 sm:gap-3" style={{ height: "180px" }}>
           {dayLabels.map((label, i) => {
             const hPct = (dayCounts[i] / maxDayCount) * 100;
@@ -397,7 +397,7 @@ export default async function AdminPipStatsPage() {
                   <td className="px-5 py-3 text-right text-xs text-slate-400">
                     {u.lastActive
                       ? formatAppDateTime(u.lastActive)
-                      : "—"}
+                      : "Never"}
                   </td>
                 </tr>
               ))}

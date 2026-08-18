@@ -1,5 +1,10 @@
 @import "tailwindcss";
 @import "../theme/school-sci-tech/theme.css";
+@import "../theme/human-overrides.css";
+
+/* Class-based dark mode: make every `dark:` utility follow the in-app
+   theme toggle (.dark on <html>) instead of the OS preference. */
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* Class-based dark mode: drive `dark:` utilities off the `.dark` class on
    <html> (set by the theme engine / FOUC script) instead of the OS setting. */
@@ -10,4 +15,5 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-fraunces);
 }

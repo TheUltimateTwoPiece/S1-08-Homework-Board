@@ -102,19 +102,11 @@ export function SendReminderForm({
 
   return (
     <form action={formAction} className="rounded-xl border hb-card-surface p-6">
-      <div className="mb-5 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden="true">
-            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-          </svg>
-        </div>
-        <div>
-          <h2 className="hb-card-section text-base">Send reminder</h2>
-          <p className="hb-card-body text-xs">
-            Students will see this in their reminders bell icon.
-          </p>
-        </div>
+      <div className="mb-5 border-b pb-4">
+        <h2 className="hb-card-title text-lg">Send reminder</h2>
+        <p className="hb-card-body mt-0.5 text-sm">
+          Students will see this in their reminders bell icon.
+        </p>
       </div>
 
       {/* Pre-click test-mode warning. Shown whenever BREVO_TEST_TO_EMAIL is
@@ -166,7 +158,7 @@ export function SendReminderForm({
           >
             <optgroup label="Students">
               <option value="all">All students</option>
-              <option value="incomplete">Only students who haven't completed this task</option>
+              <option value="incomplete">Anyone who hasn't completed this task</option>
               {students.map((student) => (
                 <option key={student.id} value={student.id}>
                   {student.full_name} ({student.email})
@@ -288,7 +280,7 @@ export function SendReminderForm({
                     <path d="M12 17h.01" />
                     <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
                   </svg>
-                  Test mode active — emails redirected to {state.testModeEmail ?? "(unset)"}.
+                  Test mode active: emails redirected to {state.testModeEmail ?? "(unset)"}.
                 </div>
                 <div className="pl-5 text-[11px]">
                   Disable on Vercel → Settings → Environment Variables → delete BREVO_TEST_TO_EMAIL, then redeploy.

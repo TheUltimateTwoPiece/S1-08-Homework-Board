@@ -148,7 +148,7 @@ export default async function YourProgressPage() {
       />
 
       {/* ── Hero ───────────────────────────────── */}
-      <section className="hb-bento-card mb-6 flex flex-col items-center gap-6 p-8 sm:flex-row sm:gap-10">
+      <section className="hb-card-surface mb-6 flex flex-col items-center gap-6 p-8 sm:flex-row sm:gap-10">
         <div className="relative flex h-44 w-44 items-center justify-center">
           <svg viewBox="0 0 160 160" className="hb-progress-ring h-44 w-44" aria-hidden="true">
             <circle
@@ -196,7 +196,7 @@ export default async function YourProgressPage() {
             {totalPosts === 0
               ? "Welcome! Once your admin posts homework, you'll see your progress here."
               : todoCount === 0
-              ? "Every assignment is done — incredible work!"
+              ? "Every assignment is done. Nice work!"
               : `${todoCount} assignment${todoCount === 1 ? "" : "s"} left to mark off.`}
           </p>
           <div className="grid grid-cols-2 gap-3 pt-2 sm:grid-cols-4">
@@ -209,10 +209,10 @@ export default async function YourProgressPage() {
       </section>
 
       {/* ── Subject breakdown ───────────────── */}
-      <section className="hb-bento-card mb-6 p-6">
+      <section className="hb-card-surface mb-6 p-6">
         <div className="mb-4 flex items-center gap-3">
-          <div className="hb-bento-icon-box" aria-hidden="true">📚</div>
           <div>
+            <div className="hb-card-meta mb-1 text-xs font-semibold uppercase tracking-wide">Subjects</div>
             <h3 className="hb-card-section text-base">By subject</h3>
             <p className="hb-card-meta text-xs">Completion percentage per subject</p>
           </div>
@@ -238,35 +238,25 @@ export default async function YourProgressPage() {
       </section>
 
       {/* ── Up Next ──────────────────────────── */}
-      <section className="hb-bento-card mb-6 p-6">
+      <section className="hb-card-surface mb-6 p-6">
         <div className="mb-4 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div
-              className="hb-bento-icon-box"
-              style={{
-                background:
-                  "linear-gradient(135deg, rgba(217,119,6,0.18), rgba(217,119,6,0.04))",
-                color: "#b45309",
-              }}
-              aria-hidden="true"
-            >
-              ⏳
-            </div>
             <div>
+              <div className="hb-card-meta mb-1 text-xs font-semibold uppercase tracking-wide">Next up</div>
               <h3 className="hb-card-section text-base">Up next</h3>
               <p className="hb-card-meta text-xs">Earliest assignments to knock out</p>
             </div>
           </div>
           <Link
             href="/posts"
-            className="hb-card-section rounded-md px-3 py-1.5 text-xs transition hover:bg-slate-100"
+            className="hb-card-meta rounded-md px-3 py-1.5 text-xs transition hover:bg-slate-100 dark:hover:bg-stone-700/50"
           >
             View all →
           </Link>
         </div>
         {upNext.length === 0 ? (
           <p className="hb-card-meta py-8 text-center text-sm">
-            You're completely caught up. 🎉
+            You're completely caught up.
           </p>
         ) : (
           <ul className="divide-y divide-slate-100 dark:divide-slate-700">
@@ -279,7 +269,7 @@ export default async function YourProgressPage() {
                 <li key={post.id}>
                   <Link
                     href={`/posts/${post.id}`}
-                    className="hb-snippet flex items-center justify-between gap-3 hover:bg-slate-50"
+                    className="hb-snippet flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-stone-700/40"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="hb-card-section line-clamp-1 text-sm">
@@ -290,10 +280,10 @@ export default async function YourProgressPage() {
                     <div
                       className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-bold ${
                         overdue
-                          ? "bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-200"
+                          ? "bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300"
                           : state?.kind === "today"
-                          ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200"
-                          : "hb-card-meta bg-slate-100"
+                          ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
+                          : "hb-card-meta bg-slate-100 dark:bg-stone-700/40"
                       }`}
                     >
                       {state
@@ -315,20 +305,9 @@ export default async function YourProgressPage() {
       </section>
 
       {/* ── Recent Completions ──────────────── */}
-      <section className="hb-bento-card mb-6 p-6">
-        <div className="mb-4 flex items-center gap-3">
-          <div
-            className="hb-bento-icon-box"
-            style={{
-              background:
-                "linear-gradient(135deg, rgba(22,163,74,0.18), rgba(22,163,74,0.04))",
-              color: "#15803d",
-            }}
-            aria-hidden="true"
-          >
-            ✓
-          </div>
-          <div>
+      <section className="hb-card-surface mb-6 p-6">
+        <div className="mb-4 flex items-center gap-3">          <div>
+            <div className="hb-card-meta mb-1 text-xs font-semibold uppercase tracking-wide">History</div>
             <h3 className="hb-card-section text-base">Recently completed</h3>
             <p className="hb-card-meta text-xs">Your last handful of wins</p>
           </div>
@@ -343,7 +322,7 @@ export default async function YourProgressPage() {
               <li key={post.id}>
                 <Link
                   href={`/posts/${post.id}`}
-                  className="hb-snippet flex items-center justify-between gap-3 hover:bg-slate-50"
+                  className="hb-snippet flex items-center justify-between gap-3 hover:bg-[var(--hb-surface-hover)]"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="hb-card-section line-clamp-1 text-sm">

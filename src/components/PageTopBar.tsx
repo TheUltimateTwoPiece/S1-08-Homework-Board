@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import type { Profile } from "@/lib/types";
 
 type PageTopBarProps = {
@@ -7,6 +6,7 @@ type PageTopBarProps = {
   greetingName: string;
   subtitle?: string;
   showAdminCta?: boolean;
+  showPipCta?: boolean;
 };
 
 export function PageTopBar({
@@ -14,33 +14,30 @@ export function PageTopBar({
   greetingName,
   subtitle,
   showAdminCta = false,
+  showPipCta = false,
 }: PageTopBarProps) {
   return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div className="hb-page-topbar mb-8 flex flex-wrap items-end justify-between gap-4">
       <div className="min-w-0 flex-1">
         <h1 className="hb-page-title text-2xl tracking-tight sm:text-[28px]">
-          Hi, <span className="text-blue-700 dark:text-blue-300">{greetingName}</span>!
-          <span className="ml-2 inline-block origin-[70%_70%] animate-[hb-wave_1800ms_ease-in-out_infinite]">
-            👋
-          </span>
+          Hi, {greetingName}
         </h1>
-        <p className="hb-body-text mt-1 text-sm">
-          {subtitle}
-        </p>
+        {subtitle && <p className="hb-body-text mt-1 text-sm">{subtitle}</p>}
       </div>
-      <div className="flex shrink-0 items-center gap-2">
-        <ThemeToggle />
+      <div className="hb-page-actions">
+        {showPipCta && (
+          <Link href="/pip" className="hb-page-action">
+            Pip
+          </Link>
+        )}
         {showAdminCta && profile.role === "admin" && (
-          <Link
-            href="/admin"
-            className="button gap-1.5"
-          >
+          <Link href="/admin" className="button gap-1.5">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2.2"
+              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
               className="h-4 w-4"

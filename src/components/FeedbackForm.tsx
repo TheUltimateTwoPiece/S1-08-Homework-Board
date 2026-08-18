@@ -36,14 +36,14 @@ export function FeedbackForm() {
         <div className="space-y-4">
           <div>
             <span className="hb-card-section mb-2 block text-sm">Category</span>
-            <div className="flex gap-2 rounded-lg bg-slate-100/70 p-1">
+            <div className="flex gap-2 rounded-lg bg-slate-100/70 p-1 dark:bg-stone-800">
               <button
                 type="button"
                 onClick={() => setCategory("post")}
                 className={`flex-1 rounded-md px-3 py-2 text-xs transition ${
                   category === "post"
-                    ? "hb-card-section bg-white shadow-sm"
-                    : "hb-card-meta hover:text-slate-700"
+                    ? "hb-segmented-btn--active"
+                    : "hb-segmented-btn--inactive"
                 }`}
               >
                 Posts
@@ -53,8 +53,8 @@ export function FeedbackForm() {
                 onClick={() => setCategory("website")}
                 className={`flex-1 rounded-md px-3 py-2 text-xs transition ${
                   category === "website"
-                    ? "hb-card-section bg-white shadow-sm"
-                    : "hb-card-meta hover:text-slate-700"
+                    ? "hb-segmented-btn--active"
+                    : "hb-segmented-btn--inactive"
                 }`}
               >
                 Website
@@ -81,10 +81,10 @@ export function FeedbackForm() {
           </div>
 
           {state?.error && (
-            <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">{state.error}</div>
+            <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-red-950/50 dark:text-red-300">{state.error}</div>
           )}
           {state?.success && (
-            <div className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-600">
+            <div className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-600 dark:bg-green-950/50 dark:text-green-300">
               <div className="flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
                   <polyline points="20 6 9 17 4 12" />

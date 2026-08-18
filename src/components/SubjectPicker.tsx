@@ -25,7 +25,7 @@ export function SubjectPicker({
           <label
             key={subject}
             htmlFor={id}
-            className="cursor-pointer select-none rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 has-[:checked]:border-blue-500 has-[:checked]:bg-blue-600 has-[:checked]:text-white"
+            className="cursor-pointer select-none rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 has-[:checked]:border-blue-500 has-[:checked]:bg-blue-600 has-[:checked]:text-white dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:border-blue-500 dark:hover:bg-blue-900/30 dark:hover:text-blue-300"
           >
             <input
               id={id}

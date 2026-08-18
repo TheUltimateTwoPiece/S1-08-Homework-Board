@@ -41,17 +41,9 @@ export function CreatePostForm() {
 
   return (
     <form action={formAction} className="rounded-xl border hb-card-surface p-6" encType="multipart/form-data">
-      <div className="mb-5 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden="true">
-            <path d="M12 5v14" />
-            <path d="M5 12h14" />
-          </svg>
-        </div>
-        <div>
-          <h2 className="hb-card-section text-base">New homework post</h2>
-          <p className="hb-card-body text-xs">Create a new assignment for your class</p>
-        </div>
+      <div className="mb-5 border-b pb-4">
+        <h2 className="hb-card-title text-lg">New homework post</h2>
+        <p className="hb-card-body mt-0.5 text-sm">Create a new assignment for your class</p>
       </div>
 
       <div className="space-y-4">
@@ -64,7 +56,7 @@ export function CreatePostForm() {
             name="title"
             required
             maxLength={160}
-            placeholder="e.g. Math — Chapter 5 exercises"
+            placeholder="e.g. Math: Chapter 5 exercises"
             className="hb-input w-full rounded-lg px-3 py-2.5 text-sm"
           />
         </div>
@@ -92,7 +84,7 @@ export function CreatePostForm() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2.5">
+        <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2.5 dark:bg-stone-800/60">
           <input
             type="checkbox"
             name="pinned"
@@ -115,7 +107,7 @@ export function CreatePostForm() {
               name="files"
               multiple
               accept="image/*,application/pdf"
-              className="hb-input w-full rounded-lg px-3 py-2.5 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-blue-50 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
+              className="hb-input w-full rounded-lg px-3 py-2.5 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-blue-50 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-stone-700 dark:file:text-stone-200 dark:hover:file:bg-stone-600"
             />
           </div>
         </div>
@@ -156,10 +148,10 @@ export function CreatePostForm() {
         </div>
 
         {state?.error && (
-          <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">{state.error}</div>
+          <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-red-950/50 dark:text-red-300">{state.error}</div>
         )}
         {state?.success && (
-          <div className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-600">
+          <div className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-600 dark:bg-green-950/50 dark:text-green-300">
             <div className="flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
                 <polyline points="20 6 9 17 4 12" />

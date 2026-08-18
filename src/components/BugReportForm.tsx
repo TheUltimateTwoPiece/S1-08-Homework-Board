@@ -22,21 +22,14 @@ export function BugReportForm() {
 
   return (
     <form ref={formRef} action={formAction} className="mx-auto max-w-2xl space-y-6">
-      <div className="text-center">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-50 to-orange-50 shadow-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 text-rose-600" aria-hidden="true">
-            <path d="M10.3 2.8 1.8 17.5A2 2 0 0 0 3.5 20.5h17a2 2 0 0 0 1.7-3L13.7 2.8a2 2 0 0 0-3.4 0Z" />
-            <path d="M12 9v4" />
-            <path d="M12 17h.01" />
-          </svg>
-        </div>
+      <div>
         <h1 className="hb-page-title text-2xl">Report a bug</h1>
         <p className="hb-body-text mt-1 text-sm">
           Tell us what happened and attach every screenshot that helps explain it.
         </p>
       </div>
 
-      <div className="hb-card-surface rounded-2xl border p-6 shadow-sm sm:p-8">
+      <div className="hb-card-surface p-6 sm:p-8">
         <div className="space-y-5">
           <div>
             <label htmlFor="bug-title" className="hb-card-section mb-1.5 block text-sm">Short title</label>
@@ -73,8 +66,8 @@ export function BugReportForm() {
             </p>
           </div>
 
-          {state?.error && <div role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{state.error}</div>}
-          {state?.success && <div role="status" className="rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700">Thanks — your bug report and screenshots were sent to the admins.</div>}
+          {state?.error &&        <div role="alert" className="border border-[var(--hb-danger)] border-opacity-40 bg-[var(--hb-surface-hover)] px-4 py-3 text-sm text-rose-700 dark:text-rose-300">{state.error}</div>}
+          {state?.success &&        <div role="status" className="border border-emerald-700 border-opacity-40 bg-[var(--hb-surface-hover)] px-4 py-3 text-sm text-emerald-700 dark:text-emerald-300">Thanks! Your bug report and screenshots were sent to the admins.</div>}
 
           <button type="submit" disabled={pending} className={`button w-full gap-2 ${pending ? "hb-btn--pending" : ""}`}>
             {pending && <span className="hb-spinner" aria-hidden="true" />}

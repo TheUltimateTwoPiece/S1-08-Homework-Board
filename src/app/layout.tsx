@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import { AppShell } from "@/components/AppShell";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -13,6 +13,14 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+// Warm editorial serif used for display headings — gives the board a
+// human, schoolbook voice instead of the all-sans "AI default" look.
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  weight: ["600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -47,11 +55,27 @@ const themeInitScript = `
         : null;
     // "custom" without a valid palette is meaningless — fall back to light.
     if (resolved === "custom" && !custom) resolved = "light";
+    // WCAG relative luminance — mirrors theme-engine so a custom theme whose
+    // text colour was hand-picked to be light still renders as dark mode.
+    function lum(hex) {
+      var n = parseInt(hex.slice(1), 16);
+      var r = (n >> 16 & 255) / 255;
+      var g = (n >> 8 & 255) / 255;
+      var b = (n & 255) / 255;
+      var f = function (c) {
+        return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+      };
+      return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+    }
     var el = document.documentElement;
     el.setAttribute("data-theme", resolved);
     var isDark =
       resolved === "dark" ||
-      (resolved === "custom" && custom.text === "#ffffff");
+      (resolved === "custom" &&
+        custom &&
+        typeof custom.text === "string" &&
+        /^#[0-9a-fA-F]{6}$/.test(custom.text) &&
+        lum(custom.text) > 0.5);
     el.classList.toggle("dark", isDark);
     if (resolved === "custom" && custom) {
       el.style.setProperty("--bg", custom.bg || "");
@@ -73,7 +97,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />

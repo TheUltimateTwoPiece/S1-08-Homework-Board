@@ -37,7 +37,7 @@ export default async function AdminFeedbackPage() {
   function renderItems(items: Feedback[]) {
     if (items.length === 0) {
       return (
-        <div className="hb-empty-state flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 py-12 text-center">
+        <div className="hb-empty-state flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 py-12 text-center dark:border-stone-700">
           <p className="hb-section-title text-sm">No feedback yet.</p>
         </div>
       );
@@ -74,10 +74,10 @@ export default async function AdminFeedbackPage() {
                     <>
                       <span className={`rounded-full px-2 py-1 text-[10px] font-bold ${
                         status === "unread"
-                          ? "bg-amber-100 text-amber-800"
+                          ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
                           : status === "resolved"
-                            ? "bg-emerald-100 text-emerald-800"
-                            : "bg-blue-100 text-blue-800"
+                            ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300"
+                            : "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300"
                       }`}>
                         {statusLabel}
                       </span>
@@ -87,7 +87,7 @@ export default async function AdminFeedbackPage() {
                         <PendingButton
                           type="submit"
                           pendingContent="Saving..."
-                          className="hb-card-section rounded-md px-2 py-1 text-[10px] transition hover:bg-slate-100"
+                          className="hb-card-meta rounded-md px-2 py-1 text-[10px] transition hover:bg-slate-100 dark:hover:bg-stone-700/50"
                         >
                           {nextLabel}
                         </PendingButton>
@@ -113,8 +113,8 @@ export default async function AdminFeedbackPage() {
     <div className="mx-auto max-w-4xl px-4 py-8">
       <div className="mb-8">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 shadow-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 text-amber-600" aria-hidden="true">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 shadow-sm dark:from-amber-900/40 dark:to-orange-900/30">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 text-amber-600 dark:text-amber-300" aria-hidden="true">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
           </div>
@@ -131,7 +131,7 @@ export default async function AdminFeedbackPage() {
         <section>
           <div className="mb-4 flex items-center gap-2">
             <h2 className="hb-section-title text-base">Posts</h2>
-            <span className="hb-card-meta rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold">{postFeedback.length}</span>
+            <span className="hb-card-meta rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold dark:bg-stone-700/40">{postFeedback.length}</span>
           </div>
           {renderItems(postFeedback)}
         </section>
@@ -139,7 +139,7 @@ export default async function AdminFeedbackPage() {
         <section>
           <div className="mb-4 flex items-center gap-2">
             <h2 className="hb-section-title text-base">Website</h2>
-            <span className="hb-card-meta rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold">{websiteFeedback.length}</span>
+            <span className="hb-card-meta rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold dark:bg-stone-700/40">{websiteFeedback.length}</span>
           </div>
           {renderItems(websiteFeedback)}
         </section>
