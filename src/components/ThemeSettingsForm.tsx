@@ -663,7 +663,7 @@ export function ThemeSettingsForm() {
           </div>
 
           {/* Swatch editors (read-only tiles for presets) */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(10rem,1fr))] gap-3">
             {SWATCH_LABELS.map(({ key, label, hint }) => {
               const value = editable
                 ? editable[key]
@@ -684,10 +684,18 @@ export function ThemeSettingsForm() {
                       aria-hidden="true"
                     />
                     <div className="min-w-0 flex-1">
-                      <div className="hb-card-section text-[11px] font-semibold">
+                      <div
+                        className="hb-card-section truncate text-[11px] font-semibold"
+                        title={label}
+                      >
                         {label}
                       </div>
-                      <div className="hb-card-meta text-[10px]">{hint}</div>
+                      <div
+                        className="hb-card-meta truncate text-[10px]"
+                        title={hint}
+                      >
+                        {hint}
+                      </div>
                     </div>
                   </div>
 
