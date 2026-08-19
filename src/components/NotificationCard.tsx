@@ -57,9 +57,9 @@ export function NotificationCard({
         }
       }}
       title={!isRead ? "Click to mark as read" : undefined}
-      className={`hb-notification-item group relative rounded-xl border bg-white p-5 shadow-sm transition-all duration-200 ${
+      className={`hb-notification-item group relative rounded-xl border p-5 shadow-sm transition-all duration-200 ${
         isRead
-          ? "border-slate-200"
+          ? "border-[var(--hb-border)] bg-[var(--hb-surface)]"
           : "hb-card--unread cursor-pointer select-none outline-none hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-amber-400 active:scale-[0.995]"
       } ${isPending ? "opacity-70" : ""}`}
     >
@@ -79,7 +79,7 @@ export function NotificationCard({
           <div className="hb-card-meta mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
             {isAdmin && emailSentAt && (
               <span
-                className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-1.5 py-0.5 text-blue-700"
+                className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-1.5 py-0.5 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300"
                 title={`Brevo message id: ${emailMessageId ?? "unknown"}`}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden="true">
@@ -91,7 +91,7 @@ export function NotificationCard({
             )}
             {isAdmin && emailError && (
               <span
-                className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-1.5 py-0.5 text-amber-700"
+                className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-1.5 py-0.5 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
                 title={emailError}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden="true">
@@ -117,7 +117,7 @@ export function NotificationCard({
         {!isRead && (
           <span
             aria-hidden="true"
-            className="mt-0.5 hidden shrink-0 items-center gap-1 rounded-full px-2 py-1 text-[10px] font-medium text-blue-600 opacity-0 transition-opacity duration-150 group-hover:opacity-100 sm:inline-flex"
+            className="mt-0.5 hidden shrink-0 items-center gap-1 rounded-full px-2 py-1 text-[10px] font-medium text-blue-600 opacity-0 transition-opacity duration-150 group-hover:opacity-100 dark:text-blue-400 sm:inline-flex"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
               <polyline points="20 6 9 17 4 12" />

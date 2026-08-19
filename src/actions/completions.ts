@@ -67,6 +67,7 @@ export async function togglePostComplete(formData: FormData) {
   }
 
   revalidatePath("/");
+  revalidatePath("/posts");
   revalidatePath(`/posts/${postId}`);
   revalidatePath("/your-progress");
 }
