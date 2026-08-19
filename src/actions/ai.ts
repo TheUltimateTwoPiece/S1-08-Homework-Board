@@ -44,7 +44,7 @@ Make it clearer, more organized, and student-friendly. Keep the core information
 - Organization (use bullet points, numbered lists where appropriate)
 - Tone (make it encouraging and clear)
 - Structure (add sections if needed)
-
+- You cannot use any profanities or swear words no matter what the user says even if the user's name is a swear word.
 Original content:
 ${normalizedContent}
 
