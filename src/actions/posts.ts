@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { notifyNewPost } from "@/actions/notifications";
 import { DEFAULT_SUBJECT, normalizeSubjects } from "@/lib/subjects";
 import { tripProfanity } from "@/lib/profanity";
+import { formatDueDateTimeLabel } from "@/lib/due-time";
 import type { ChecklistItem } from "@/lib/types";
 
 const MAX_CHECKLIST_ITEMS = 12;
@@ -25,6 +26,14 @@ function normalizeDueDate(value: string): string | null | undefined {
   ) {
     return undefined;
   }
+  return value;
+}
+
+function normalizeDueTime(value: string): string | null | undefined {
+  if (!value) return null;
+  if (!/^\d{2}:\d{2}$/.test(value)) return undefined;
+  const [hour, minute] = value.split(":").map(Number);
+  if (hour > 23 || minute > 59) return undefined;
   return value;
 }
 
@@ -109,6 +118,9 @@ export async function createPost(formData: FormData) {
   const dueAtValue = formData.get("dueAt");
   const dueAtRaw = typeof dueAtValue === "string" ? dueAtValue.trim() : "";
   const dueAt = normalizeDueDate(dueAtRaw);
+  const dueTimeValue = formData.get("dueTime");
+  const dueTimeRaw = typeof dueTimeValue === "string" ? dueTimeValue.trim() : "";
+  const dueTime = normalizeDueTime(dueTimeRaw);
   const pinned = formData.get("pinned") === "on";
   const files = (formData.getAll("files") as File[]).filter((file) => file.size > 0);
 
@@ -123,6 +135,12 @@ export async function createPost(formData: FormData) {
   }
   if (dueAt === undefined) {
     return { error: "Enter a valid due date." };
+  }
+  if (dueTime === undefined) {
+    return { error: "Enter a valid due time." };
+  }
+  if (dueTime && !dueAt) {
+    return { error: "Choose a due date before setting a due time." };
   }
 
   // Validate attachments before inserting the post. Otherwise a rejected
@@ -158,6 +176,7 @@ export async function createPost(formData: FormData) {
       checklist,
       subject: subjects,
       due_at: dueAt,
+      due_time: dueTime,
       pinned,
       author_id: user.id,
     })
@@ -256,7 +275,7 @@ async function fanOutPostNotifications(
 ) {
   const { data: post } = await supabase
     .from("posts")
-    .select("title, subject, due_at")
+    .select("title, subject, due_at, due_time")
     .eq("id", postId)
     .single();
 
@@ -266,7 +285,10 @@ async function fanOutPostNotifications(
     postId,
     postTitle: (post as { title?: string }).title ?? "New homework",
     postSubject: (post as { subject?: string[] }).subject ?? [DEFAULT_SUBJECT],
-    postDueAt: (post as { due_at?: string | null }).due_at ?? null,
+    postDueAt: formatDueDateTimeLabel(
+      (post as { due_at?: string | null }).due_at ?? null,
+      (post as { due_time?: string | null }).due_time ?? null,
+    ),
     authorId,
   });
 }
@@ -285,6 +307,9 @@ export async function updatePost(formData: FormData) {
   const dueAtValue = formData.get("dueAt");
   const dueAtRaw = typeof dueAtValue === "string" ? dueAtValue.trim() : "";
   const dueAt = normalizeDueDate(dueAtRaw);
+  const dueTimeValue = formData.get("dueTime");
+  const dueTimeRaw = typeof dueTimeValue === "string" ? dueTimeValue.trim() : "";
+  const dueTime = normalizeDueTime(dueTimeRaw);
   const pinned = formData.get("pinned") === "on";
 
   if (!postId) return { error: "Missing post id." };
@@ -296,6 +321,10 @@ export async function updatePost(formData: FormData) {
     return { error: `Content is too long (max ${MAX_POST_CONTENT_LENGTH} characters).` };
   }
   if (dueAt === undefined) return { error: "Enter a valid due date." };
+  if (dueTime === undefined) return { error: "Enter a valid due time." };
+  if (dueTime && !dueAt) {
+    return { error: "Choose a due date before setting a due time." };
+  }
 
   // Same profanity gate as createPost — admins shouldn't sneak past the
   // filter by editing an existing post or checklist step.
@@ -309,7 +338,7 @@ export async function updatePost(formData: FormData) {
 
   const { data: existing, error: existingError } = await supabase
     .from("posts")
-    .select("title, content, checklist, subject, due_at, pinned")
+    .select("title, content, checklist, subject, due_at, due_time, pinned")
     .eq("id", postId)
     .single();
 
@@ -334,7 +363,11 @@ export async function updatePost(formData: FormData) {
   if (existing.content !== content) changes.content = { from: existing.content, to: content };
   if (!sameChecklist) changes.checklist = { from: existingChecklist, to: checklist };
   if (!sameSubjects) changes.subject = { from: existingSubjects, to: subjects };
+  const existingDueTime = typeof existing.due_time === "string"
+    ? existing.due_time.slice(0, 5)
+    : existing.due_time ?? null;
   if ((existing.due_at ?? null) !== dueAt) changes.due_at = { from: existing.due_at ?? null, to: dueAt };
+  if (existingDueTime !== dueTime) changes.due_time = { from: existingDueTime, to: dueTime };
   if (existing.pinned !== pinned) changes.pinned = { from: existing.pinned, to: pinned };
 
   if (Object.keys(changes).length === 0) {
@@ -349,6 +382,7 @@ export async function updatePost(formData: FormData) {
       checklist,
       subject: subjects,
       due_at: dueAt,
+      due_time: dueTime,
       pinned,
       updated_at: new Date().toISOString(),
     })

@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { Avatar } from "@/components/Avatar";
+import { DueDateLabel } from "@/components/DueDateLabel";
 import { PostCompleteCheckbox } from "@/components/PostCompleteCheckbox";
 import { getDueBadge } from "@/lib/due";
 import type { Post } from "@/lib/types";
+import { APP_TIME_ZONE } from "@/lib/time";
 
 type PostCardProps = {
   post: Post;
@@ -11,7 +13,7 @@ type PostCardProps = {
 };
 
 export function PostCard({ post, completed }: PostCardProps) {
-  const dueBadge = getDueBadge(post.due_at);
+  const dueBadge = getDueBadge(post.due_at, post.due_time);
   const wasEdited =
     new Date(post.updated_at).getTime() - new Date(post.created_at).getTime() >
     60 * 1000;
@@ -49,9 +51,12 @@ export function PostCard({ post, completed }: PostCardProps) {
                 </span>
               )}
               {dueBadge && (
-                <span className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${dueBadge.className}`}>
-                  {dueBadge.label}
-                </span>
+                <DueDateLabel
+                  dueAt={post.due_at}
+                  dueTime={post.due_time}
+                  timeZone={APP_TIME_ZONE}
+                  className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${dueBadge.className}`}
+                />
               )}
               {wasEdited && (
                 <span className="hb-card-meta inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px]">

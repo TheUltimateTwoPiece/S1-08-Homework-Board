@@ -1,4 +1,4 @@
-import { getDateAfterDaysString, getPromptDateString, getTodayString, formatAppDate } from "@/lib/time";
+import { getPromptDateString, formatAppDate } from "@/lib/time";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
 import { PageTopBar } from "@/components/PageTopBar";
@@ -8,14 +8,13 @@ import { StatsWidget } from "@/components/dashboard/StatsWidget";
 import { NotificationsWidget } from "@/components/dashboard/NotificationsWidget";
 import { PipBubble } from "@/components/PipBubble";
 import { normalizePost, type Notification, type Post } from "@/lib/types";
+import { getDueState } from "@/lib/due";
 
 export const revalidate = 30;
 
 export default async function DashboardPage() {
   const profile = await requireProfile();
   const supabase = await createClient();
-  const todayStr = getTodayString();
-  const tomorrowStr = getDateAfterDaysString(1);
 
   const [{ data: posts }, { data: completions }, { data: notifications }] =
     await Promise.all([
@@ -54,6 +53,11 @@ export default async function DashboardPage() {
       if (!b.due_at) return -1;
       return a.due_at.localeCompare(b.due_at);
     }
+    if (a.due_time !== b.due_time) {
+      if (!a.due_time) return 1;
+      if (!b.due_time) return -1;
+      return a.due_time.localeCompare(b.due_time);
+    }
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
 
@@ -61,15 +65,18 @@ export default async function DashboardPage() {
   const completedCount = typedPosts.filter((post) => completedSet.has(post.id)).length;
   const assignmentsLeft = Math.max(0, totalPosts - completedCount);
   const dueTodayCount = typedPosts.filter(
-    (post) => post.due_at === todayStr && !completedSet.has(post.id),
+    (post) =>
+      getDueState(post.due_at, post.due_time)?.kind === "today" &&
+      !completedSet.has(post.id),
   ).length;
   const dueTomorrowCount = typedPosts.filter(
-    (post) => post.due_at === tomorrowStr && !completedSet.has(post.id),
+    (post) =>
+      getDueState(post.due_at, post.due_time)?.kind === "tomorrow" &&
+      !completedSet.has(post.id),
   ).length;
   const overdueCount = typedPosts.filter(
     (post) =>
-      post.due_at &&
-      post.due_at < todayStr &&
+      getDueState(post.due_at, post.due_time)?.kind === "overdue" &&
       !completedSet.has(post.id),
   ).length;
 

@@ -7,6 +7,7 @@ import { PageTopBar } from "@/components/PageTopBar";
 import { requireProfile } from "@/lib/auth";
 import { SUBJECTS } from "@/lib/subjects";
 import { normalizePost, type Post } from "@/lib/types";
+import { getDueState } from "@/lib/due";
 
 export const revalidate = 30;
 
@@ -69,8 +70,8 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
 
     if (due === "today") postsQuery = postsQuery.eq("due_at", todayStr);
     if (due === "tomorrow") postsQuery = postsQuery.eq("due_at", tomorrowStr);
-    if (due === "overdue") postsQuery = postsQuery.lt("due_at", todayStr);
-    if (due === "upcoming") postsQuery = postsQuery.gt("due_at", todayStr);
+    if (due === "overdue") postsQuery = postsQuery.lte("due_at", todayStr);
+    if (due === "upcoming") postsQuery = postsQuery.gte("due_at", todayStr);
   }
 
   // Run the posts query and the completion lookup in parallel — they have
@@ -99,13 +100,25 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
       if (!b.due_at) return -1;
       return a.due_at.localeCompare(b.due_at);
     }
+    if (a.due_time !== b.due_time) {
+      if (!a.due_time) return 1;
+      if (!b.due_time) return -1;
+      return a.due_time.localeCompare(b.due_time);
+    }
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
 
   const filteredPosts = sortedPosts.filter((post) => {
     const isCompleted = completedPostIds.has(post.id);
-    if (status === "completed") return isCompleted;
-    if (status === "todo") return !isCompleted;
+    if (status === "completed" && !isCompleted) return false;
+    if (status === "todo" && isCompleted) return false;
+    if (due !== "all") {
+      const dueKind = getDueState(post.due_at, post.due_time)?.kind;
+      if (due === "today" && dueKind !== "today") return false;
+      if (due === "tomorrow" && dueKind !== "tomorrow") return false;
+      if (due === "overdue" && dueKind !== "overdue") return false;
+      if (due === "upcoming" && (!dueKind || dueKind === "overdue")) return false;
+    }
     return true;
   });
 

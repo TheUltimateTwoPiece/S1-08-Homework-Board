@@ -1,25 +1,22 @@
 import Link from "next/link";
-import { format, parseISO } from "date-fns";
 import { PostCompleteButton } from "@/components/PostCompleteButton";
+import { DueDateLabel } from "@/components/DueDateLabel";
 import { togglePostComplete } from "@/actions/completions";
 import type { Post } from "@/lib/types";
-import { getTodayString } from "@/lib/time";
+import { APP_TIME_ZONE } from "@/lib/time";
+import { getDueBadge } from "@/lib/due";
 
 type PostsWidgetProps = {
   posts: Post[];
   completedSet: Set<string>;
 };
 
-function dueLabelFor(due: string | null) {
-  const today = getTodayString();
-  if (!due) return { text: "No due date", className: "hb-card-meta" };
-  if (due < today) {
-    return { text: "Overdue", className: "text-rose-600 dark:text-rose-400" };
-  }
-  if (due === today) {
-    return { text: "Today", className: "text-amber-600 dark:text-amber-400" };
-  }
-  return { text: format(parseISO(due), "d MMM"), className: "hb-card-meta" };
+function dueLabelFor(due: string | null, dueTime: string | null) {
+  const badge = getDueBadge(due, dueTime);
+  return {
+    text: badge?.label ?? "No due date",
+    className: badge?.className ?? "hb-card-meta",
+  };
 }
 
 export function PostsWidget({ posts, completedSet }: PostsWidgetProps) {
@@ -65,7 +62,7 @@ export function PostsWidget({ posts, completedSet }: PostsWidgetProps) {
         </div>
       ) : (
         <>
-          <div className="hb-dashboard-list-head hidden grid-cols-[auto_minmax(0,1fr)_90px_88px] gap-3 px-1 pb-1 pt-4 text-[11px] font-semibold uppercase tracking-wide sm:grid">
+          <div className="hb-dashboard-list-head hidden grid-cols-[auto_minmax(0,1fr)_180px_88px] gap-3 px-1 pb-1 pt-4 text-[11px] font-semibold uppercase tracking-wide sm:grid">
             <span aria-hidden="true" />
             <span>Assignment</span>
             <span>Due</span>
@@ -74,12 +71,12 @@ export function PostsWidget({ posts, completedSet }: PostsWidgetProps) {
           <ul className="divide-y">
             {shown.map((post) => {
               const done = completedSet.has(post.id);
-              const due = dueLabelFor(post.due_at);
+              const due = dueLabelFor(post.due_at, post.due_time);
               const subjects = Array.isArray(post.subject) ? post.subject : [];
               const subjectLabel = subjects.join(", ");
               return (
                 <li key={post.id}>
-                  <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 py-3 sm:grid-cols-[auto_minmax(0,1fr)_90px_88px]">
+                  <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 py-3 sm:grid-cols-[auto_minmax(0,1fr)_180px_88px]">
                     <form
                       action={togglePostComplete}
                       className="flex shrink-0 items-center"
@@ -103,12 +100,31 @@ export function PostsWidget({ posts, completedSet }: PostsWidgetProps) {
                         {post.title}
                       </span>
                       <span className={"mt-0.5 block text-xs font-medium sm:hidden " + due.className}>
-                        {due.text}{subjectLabel ? ` · ${subjectLabel}` : ""}
+                        {post.due_at ? (
+                          <DueDateLabel
+                            dueAt={post.due_at}
+                            dueTime={post.due_time}
+                            timeZone={APP_TIME_ZONE}
+                            countdownClassName="ml-1 opacity-80"
+                          />
+                        ) : (
+                          due.text
+                        )}
+                        {subjectLabel ? ` · ${subjectLabel}` : ""}
                       </span>
                     </Link>
 
                     <span className={"hidden text-xs font-medium sm:block " + due.className}>
-                      {due.text}
+                      {post.due_at ? (
+                        <DueDateLabel
+                          dueAt={post.due_at}
+                          dueTime={post.due_time}
+                          timeZone={APP_TIME_ZONE}
+                          countdownClassName="ml-1 opacity-80"
+                        />
+                      ) : (
+                        due.text
+                      )}
                     </span>
                     <span className="hb-card-meta hidden truncate text-xs sm:block">
                       {subjectLabel || "No subject"}
