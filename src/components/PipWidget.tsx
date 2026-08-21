@@ -381,7 +381,7 @@ export function PipWidget({
 
   // ── Render ──
   return (
-    <div className="hb-chat-panel flex h-[calc(100vh-10rem)] max-sm:h-[calc(100dvh-3rem)] overflow-hidden rounded-xl shadow-lg">
+    <div className="hb-chat-panel flex h-[calc(100vh-10rem)] max-sm:h-[calc(100dvh-3rem)] overflow-hidden shadow-lg">
       {/* ── Mobile sidebar overlay ── */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 sm:hidden" onClick={() => setSidebarOpen(false)}>

@@ -59,7 +59,7 @@ export default async function AdminBugReportsPage() {
       {error ? (
         <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-300">Could not load bug reports: {error.message}</div>
       ) : withScreenshots.length === 0 ? (
-        <div className="hb-empty-state rounded-2xl border-2 border-dashed border-slate-200 py-16 text-center dark:border-slate-700"><p className="hb-section-title text-sm">No bug reports yet.</p></div>
+        <div className="hb-empty-state border-2 border-dashed border-slate-200 py-16 text-center dark:border-slate-700"><p className="hb-section-title text-sm">No bug reports yet.</p></div>
       ) : (
         <div className="space-y-5">
           {withScreenshots.map((report) => (

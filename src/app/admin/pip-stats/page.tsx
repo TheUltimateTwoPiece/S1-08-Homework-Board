@@ -267,7 +267,7 @@ export default async function AdminPipStatsPage() {
       </div>
 
       {/* 7-day usage chart */}
-      <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div className="mt-8 border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <h2 className="hb-card-section text-base">Prompts in the last 7 days</h2>
         <div className="mt-4 grid grid-cols-7 items-end gap-2 sm:gap-3" style={{ height: "180px" }}>
           {dayLabels.map((label, i) => {
@@ -305,7 +305,7 @@ export default async function AdminPipStatsPage() {
       </div>
 
       {/* Per-user table */}
-      <div className="mt-8 rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div className="mt-8 border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
           <h2 className="hb-card-section text-base">All Pip users</h2>
           <span className="text-xs text-slate-400">{userStats.length} users</span>
@@ -458,7 +458,7 @@ function StatCard({
   const c = colorMap[color] ?? colorMap.blue;
 
   return (
-    <div className={`rounded-xl border border-slate-200 p-4 shadow-sm transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900 ${c.bg}`}>
+    <div className={`border border-slate-200 p-4 shadow-sm transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900 ${c.bg}`}>
       <div className="flex items-center gap-3">
         <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${c.iconBg} ${c.iconText}`}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
