@@ -193,7 +193,7 @@ export function PipBubble({ remaining: initialRemaining }: { remaining: number }
   }
 
   return (
-    <div className={`hb-chat-panel fixed bottom-6 right-6 z-50 flex flex-col overflow-hidden rounded-2xl shadow-2xl transition-all duration-300 ${
+    <div className={`hb-chat-panel fixed bottom-6 right-6 z-50 flex flex-col overflow-hidden shadow-2xl transition-all duration-300 ${
       open ? EXPANDED_HEIGHT + " w-[360px] max-sm:w-[calc(100vw-3rem)]" : MINIMIZED_HEIGHT + " w-14"
     }`}>
       {/* Header */}

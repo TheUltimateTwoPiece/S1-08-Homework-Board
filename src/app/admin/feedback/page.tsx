@@ -37,7 +37,7 @@ export default async function AdminFeedbackPage() {
   function renderItems(items: Feedback[]) {
     if (items.length === 0) {
       return (
-        <div className="hb-empty-state flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 py-12 text-center dark:border-stone-700">
+        <div className="hb-empty-state flex flex-col items-center justify-center border-2 border-dashed border-slate-200 py-12 text-center dark:border-stone-700">
           <p className="hb-section-title text-sm">No feedback yet.</p>
         </div>
       );

@@ -530,7 +530,7 @@ export function ThemeSettingsForm() {
           }}
           onDragLeave={() => setDragActive(false)}
           onDrop={handleDrop}
-          className={`flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 text-center transition ${
+          className={`flex flex-col items-center justify-center gap-3 border-2 border-dashed p-8 text-center transition ${
             dragActive
               ? "border-blue-500 bg-blue-50 dark:border-blue-500 dark:bg-blue-950/40"
               : "border-slate-200 bg-slate-50/60 hover:border-blue-300 hover:bg-blue-50/40 dark:border-stone-700 dark:bg-stone-800/50 dark:hover:border-blue-500 dark:hover:bg-blue-950/30"
@@ -652,7 +652,7 @@ export function ThemeSettingsForm() {
         <div className="grid gap-4 sm:grid-cols-2">
           {/* Mock dashboard surface rendered with the *live* CSS vars */}
           <div
-            className="rounded-xl border p-4"
+            className="border p-4"
             style={{
               background: "var(--hb-surface-muted)",
               borderColor: "var(--hb-border)",
@@ -660,7 +660,7 @@ export function ThemeSettingsForm() {
             }}
           >
             <div
-              className="rounded-lg border p-4 shadow-sm"
+              className="border p-4 shadow-sm"
               style={{
                 background: "var(--hb-surface)",
                 borderColor: "var(--hb-border)",
@@ -698,7 +698,7 @@ export function ThemeSettingsForm() {
               return (
                 <div
                   key={key}
-                  className="relative flex flex-col gap-2 rounded-lg border border-slate-200 p-2.5 transition hover:border-blue-300 dark:border-stone-700 dark:hover:border-blue-500"
+                  className="relative flex flex-col gap-2 border border-slate-200 p-2.5 transition hover:border-blue-300 dark:border-stone-700 dark:hover:border-blue-500"
                 >
                   <div
                     className={`flex items-center gap-2 ${isEditing ? "pr-11" : ""}`}
@@ -828,7 +828,7 @@ export function ThemeSettingsForm() {
 
         {/* Eyedropper picker */}
         {picking && (
-          <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50/40 p-4 dark:border-blue-900 dark:bg-blue-950/20">
+          <div className="mt-4 border border-blue-200 bg-blue-50/40 p-4 dark:border-blue-900 dark:bg-blue-950/20">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
               <p className="text-sm text-slate-700 dark:text-stone-200">
                 <span className="font-semibold">

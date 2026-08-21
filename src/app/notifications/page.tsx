@@ -77,7 +77,7 @@ export default async function NotificationsPage() {
           ))}
         </ul>
       ) : (
-        <div className="hb-empty-state flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[var(--hb-border)] py-16 text-center">
+        <div className="hb-empty-state flex flex-col items-center justify-center border-2 border-dashed border-[var(--hb-border)] py-16 text-center">
           <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--hb-surface-hover)]">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 text-[var(--hb-text-muted)]" aria-hidden="true">
               <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
