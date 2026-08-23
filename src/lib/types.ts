@@ -22,6 +22,14 @@ export type Profile = {
   email_reminder_notifications: boolean;
 };
 
+export type BirthdaySetting = {
+  id: number;
+  active: boolean;
+  celebrant_name: string;
+  activated_at: string | null;
+  updated_at: string;
+};
+
 export type ChecklistItem = {
   id: string;
   text: string;
