@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import type { BirthdaySetting } from "@/lib/types";
 
@@ -40,7 +40,7 @@ export function BirthdayPopup({ setting, userId }: BirthdayPopupProps) {
 
   useEffect(() => {
     if (!setting?.active) {
-      // localStorage is the external source of truth for the popup's initial
+      // localStorage is the external source of truth for the banner's initial
       // visibility. This state sync is intentional after client hydration.
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setOpen(false);
@@ -56,35 +56,25 @@ export function BirthdayPopup({ setting, userId }: BirthdayPopupProps) {
     }
   }, [activationKey, setting?.active, storageKey]);
 
-  const dismiss = useCallback(() => {
-    setOpen(false);
-    try {
-      window.localStorage.setItem(storageKey, activationKey);
-    } catch {
-      // The popup is still dismissed for this render if storage is unavailable.
-    }
-  }, [activationKey, storageKey]);
-
   useEffect(() => {
     if (!open) return;
 
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") dismiss();
-    }
+    const timeoutId = window.setTimeout(() => {
+      setOpen(false);
+      try {
+        window.localStorage.setItem(storageKey, activationKey);
+      } catch {
+        // The banner still disappears if storage is unavailable.
+      }
+    }, 5000);
 
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [dismiss, open]);
+    return () => window.clearTimeout(timeoutId);
+  }, [activationKey, open, storageKey]);
 
   if (!open || !setting?.active) return null;
 
   return (
-    <div className="hb-birthday-layer">
+    <div className="hb-birthday-layer" role="status" aria-live="polite" aria-atomic="true">
       <div className="hb-birthday-confetti" aria-hidden="true">
         {pieces.map((piece) => (
           <span
@@ -94,51 +84,11 @@ export function BirthdayPopup({ setting, userId }: BirthdayPopupProps) {
           />
         ))}
       </div>
-      <div
-        className="hb-birthday-backdrop"
-        role="presentation"
-        onClick={dismiss}
-      />
-      <section
-        className="hb-birthday-dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="hb-birthday-title"
-        aria-describedby="hb-birthday-message"
-      >
-        <button
-          type="button"
-          className="hb-birthday-close"
-          onClick={dismiss}
-          aria-label="Close birthday message"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            aria-hidden="true"
-          >
-            <path d="m6 6 12 12" />
-            <path d="m18 6-12 12" />
-          </svg>
-        </button>
-        <div className="hb-birthday-cake" aria-hidden="true">
-          <span>🎂</span>
-        </div>
-        <p className="hb-birthday-kicker">A little celebration</p>
-        <h2 id="hb-birthday-title" className="hb-birthday-title">
-          Happy birthday, {setting.celebrant_name}!
-        </h2>
-        <p id="hb-birthday-message" className="hb-birthday-message">
-          Hope you have a brilliant day.
-        </p>
-        <button type="button" className="button hb-birthday-button" onClick={dismiss}>
-          Thanks!
-        </button>
-      </section>
+      <div className="hb-birthday-banner">
+        <p className="hb-birthday-kicker">Birthday celebration</p>
+        <p className="hb-birthday-title">Happy birthday, {setting.celebrant_name}!</p>
+        <p className="hb-birthday-message">Hope you have a brilliant day.</p>
+      </div>
     </div>
   );
 }
