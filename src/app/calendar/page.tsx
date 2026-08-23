@@ -12,6 +12,7 @@ import {
 } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
 import { getTodayString } from "@/lib/time";
+import { formatDueTimeOnly } from "@/lib/due-time";
 import { requireProfile } from "@/lib/auth";
 import { normalizePost } from "@/lib/types";
 
@@ -48,13 +49,14 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
   const supabase = await createClient();
   const { data: posts } = await supabase
     .from("posts")
-    .select("id, title, due_at, subject, pinned")
+    .select("id, title, due_at, due_time, subject, pinned")
     .not("due_at", "is", null)
     .gte("due_at", startStr)
     .lte("due_at", endStr)
-    .order("due_at", { ascending: true });
+    .order("due_at", { ascending: true })
+    .order("due_time", { ascending: true, nullsFirst: false });
 
-  const byDay = ((posts ?? []) as { id: string; title: string; due_at: string | null; subject: unknown; pinned: boolean }[]).map(normalizePost).reduce(
+  const byDay = ((posts ?? []) as { id: string; title: string; due_at: string | null; due_time: string | null; subject: unknown; pinned: boolean }[]).map(normalizePost).reduce(
     (acc, post) => {
       const key = post.due_at as string | null;
       if (!key) return acc;
@@ -64,7 +66,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
     },
     {} as Record<
       string,
-      { id: string; title: string; subject: string[]; pinned: boolean }[]
+      { id: string; title: string; subject: string[]; due_time: string | null; pinned: boolean }[]
     >,
   );
 
@@ -162,7 +164,12 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
                             : "hover:bg-slate-50 dark:hover:bg-stone-700/40"
                         }`}
                       >
-                        {post.title}
+                        <span className="line-clamp-2">{post.title}</span>
+                        {post.due_time && (
+                          <span className="mt-0.5 block text-[9px] opacity-75">
+                            {formatDueTimeOnly(post.due_time)}
+                          </span>
+                        )}
                       </Link>
                     </li>
                   ))}

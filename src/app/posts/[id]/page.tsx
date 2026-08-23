@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
 import { getDueBadge } from "@/lib/due";
 import { AttachmentList } from "@/components/AttachmentList";
+import { DueDateLabel } from "@/components/DueDateLabel";
 import { CommentForm } from "@/components/CommentForm";
 import { CommentList } from "@/components/CommentList";
 import { EditPostForm } from "@/components/EditPostForm";
@@ -12,7 +13,7 @@ import { PostCompleteCheckbox } from "@/components/PostCompleteCheckbox";
 import { PostChecklist } from "@/components/PostChecklist";
 import { deletePost, setPostCommentsLocked, setPostPinned } from "@/actions/posts";
 import { normalizePost, type Attachment, type Comment, type Post, type PostEdit, type Profile } from "@/lib/types";
-import { formatAppDateTime } from "@/lib/time";
+import { APP_TIME_ZONE, formatAppDateTime } from "@/lib/time";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -64,7 +65,7 @@ export default async function PostPage({ params }: PageProps) {
   const isAdmin = profile.role === "admin";
   const commentsLocked = typedPost.comments_locked;
   const canComment = isAdmin || !commentsLocked;
-  const dueBadge = getDueBadge(typedPost.due_at);
+  const dueBadge = getDueBadge(typedPost.due_at, typedPost.due_time);
   const wasEdited =
     new Date(typedPost.updated_at).getTime() - new Date(typedPost.created_at).getTime() >
     60 * 1000;
@@ -309,9 +310,13 @@ export default async function PostPage({ params }: PageProps) {
               </span>
             ))}
             {dueBadge && (
-              <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold ${dueBadge.className}`}>
-                {dueBadge.label}
-              </span>
+              <DueDateLabel
+                dueAt={typedPost.due_at}
+                dueTime={typedPost.due_time}
+                timeZone={APP_TIME_ZONE}
+                className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold ${dueBadge.className}`}
+                countdownClassName="ml-1.5 opacity-80"
+              />
             )}
             {wasEdited && (
               <span className="hb-card-meta inline-flex items-center rounded-md px-2 py-0.5 text-[10px]">Edited</span>
@@ -426,6 +431,7 @@ export default async function PostPage({ params }: PageProps) {
                 checklist: typedPost.checklist ?? [],
                 subject: typedPost.subject,
                 due_at: typedPost.due_at,
+                due_time: typedPost.due_time,
                 pinned: typedPost.pinned,
               }}
             />

@@ -1,14 +1,14 @@
 import Link from "next/link";
-import { differenceInCalendarDays, parseISO } from "date-fns";
-import { formatAppDateOnly, getTodayString } from "@/lib/time";
+import { DueDateLabel } from "@/components/DueDateLabel";
+import { formatAppDateOnly, APP_TIME_ZONE } from "@/lib/time";
+import { getDueState } from "@/lib/due";
 import type { Post } from "@/lib/types";
 
 type UpcomingWidgetProps = { posts: Post[] };
 
 export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
-  const todayStr = getTodayString();
   const upcoming = posts
-    .filter((p) => p.due_at && p.due_at >= todayStr)
+    .filter((p) => p.due_at && getDueState(p.due_at, p.due_time)?.kind !== "overdue")
     .slice(0, 4);
 
   return (
@@ -31,9 +31,9 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
         <ul className="space-y-2.5">
           {upcoming.map((post) => {
             const dueAt = post.due_at as string;
-            const due = parseISO(dueAt);
-            const daysUntil = differenceInCalendarDays(due, parseISO(todayStr));
-            const today = daysUntil === 0;
+            const state = getDueState(dueAt, post.due_time);
+            const today = state?.kind === "today";
+            const overdue = state?.kind === "overdue";
             return (
               <li key={post.id} className="flex items-start gap-3">
                 <div
@@ -41,7 +41,9 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
                     "mt-0.5 flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-md text-center leading-none " +
                     (today
                       ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
-                      : "bg-[var(--hb-surface-hover)]")
+                      : overdue
+                        ? "bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300"
+                        : "bg-[var(--hb-surface-hover)]")
                   }
                 >
                   <span className="text-[10px] font-semibold uppercase">
@@ -58,20 +60,20 @@ export function UpcomingWidget({ posts }: UpcomingWidgetProps) {
                   >
                     {post.title}
                   </Link>
-                  <p
+                  <DueDateLabel
+                    dueAt={dueAt}
+                    dueTime={post.due_time}
+                    timeZone={APP_TIME_ZONE}
                     className={
-                      "mt-0.5 text-xs font-medium " +
+                      "mt-0.5 block text-xs font-medium " +
                       (today
                         ? "text-amber-700 dark:text-amber-400"
-                        : "hb-card-meta")
+                        : overdue
+                          ? "text-rose-700 dark:text-rose-400"
+                          : "hb-card-meta")
                     }
-                  >
-                    {today
-                      ? "Due today"
-                      : daysUntil === 1
-                        ? "Tomorrow"
-                        : `In ${daysUntil} days`}
-                  </p>
+                    countdownClassName="ml-1 opacity-80"
+                  />
                 </div>
               </li>
             );

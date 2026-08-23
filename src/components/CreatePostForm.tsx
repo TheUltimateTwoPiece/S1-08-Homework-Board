@@ -82,6 +82,18 @@ export function CreatePostForm() {
               className="hb-input w-full rounded-lg px-3 py-2.5 text-sm"
             />
           </div>
+          <div>
+            <label htmlFor="dueTime" className="hb-card-section mb-1.5 block text-sm">
+              Due time <span className="hb-card-meta text-xs font-normal">(optional)</span>
+            </label>
+            <input
+              id="dueTime"
+              name="dueTime"
+              type="time"
+              className="hb-input w-full rounded-lg px-3 py-2.5 text-sm"
+            />
+            <p className="hb-card-meta mt-1 text-xs">Uses the app timezone.</p>
+          </div>
         </div>
 
         <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2.5 dark:bg-stone-800/60">

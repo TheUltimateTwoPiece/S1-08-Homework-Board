@@ -1,13 +1,15 @@
 import { createClient } from "@/lib/supabase/server";
 import { DEFAULT_SUBJECT } from "@/lib/subjects";
 import { normalizePost } from "@/lib/types";
-import { getTodayString } from "@/lib/time";
+import { formatDueDateTimeLabel } from "@/lib/due-time";
+import { getDueState } from "@/lib/due";
 
 type PostRow = {
   id: string;
   title: string;
   subject: string[];
   due_at: string | null;
+  due_time: string | null;
   content: string;
   checklist?: unknown;
 };
@@ -89,13 +91,11 @@ export async function buildUserContext(
   supabase: Awaited<ReturnType<typeof createClient>>,
   userId: string,
 ): Promise<string> {
-  const todayStr = getTodayString();
-
   const [postsResult, completionsResult, checklistProgressResult, notificationsResult, profileResult] =
     await Promise.all([
       supabase
         .from("posts")
-        .select("id, title, subject, due_at, content, checklist")
+        .select("id, title, subject, due_at, due_time, content, checklist")
         .order("due_at", { ascending: true, nullsFirst: false })
         .limit(500),
       supabase.from("post_completions").select("post_id, completed_at").eq("user_id", userId),
@@ -154,7 +154,7 @@ export async function buildUserContext(
   const remaining = typedPosts.filter((p) => !completedSet.has(p.id));
   const remainingLines = remaining.map(
     (p) =>
-      `  - [${p.id}] ${p.title} (${p.subject.join(" + ")}${p.due_at ? `, due ${p.due_at}` : ", no due date"})`,
+      `  - [${p.id}] ${p.title} (${p.subject.join(" + ")}${p.due_at ? `, due ${formatDueDateTimeLabel(p.due_at, p.due_time) ?? p.due_at}` : ", no due date"})`,
   );
 
   const checkedChecklistByPost = new Map<string, Set<string>>();
@@ -177,20 +177,20 @@ export async function buildUserContext(
 
   // ── Overdue (due date in the past + uncompleted) — with content ──
   const overdue = typedPosts
-    .filter((p) => p.due_at && p.due_at < todayStr && !completedSet.has(p.id))
+    .filter((p) => getDueState(p.due_at, p.due_time)?.kind === "overdue" && !completedSet.has(p.id))
     .slice(0, 5)
     .map(
       (p) =>
-        `  - [${p.id}] ${p.title} (${p.subject.join(" + ")}, overdue since ${p.due_at}) — ${p.content.slice(0, 300)}${p.content.length > 300 ? "..." : ""}${checklistSummary(p)}`,
+        `  - [${p.id}] ${p.title} (${p.subject.join(" + ")}, overdue since ${formatDueDateTimeLabel(p.due_at, p.due_time) ?? p.due_at}) — ${p.content.slice(0, 300)}${p.content.length > 300 ? "..." : ""}${checklistSummary(p)}`,
     );
 
   // ── Upcoming (due date today/future + uncompleted) — with content ──
   const upcoming = typedPosts
-    .filter((p) => p.due_at && p.due_at >= todayStr && !completedSet.has(p.id))
+    .filter((p) => getDueState(p.due_at, p.due_time)?.kind !== "overdue" && p.due_at && !completedSet.has(p.id))
     .slice(0, 10)
     .map(
       (p) =>
-        `  - [${p.id}] ${p.title} (${p.subject.join(" + ")}, due ${p.due_at}) — ${p.content.slice(0, 300)}${p.content.length > 300 ? "..." : ""}${checklistSummary(p)}`,
+        `  - [${p.id}] ${p.title} (${p.subject.join(" + ")}, due ${formatDueDateTimeLabel(p.due_at, p.due_time) ?? p.due_at}) — ${p.content.slice(0, 300)}${p.content.length > 300 ? "..." : ""}${checklistSummary(p)}`,
     );
 
   // ── No due date (uncompleted) — with content ──

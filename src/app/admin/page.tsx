@@ -4,7 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
 import { CreatePostForm } from "@/components/CreatePostForm";
 import { SendReminderForm } from "@/components/SendReminderForm";
-import type { Post, Profile } from "@/lib/types";
+import { BirthdayPopupForm } from "@/components/BirthdayPopupForm";
+import type { BirthdaySetting, Post, Profile } from "@/lib/types";
 
 export const revalidate = 60;
 
@@ -17,7 +18,12 @@ export default async function AdminPage() {
 
   const supabase = await createClient();
 
-  const [{ data: students }, { data: admins }, { data: posts }] = await Promise.all([
+  const [
+    { data: students },
+    { data: admins },
+    { data: posts },
+    { data: birthdaySetting },
+  ] = await Promise.all([
     supabase
       .from("profiles")
       .select("id, full_name, email")
@@ -33,6 +39,11 @@ export default async function AdminPage() {
       .select("id, title")
       .order("created_at", { ascending: false })
       .limit(20),
+    supabase
+      .from("birthday_settings")
+      .select("id, active, celebrant_name, activated_at, updated_at")
+      .eq("id", 1)
+      .maybeSingle(),
   ]);
 
   return (
@@ -95,6 +106,12 @@ export default async function AdminPage() {
             Pip Stats
           </Link>
         </div>
+      </div>
+
+      <div className="mb-8">
+        <BirthdayPopupForm
+          setting={(birthdaySetting as BirthdaySetting | null) ?? null}
+        />
       </div>
 
       <div className="grid gap-8 lg:grid-cols-2">

@@ -1,5 +1,6 @@
-import { differenceInCalendarDays, format, parseISO } from "date-fns";
-import { getTodayString } from "@/lib/time";
+import { differenceInCalendarDays, parseISO } from "date-fns";
+import { getTodayString, APP_TIME_ZONE } from "@/lib/time";
+import { formatDueDateTimeLabel, getDueTimestamp } from "@/lib/due-time";
 
 export type DueKind = "overdue" | "today" | "tomorrow" | "future";
 
@@ -8,26 +9,61 @@ export type DueState = {
   kind: DueKind;
   /** Whole calendar days between the due date and today (negative = past). */
   diffDays: number;
+  dueTimestamp: number | null;
 };
 
 /**
- * Canonical due-date logic — single source of truth for every label and
- * countdown in the app. A due_at is a *date* (the column is `date`), so all
- * comparisons are calendar-day based. This never drifts with the clock the
- * way relative time (`formatDistanceToNow`) does — a post due tomorrow still
- * reads "Due tomorrow" at 1 AM, 1 PM, and 11 PM.
+ * Canonical due-date logic for every label and status in the app.
+ * Date-only posts keep calendar-day behavior. Posts with due_time are
+ * compared against the exact local deadline in APP_TIME_ZONE, so a task due
+ * today at 10 PM is not marked overdue at noon.
  */
-export function getDueState(dueAt: string | null): DueState | null {
+export function getDueState(
+  dueAt: string | null,
+  dueTime: string | null = null,
+  now = new Date(),
+): DueState | null {
   if (!dueAt) return null;
 
   const dueDate = parseISO(dueAt);
-  const today = parseISO(getTodayString());
+  const today = parseISO(getTodayString(now));
   const diff = differenceInCalendarDays(dueDate, today);
+  const dueTimestamp = getDueTimestamp(dueAt, dueTime, APP_TIME_ZONE);
+  const hasPassed = dueTimestamp === null
+    ? diff < 0
+    : dueTimestamp <= now.getTime();
+  const dateLabel = formatDueDateTimeLabel(dueAt, dueTime) ?? dueAt;
 
-  if (diff < 0) return { label: "Overdue", kind: "overdue", diffDays: diff };
-  if (diff === 0) return { label: "Due today", kind: "today", diffDays: 0 };
-  if (diff === 1) return { label: "Due tomorrow", kind: "tomorrow", diffDays: 1 };
-  return { label: `Due ${format(dueDate, "MMM d")}`, kind: "future", diffDays: diff };
+  if (hasPassed) {
+    return {
+      label: `Due ${dateLabel}`,
+      kind: "overdue",
+      diffDays: diff,
+      dueTimestamp,
+    };
+  }
+  if (diff === 0) {
+    return {
+      label: `Due ${dateLabel}`,
+      kind: "today",
+      diffDays: 0,
+      dueTimestamp,
+    };
+  }
+  if (diff === 1) {
+    return {
+      label: `Due ${dateLabel}`,
+      kind: "tomorrow",
+      diffDays: 1,
+      dueTimestamp,
+    };
+  }
+  return {
+    label: `Due ${dateLabel}`,
+    kind: "future",
+    diffDays: diff,
+    dueTimestamp,
+  };
 }
 
 export type DueBadge = {
@@ -35,22 +71,18 @@ export type DueBadge = {
   className: string;
 };
 
-/**
- * Small badge variant used on post cards and the dashboard homework list.
- * Colors are FIXED dark-on-light so the badge stays legible on the
- * always-white cards in BOTH themes — theme-variable colors (e.g.
- * --hb-warning) flip to light amber/grey on white in dark mode and become
- * unreadable.
- */
-export function getDueBadge(dueAt: string | null): DueBadge | null {
-  const state = getDueState(dueAt);
+export function getDueBadge(
+  dueAt: string | null,
+  dueTime: string | null = null,
+): DueBadge | null {
+  const state = getDueState(dueAt, dueTime);
   if (!state) return null;
 
   const className =
     state.kind === "overdue"
-      ? "text-rose-700"
+      ? "text-rose-700 dark:text-rose-400"
       : state.kind === "today" || state.kind === "tomorrow"
-        ? "text-amber-700"
+        ? "text-amber-700 dark:text-amber-400"
         : "hb-card-meta";
 
   return { label: state.label, className };

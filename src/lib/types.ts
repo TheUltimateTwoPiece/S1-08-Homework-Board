@@ -22,6 +22,14 @@ export type Profile = {
   email_reminder_notifications: boolean;
 };
 
+export type BirthdaySetting = {
+  id: number;
+  active: boolean;
+  celebrant_name: string;
+  activated_at: string | null;
+  updated_at: string;
+};
+
 export type ChecklistItem = {
   id: string;
   text: string;
@@ -35,6 +43,8 @@ export type Post = {
   /** A post can belong to multiple subjects at once — always ≥ 1 element. */
   subject: string[];
   due_at: string | null;
+  /** Optional local wall-clock deadline interpreted in APP_TIME_ZONE. */
+  due_time: string | null;
   pinned: boolean;
   comments_locked: boolean;
   author_id: string;
@@ -161,7 +171,7 @@ export function normalizeChecklist(raw: unknown): ChecklistItem[] {
 
 export function normalizePost<T extends { subject: unknown }>(
   post: T,
-): Omit<T, "subject"> & { subject: string[]; checklist: ChecklistItem[] } {
+): Omit<T, "subject"> & { subject: string[]; checklist: ChecklistItem[]; due_time: string | null } {
   const raw = (post as Record<string, unknown>).subject;
   let subject: string[];
   if (Array.isArray(raw)) {
@@ -171,9 +181,11 @@ export function normalizePost<T extends { subject: unknown }>(
   } else {
     subject = [];
   }
+  const rawDueTime = (post as Record<string, unknown>).due_time;
   return {
     ...post,
     subject,
     checklist: normalizeChecklist((post as Record<string, unknown>).checklist),
+    due_time: typeof rawDueTime === "string" ? rawDueTime : null,
   };
 }

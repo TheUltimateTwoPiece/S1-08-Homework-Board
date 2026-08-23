@@ -5,8 +5,9 @@ import { createClient } from "@/lib/supabase/server";
 import { PageTopBar } from "@/components/PageTopBar";
 import { DEFAULT_SUBJECT } from "@/lib/subjects";
 import { getDueState } from "@/lib/due";
+import { DueDateLabel } from "@/components/DueDateLabel";
 import { normalizePost, type Post } from "@/lib/types";
-import { getDateAfterDaysString, getTodayString } from "@/lib/time";
+import { APP_TIME_ZONE, getDateAfterDaysString, getTodayString } from "@/lib/time";
 
 export const revalidate = 30;
 
@@ -18,12 +19,10 @@ type CompletionRow = {
 export default async function YourProgressPage() {
   const profile = await requireProfile();
   const supabase = await createClient();
-  const todayStr = getTodayString();
-
   const [{ data: posts }, { data: completions }] = await Promise.all([
     supabase
       .from("posts")
-      .select("id, title, subject, due_at, pinned, created_at")
+      .select("id, title, subject, due_at, due_time, pinned, created_at")
       .order("created_at", { ascending: false }),
     supabase
       .from("post_completions")
@@ -50,11 +49,13 @@ export default async function YourProgressPage() {
   const upcomingCount = typedPosts.filter(
     (p) =>
       p.due_at &&
-      p.due_at >= todayStr &&
+      getDueState(p.due_at, p.due_time)?.kind !== "overdue" &&
       !completedSet.has(p.id),
   ).length;
   const overdueCount = typedPosts.filter(
-    (p) => p.due_at && p.due_at < todayStr && !completedSet.has(p.id),
+    (p) =>
+      getDueState(p.due_at, p.due_time)?.kind === "overdue" &&
+      !completedSet.has(p.id),
   ).length;
   const todoCount = typedPosts.length - completedCount;
 
@@ -125,8 +126,8 @@ export default async function YourProgressPage() {
   const upNext = typedPosts
     .filter((p) => !completedSet.has(p.id))
     .sort((a, b) => {
-      const aKey = a.due_at ?? "ZZZZ";
-      const bKey = b.due_at ?? "ZZZZ";
+      const aKey = `${a.due_at ?? "ZZZZ"}T${a.due_time ?? "99:99"}`;
+      const bKey = `${b.due_at ?? "ZZZZ"}T${b.due_time ?? "99:99"}`;
       return aKey.localeCompare(bKey);
     })
     .slice(0, 6);
@@ -263,7 +264,7 @@ export default async function YourProgressPage() {
             {upNext.map((post) => {
               // Same calendar-day source of truth as the dashboard and post
               // cards — this list can never drift out of sync with them.
-              const state = getDueState(post.due_at);
+              const state = getDueState(post.due_at, post.due_time);
               const overdue = state?.kind === "overdue";
               return (
                 <li key={post.id}>
@@ -277,25 +278,25 @@ export default async function YourProgressPage() {
                       </div>
                       <div className="hb-card-meta text-xs">{post.subject.join(" + ")}</div>
                     </div>
-                    <div
-                      className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-bold ${
-                        overdue
-                          ? "bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300"
-                          : state?.kind === "today"
-                          ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
-                          : "hb-card-meta bg-slate-100 dark:bg-stone-700/40"
-                      }`}
-                    >
-                      {state
-                        ? overdue
-                          ? `Overdue ${Math.abs(state.diffDays)}d`
-                          : state.kind === "today"
-                          ? "Today"
-                          : state.kind === "tomorrow"
-                          ? "Tomorrow"
-                          : `In ${state.diffDays} days`
-                        : "No due date"}
-                    </div>
+                    {state ? (
+                      <DueDateLabel
+                        dueAt={post.due_at}
+                        dueTime={post.due_time}
+                        timeZone={APP_TIME_ZONE}
+                        className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-bold ${
+                          overdue
+                            ? "bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300"
+                            : state.kind === "today"
+                            ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
+                            : "hb-card-meta bg-slate-100 dark:bg-stone-700/40"
+                        }`}
+                        countdownClassName="ml-1 opacity-80"
+                      />
+                    ) : (
+                      <span className="hb-card-meta shrink-0 rounded-md bg-slate-100 px-2 py-1 text-[11px] font-bold dark:bg-stone-700/40">
+                        No due date
+                      </span>
+                    )}
                   </Link>
                 </li>
               );

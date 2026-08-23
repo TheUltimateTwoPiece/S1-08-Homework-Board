@@ -7,7 +7,7 @@ import { ChecklistEditor } from "@/components/ChecklistEditor";
 import type { Post } from "@/lib/types";
 
 type EditPostFormProps = {
-  post: Pick<Post, "id" | "title" | "content" | "checklist" | "subject" | "due_at" | "pinned">;
+  post: Pick<Post, "id" | "title" | "content" | "checklist" | "subject" | "due_at" | "due_time" | "pinned">;
 };
 
 export function EditPostForm({ post }: EditPostFormProps) {
@@ -66,6 +66,19 @@ export function EditPostForm({ post }: EditPostFormProps) {
               defaultValue={post.due_at ?? ""}
               className="hb-input w-full rounded-lg px-3 py-2.5 text-sm"
             />
+          </div>
+          <div>
+            <label htmlFor="edit-dueTime" className="hb-card-section mb-1.5 block text-sm">
+              Due time <span className="hb-card-meta text-xs font-normal">(optional)</span>
+            </label>
+            <input
+              id="edit-dueTime"
+              name="dueTime"
+              type="time"
+              defaultValue={post.due_time ? post.due_time.slice(0, 5) : ""}
+              className="hb-input w-full rounded-lg px-3 py-2.5 text-sm"
+            />
+            <p className="hb-card-meta mt-1 text-xs">Uses the app timezone.</p>
           </div>
         </div>
 

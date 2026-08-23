@@ -12,6 +12,7 @@ A daily homework posting site for admins and students. Built with Next.js, Supab
 - **AI-powered post creation** — use Google Gemini AI to format and enhance homework posts
 - **Pip** — a Gemini homework assistant with persistent chats, account-level context, a 100-prompt UTC-day limit, and confirmation-gated completion actions
 - **Bug reports** — every authenticated user, including admins, can submit a report with one or more required screenshots; admins review them in `/admin/bug-reports`
+- **Birthday popup** — admins can activate a custom-named birthday celebration with confetti for all signed-in users
 - **Anti-swear filter** — every free-form text field (post title + content, comment, feedback, profile display name, admin reminder body) is checked for profanity before being saved. If a blocked word is detected, the user is redirected away from the app. See the [Anti-swear filter](#anti-swear-filter) section below
 
 ## Anti-swear filter
@@ -89,7 +90,7 @@ npm install
 1. Create a new project at [supabase.com](https://supabase.com)
 2. Run the SQL migrations in the `supabase/` directory in the Supabase SQL Editor (`schema.sql` first, then any migrations in order — at minimum `migration-email-status.sql` and `migration-profile-email-prefs.sql` if you use Brevo, plus `migration-notifications-admin-select.sql` for any existing deployment that predates the admin `SELECT` policy on notifications)
 3. Run `supabase/migration-20-bug-reports.sql` after the earlier numbered migrations. It creates the bug-report inbox and requires at least one screenshot per report. Screenshots use the existing private `attachments` storage bucket.
-4. Make sure the Pip and checklist migrations are applied: `migration-pip-prompts.sql`, `migration-pip-chats.sql`, `migration-pip-add-instructions.sql`, `migration-pip-admin-rls.sql`, `migration-17-post-checklists.sql`, `migration-18-post-checklist-progress.sql`, and `migration-19-pip-last-active.sql` (use the existing migration files and skip any already applied). Then run `migration-21-auth-role-hardening.sql`, `migration-22-pip-rate-limit-hardening.sql`, and `migration-23-inbox-status.sql`; these prevent forged admin signup metadata, direct Pip rate-limit bypasses, and add admin inbox status tracking.
+4. Make sure the Pip and checklist migrations are applied: `migration-pip-prompts.sql`, `migration-pip-chats.sql`, `migration-pip-add-instructions.sql`, `migration-pip-admin-rls.sql`, `migration-17-post-checklists.sql`, `migration-18-post-checklist-progress.sql`, and `migration-19-pip-last-active.sql` (use the existing migration files and skip any already applied). Then run `migration-21-auth-role-hardening.sql`, `migration-22-pip-rate-limit-hardening.sql`, `migration-23-inbox-status.sql`, `migration-24-post-due-times.sql`, and `migration-25-birthday-popup.sql`; these prevent forged admin signup metadata, direct Pip rate-limit bypasses, add admin inbox status tracking, add optional timezone-aware due times, and add the admin-controlled birthday popup.
 5. Copy your project URL and anon key from Supabase Settings → API
 
 ### 4. Configure environment variables
@@ -112,7 +113,7 @@ BREVO_FROM_EMAIL=
 BREVO_FROM_NAME=
 # Required for the "View assignment" CTA links inside emails to resolve.
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
-# Optional — date-only homework values use this timezone instead of Vercel UTC.
+# Optional — homework dates and optional due times use this timezone instead of Vercel UTC.
 # The default is America/New_York; set it to your school's IANA timezone.
 APP_TIME_ZONE=America/New_York
 ```
