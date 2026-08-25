@@ -104,20 +104,28 @@ export async function buildUserContext(
         .select("post_id, item_id")
         .eq("user_id", userId),
       supabase.from("notifications").select("id, read_at").eq("user_id", userId).is("read_at", null),
-      supabase.from("profiles").select("full_name, role").eq("id", userId).single(),
+      supabase.from("profiles").select("full_name, role").eq("id", userId).maybeSingle(),
     ]);
 
   // Checklist progress was added after the core Pip tables. Keep Pip usable
   // on an older deployment while making the missing progress explicit rather
   // than pretending every step is unchecked.
+  //
+  // A missing profile row is not fatal: the prompt already defaults the name
+  // to "Student" below, and breaking every chat over an absent profile is
+  // worse than Pip not knowing the user's name.
   const failedQueries = [
     postsResult.error,
     completionsResult.error,
     notificationsResult.error,
-    profileResult.error,
   ].filter(Boolean);
   if (failedQueries.length > 0) {
-    console.error("[pip-context] failed to load authoritative homework data", failedQueries[0]);
+    // Log every failure (not just the first) so the real culprit — e.g. a
+    // schema-cache miss like a missing `due_time` column — is visible in the
+    // server logs instead of being hidden behind the generic message.
+    for (const error of failedQueries) {
+      console.error("[pip-context] failed to load authoritative homework data", error);
+    }
     throw new Error("PIP_CONTEXT_UNAVAILABLE");
   }
 

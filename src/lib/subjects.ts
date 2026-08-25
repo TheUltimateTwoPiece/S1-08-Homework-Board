@@ -20,7 +20,7 @@ export const SUBJECTS = [
   "Science",
   "Humanities",
   "ChangeMakers",
-  "Safety & Wellness",
+  "Sports & Wellness",
   "CCE",
   "General",
 ] as const;
