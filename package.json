@@ -8,7 +8,8 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
-    "test:entities": "node scripts/check-html-entities.mjs"
+    "test:entities": "node scripts/check-html-entities.mjs",
+    "db:execute": "bash scripts/db-execute.sh"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

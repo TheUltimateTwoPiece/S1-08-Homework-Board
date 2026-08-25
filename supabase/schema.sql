@@ -29,7 +29,7 @@ create table public.posts (
         'Science',
         'Humanities',
         'ChangeMakers',
-        'Safety & Wellness',
+        'Sports & Wellness',
         'CCE',
         'General'
       ]::text[]

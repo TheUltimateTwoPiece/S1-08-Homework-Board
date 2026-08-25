@@ -5,6 +5,7 @@ import { SideRailBadge } from "@/components/SideRailBadge";
 import { PageTransition } from "@/components/PageTransition";
 import { getAdminInboxCounts, getCurrentProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { APP_TIME_ZONE, getTodayString } from "@/lib/time";
 import type { BirthdaySetting, Profile } from "@/lib/types";
 
 export async function AppShell({ children }: { children: React.ReactNode }) {
@@ -48,6 +49,8 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
       <BirthdayPopup
         setting={(birthdaySetting as BirthdaySetting | null) ?? null}
         userId={profile.id}
+        timeZone={APP_TIME_ZONE}
+        todayString={getTodayString()}
       />
     </div>
   );
